@@ -27,7 +27,7 @@ export default function TecniciPage() {
                 </p>
             </div>
             <Button asChild>
-                <Link href="#">
+                <Link href="/tecnici/nuovo">
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Nuovo Tecnico
                 </Link>
