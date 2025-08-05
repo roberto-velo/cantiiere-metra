@@ -76,7 +76,7 @@ export default function NuovoClientePage() {
         mapUrl,
         pool: null,
       };
-
+      
       if (values.poolType) {
         newClient.pool = {
           type: values.poolType,
