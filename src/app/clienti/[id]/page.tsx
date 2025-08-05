@@ -1,3 +1,7 @@
+
+"use client";
+
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -8,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { clients, tasks as allTasks } from "@/lib/data";
+import { getClient, getTasksByClientId } from "@/lib/firebase";
 import {
   Mail,
   MapPin,
@@ -21,11 +25,82 @@ import {
   Droplet,
 } from "lucide-react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
+import type { Client, Task } from "@/lib/types";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default function ClientDetailPage({ params }: { params: { id: string } }) {
-  const client = clients.find((c) => c.id === params.id);
-  const clientTasks = allTasks.filter((task) => task.clientId === params.id);
+export default function ClientDetailPage() {
+  const params = useParams<{ id: string }>();
+  const [client, setClient] = useState<Client | null>(null);
+  const [clientTasks, setClientTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (params.id) {
+      const fetchClientData = async () => {
+        setLoading(true);
+        const clientData = await getClient(params.id as string);
+        if (clientData) {
+          setClient(clientData);
+          const tasksData = await getTasksByClientId(params.id as string);
+          setClientTasks(tasksData);
+        }
+        setLoading(false);
+      };
+      fetchClientData();
+    }
+  }, [params.id]);
+
+  if (loading) {
+    return (
+       <div className="flex flex-col flex-1">
+        <header className="bg-muted/30 border-b p-4 sm:p-6">
+            <div className="flex items-center justify-between gap-4">
+                <div>
+                    <Skeleton className="h-8 w-64 mb-2" />
+                    <Skeleton className="h-5 w-40" />
+                </div>
+                <div className="flex items-center gap-2">
+                    <Skeleton className="h-9 w-24" />
+                    <Skeleton className="h-9 w-24" />
+                </div>
+            </div>
+        </header>
+        <main className="flex-1 p-4 sm:p-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+             <div className="lg:col-span-2 space-y-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle><Skeleton className="h-7 w-48" /></CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <Skeleton className="h-6 w-full" />
+                        <Skeleton className="h-6 w-full" />
+                        <Skeleton className="h-6 w-full" />
+                    </CardContent>
+                </Card>
+                 <Card>
+                    <CardHeader>
+                        <CardTitle><Skeleton className="h-7 w-48" /></CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Skeleton className="h-40 w-full" />
+                    </CardContent>
+                </Card>
+             </div>
+             <div className="lg:col-span-1">
+                <Card>
+                    <CardHeader>
+                         <CardTitle><Skeleton className="h-7 w-32" /></CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Skeleton className="w-full aspect-video" />
+                    </CardContent>
+                </Card>
+             </div>
+        </main>
+      </div>
+    );
+  }
 
   if (!client) {
     notFound();
@@ -36,6 +111,8 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
     { icon: Mail, label: "Email", value: client.email },
     { icon: MapPin, label: "Indirizzo", value: client.address },
   ];
+  
+  const allDocuments = clientTasks.flatMap(t => t.documents);
 
   return (
     <div className="flex flex-col flex-1">
@@ -48,11 +125,11 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline">
+            <Button variant="outline" disabled>
               <Pencil className="mr-2 h-4 w-4" />
               Modifica
             </Button>
-            <Button variant="destructive">
+            <Button variant="destructive" disabled>
               <Trash2 className="mr-2 h-4 w-4" />
               Elimina
             </Button>
@@ -139,18 +216,24 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {clientTasks.map((task) => (
-                    <TableRow key={task.id}>
-                      <TableCell>{task.date}</TableCell>
-                      <TableCell>{task.description}</TableCell>
-                      <TableCell>{task.status}</TableCell>
-                      <TableCell className="text-right">
-                        <Button asChild variant="ghost" size="sm">
-                          <Link href={`/attivita/${task.id}`}>Dettagli</Link>
-                        </Button>
-                      </TableCell>
+                  {clientTasks.length > 0 ? (
+                    clientTasks.map((task) => (
+                      <TableRow key={task.id}>
+                        <TableCell>{task.date}</TableCell>
+                        <TableCell>{task.description}</TableCell>
+                        <TableCell>{task.status}</TableCell>
+                        <TableCell className="text-right">
+                          <Button asChild variant="ghost" size="sm">
+                            <Link href={`/attivita/${task.id}`}>Dettagli</Link>
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center h-24">Nessuna attività trovata.</TableCell>
                     </TableRow>
-                  ))}
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
@@ -162,30 +245,33 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
                 <FileText className="h-5 w-5" />
                 Documenti Allegati
               </CardTitle>
-              <Button size="sm" variant="outline">
+              <Button size="sm" variant="outline" disabled>
                 <Upload className="mr-2 h-4 w-4" />
                 Carica
               </Button>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2">
-                {allTasks
-                  .filter(t => t.clientId === client.id)
-                  .flatMap(t => t.documents)
-                  .map((doc) => (
-                    <li
-                      key={doc.id}
-                      className="flex items-center justify-between rounded-md border p-3"
-                    >
-                      <span className="font-medium">{doc.name}</span>
-                      <Button variant="ghost" size="sm" asChild>
-                        <a href={doc.url} download>
-                          Scarica
-                        </a>
-                      </Button>
-                    </li>
-                  ))}
-              </ul>
+              {allDocuments.length > 0 ? (
+                 <ul className="space-y-2">
+                    {allDocuments.map((doc) => (
+                      <li
+                        key={doc.id}
+                        className="flex items-center justify-between rounded-md border p-3"
+                      >
+                        <span className="font-medium">{doc.name}</span>
+                        <Button variant="ghost" size="sm" asChild>
+                          <a href={doc.url} download>
+                            Scarica
+                          </a>
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+              ) : (
+                 <p className="text-sm text-center text-muted-foreground py-4">
+                    Nessun documento allegato.
+                </p>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -213,3 +299,4 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
     </div>
   );
 }
+

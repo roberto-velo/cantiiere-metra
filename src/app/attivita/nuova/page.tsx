@@ -26,10 +26,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ClipboardList, Mail, MapPin, Phone, Upload, Camera, FileText } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
-import { clients, technicians } from "@/lib/data";
+import { addTask, getClients, getTechnicians } from "@/lib/firebase";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import type { Client } from "@/lib/types";
+import type { Client, Technician } from "@/lib/types";
 
 const formSchema = z.object({
   clientId: z.string({ required_error: "Il cliente è obbligatorio." }),
@@ -48,6 +48,9 @@ export default function NuovaAttivitaPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const clientIdFromParams = searchParams.get("clientId");
+  
+  const [clients, setClients] = useState<Client[]>([]);
+  const [technicians, setTechnicians] = useState<Technician[]>([]);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -66,39 +69,56 @@ export default function NuovaAttivitaPage() {
   const clientId = form.watch("clientId");
 
   useEffect(() => {
+    const fetchData = async () => {
+        const [clientsData, techniciansData] = await Promise.all([getClients(), getTechnicians()]);
+        setClients(clientsData);
+        setTechnicians(techniciansData);
+        if (clientIdFromParams) {
+            const client = clientsData.find((c) => c.id === clientIdFromParams);
+            setSelectedClient(client || null);
+        }
+    };
+    fetchData();
+  }, [clientIdFromParams]);
+
+
+  useEffect(() => {
     if (clientId) {
       const client = clients.find((c) => c.id === clientId);
       setSelectedClient(client || null);
     } else {
       setSelectedClient(null);
     }
-  }, [clientId]);
+  }, [clientId, clients]);
   
-  // Set initial client if coming from params
-  useEffect(() => {
-    if (clientIdFromParams) {
-       const client = clients.find((c) => c.id === clientIdFromParams);
-       setSelectedClient(client || null);
-    }
-  }, [clientIdFromParams])
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    const newActivity = {
-      ...values,
-      id: crypto.randomUUID(),
-      status: "Pianificato",
-      // In a real app, you'd handle file uploads and get back URLs
-      photos: [], 
-      documents: [],
-    };
-    
-    console.log(newActivity);
-    // TODO: In a real application, you would save this data.
-    toast({
-      title: "Attività Creata!",
-      description: `L'attività "${values.description}" è stata creata con successo.`,
-    });
-    router.push('/attivita');
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+        const newActivity = {
+            ...values,
+            status: "Pianificato",
+            // In a real app, you'd handle file uploads to a service like Firebase Storage
+            // and get back URLs to save in Firestore.
+            photos: [], 
+            documents: [],
+        };
+        
+        await addTask(newActivity);
+
+        toast({
+        title: "Attività Creata!",
+        description: `L'attività "${values.description}" è stata creata con successo.`,
+        });
+        router.push('/attivita');
+
+    } catch (error) {
+        toast({
+            title: "Errore",
+            description: "Si è verificato un errore durante la creazione dell'attività.",
+            variant: "destructive"
+        });
+        console.error("Error adding task: ", error);
+    }
   }
 
   const clientInfo = selectedClient ? [
@@ -148,6 +168,7 @@ export default function NuovaAttivitaPage() {
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          value={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -323,7 +344,7 @@ export default function NuovaAttivitaPage() {
                                     <FormItem>
                                     <FormLabel>Seleziona una o più foto</FormLabel>
                                     <FormControl>
-                                        <Input type="file" multiple accept="image/*" onChange={(e) => field.onChange(e.target.files)} />
+                                        <Input type="file" multiple accept="image/*" onChange={(e) => field.onChange(e.target.files)} disabled />
                                     </FormControl>
                                     <FormMessage />
                                     </FormItem>
@@ -346,7 +367,7 @@ export default function NuovaAttivitaPage() {
                                     <FormItem>
                                     <FormLabel>Seleziona uno o più documenti</FormLabel>
                                     <FormControl>
-                                        <Input type="file" multiple onChange={(e) => field.onChange(e.target.files)} />
+                                        <Input type="file" multiple onChange={(e) => field.onChange(e.target.files)} disabled />
                                     </FormControl>
                                     <FormMessage />
                                     </FormItem>
@@ -361,7 +382,9 @@ export default function NuovaAttivitaPage() {
               <Button type="button" variant="outline" asChild>
                 <Link href="/attivita">Annulla</Link>
               </Button>
-              <Button type="submit">Salva Attività</Button>
+              <Button type="submit" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? "Creazione..." : "Crea Attività"}
+              </Button>
             </div>
           </form>
         </Form>
@@ -370,4 +393,3 @@ export default function NuovaAttivitaPage() {
   );
 }
 
-    

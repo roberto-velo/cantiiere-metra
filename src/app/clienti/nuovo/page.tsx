@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -25,15 +25,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
+import { addClient } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(2, "Il nome deve avere almeno 2 caratteri."),
   email: z.string().email("Inserisci un'email valida."),
   phone: z.string().min(5, "Il numero di telefono non sembra corretto."),
   address: z.string().min(5, "L'indirizzo deve avere almeno 5 caratteri."),
-  
-  // Campi opzionali per la piscina
+
   poolType: z.enum(['Interrata', 'Fuori terra']).optional(),
   poolShape: z.enum(['Rettangolare', 'Ovale', 'Forma libera']).optional(),
   poolDimensione: z.string().optional(),
@@ -44,6 +44,8 @@ const formSchema = z.object({
 
 export default function NuovoClientePage() {
   const { toast } = useToast();
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -60,37 +62,46 @@ export default function NuovoClientePage() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    const clientCode =
-      values.name.substring(0, 3).toUpperCase() +
-      Math.floor(100 + Math.random() * 900);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const clientCode =
+        values.name.substring(0, 3).toUpperCase() +
+        Math.floor(100 + Math.random() * 900);
+        
+      const mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(values.address)}&output=embed`;
+
+      const newClient = {
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        address: values.address,
+        clientCode,
+        mapUrl,
+        pool: values.poolType ? {
+          type: values.poolType,
+          shape: values.poolShape,
+          dimensione: values.poolDimensione,
+          volume: values.poolVolume,
+          liner: values.poolLiner,
+          filtrationSystem: values.poolFiltrationSystem,
+        } : undefined,
+      };
+
+      await addClient(newClient);
       
-    const mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(values.address)}&output=embed`;
-
-    const newClient = {
-      name: values.name,
-      email: values.email,
-      phone: values.phone,
-      address: values.address,
-      clientCode,
-      mapUrl,
-      pool: values.poolType ? {
-        type: values.poolType,
-        shape: values.poolShape,
-        dimensione: values.poolDimensione,
-        volume: values.poolVolume,
-        liner: values.poolLiner,
-        filtrationSystem: values.poolFiltrationSystem,
-      } : undefined,
-    };
-
-    console.log(newClient);
-    // TODO: In a real application, you would save this data.
-    toast({
-      title: "Cliente Creato!",
-      description: `Il cliente "${values.name}" è stato salvato con successo.`,
-    });
-    form.reset();
+      toast({
+        title: "Cliente Creato!",
+        description: `Il cliente "${values.name}" è stato salvato con successo.`,
+      });
+      router.push("/clienti");
+    } catch (error) {
+       toast({
+        title: "Errore",
+        description: "Si è verificato un errore durante il salvataggio del cliente.",
+        variant: "destructive"
+      });
+      console.error("Error adding client: ", error);
+    }
   }
 
   return (
@@ -231,7 +242,7 @@ export default function NuovoClientePage() {
                             )}
                         />
                     </div>
-                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <FormField
                             control={form.control}
                             name="poolDimensione"
@@ -245,6 +256,21 @@ export default function NuovoClientePage() {
                                 </FormItem>
                             )}
                         />
+                        <FormField
+                            control={form.control}
+                            name="poolVolume"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Volume (m³)</FormLabel>
+                                <FormControl>
+                                    <Input type="number" placeholder="Es: 75" {...field} onChange={event => field.onChange(+event.target.value)} value={field.value ?? ""} />
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <FormField
                             control={form.control}
                             name="poolLiner"
@@ -289,19 +315,6 @@ export default function NuovoClientePage() {
                                 </FormItem>
                             )}
                         />
-                         <FormField
-                            control={form.control}
-                            name="poolVolume"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Volume (m³)</FormLabel>
-                                <FormControl>
-                                    <Input type="number" placeholder="Es: 75" {...field} onChange={event => field.onChange(+event.target.value)} value={field.value ?? ""} />
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
                     </div>
                 </CardContent>
             </Card>
@@ -310,7 +323,9 @@ export default function NuovoClientePage() {
                 <Button type="button" variant="outline" asChild>
                     <Link href="/clienti">Annulla</Link>
                 </Button>
-                <Button type="submit">Salva Cliente</Button>
+                <Button type="submit" disabled={form.formState.isSubmitting}>
+                  {form.formState.isSubmitting ? "Salvataggio..." : "Salva Cliente"}
+                </Button>
             </div>
           </form>
         </Form>

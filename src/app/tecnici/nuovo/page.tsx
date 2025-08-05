@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -32,6 +32,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { format } from "date-fns";
+import { addTechnician } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
 
 const qualificationSchema = z.object({
   name: z.string().min(1, "Il nome della qualifica è obbligatorio."),
@@ -50,6 +52,7 @@ const formSchema = z.object({
 
 export default function NuovoTecnicoPage() {
   const { toast } = useToast();
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -66,24 +69,32 @@ export default function NuovoTecnicoPage() {
     name: "qualifications",
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    const newTechnician = {
-      ...values,
-      id: crypto.randomUUID(),
-      qualifications: values.qualifications.map(q => ({
-        ...q,
-        id: crypto.randomUUID(),
-        expiryDate: format(q.expiryDate, 'yyyy-MM-dd')
-      }))
-    };
-    
-    console.log(newTechnician);
-    // TODO: In a real application, you would save this data.
-    toast({
-      title: "Tecnico Creato!",
-      description: `Il tecnico "${values.firstName} ${values.lastName}" è stato salvato con successo.`,
-    });
-    form.reset();
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const newTechnician = {
+        ...values,
+        qualifications: values.qualifications.map(q => ({
+          id: crypto.randomUUID(),
+          name: q.name,
+          expiryDate: format(q.expiryDate, 'yyyy-MM-dd')
+        }))
+      };
+      
+      await addTechnician(newTechnician);
+      
+      toast({
+        title: "Tecnico Creato!",
+        description: `Il tecnico "${values.firstName} ${values.lastName}" è stato salvato con successo.`,
+      });
+      router.push("/tecnici");
+    } catch (error) {
+       toast({
+        title: "Errore",
+        description: "Si è verificato un errore durante il salvataggio del tecnico.",
+        variant: "destructive"
+      });
+      console.error("Error adding technician: ", error);
+    }
   }
 
   return (
@@ -279,7 +290,9 @@ export default function NuovoTecnicoPage() {
               <Button type="button" variant="outline" asChild>
                 <Link href="/tecnici">Annulla</Link>
               </Button>
-              <Button type="submit">Salva Tecnico</Button>
+              <Button type="submit" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? "Salvataggio..." : "Salva Tecnico"}
+              </Button>
             </div>
           </form>
         </Form>
@@ -287,3 +300,4 @@ export default function NuovoTecnicoPage() {
     </div>
   );
 }
+

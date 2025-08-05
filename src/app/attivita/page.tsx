@@ -1,4 +1,7 @@
 
+"use client";
+
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,11 +21,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { clients, tasks, technicians } from "@/lib/data";
-import type { TaskPriority, TaskStatus } from "@/lib/types";
+import { getTasks, getClients, getTechnicians } from "@/lib/firebase";
+import type { Task, Client, Technician, TaskPriority, TaskStatus } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { PlusCircle, Search, ClipboardList, Calendar } from "lucide-react";
 import Link from "next/link";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const priorityBadge: Record<TaskPriority, string> = {
   Alta: "bg-red-500/20 text-red-700 border border-red-500/30",
@@ -37,24 +41,45 @@ const statusBadge: Record<TaskStatus, string> = {
 };
 
 export default function AttivitaPage() {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [technicians, setTechnicians] = useState<Technician[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      const [tasksData, clientsData, techniciansData] = await Promise.all([
+        getTasks(),
+        getClients(),
+        getTechnicians(),
+      ]);
+      setTasks(tasksData);
+      setClients(clientsData);
+      setTechnicians(techniciansData);
+      setLoading(false);
+    };
+    fetchData();
+  }, []);
+
   return (
     <div className="flex flex-col flex-1">
-       <header className="bg-muted/30 border-b p-4 sm:p-6">
+      <header className="bg-muted/30 border-b p-4 sm:p-6">
         <div className="flex items-center justify-between">
-            <div className="space-y-1">
-                <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-                <ClipboardList className="h-6 w-6" /> Programmazione Attività
-                </h1>
-                <p className="text-muted-foreground">
-                Crea, visualizza e gestisci le attività dei tecnici.
-                </p>
-            </div>
-            <Button asChild>
-                <Link href="/attivita/nuova">
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Nuova Attività
-                </Link>
-            </Button>
+          <div className="space-y-1">
+            <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+              <ClipboardList className="h-6 w-6" /> Programmazione Attività
+            </h1>
+            <p className="text-muted-foreground">
+              Crea, visualizza e gestisci le attività dei tecnici.
+            </p>
+          </div>
+          <Button asChild>
+            <Link href="/attivita/nuova">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Nuova Attività
+            </Link>
+          </Button>
         </div>
       </header>
       <main className="flex-1 p-4 sm:p-6 space-y-6">
@@ -64,7 +89,7 @@ export default function AttivitaPage() {
               <TabsTrigger value="lista">
                 <ClipboardList className="mr-2 h-4 w-4" /> Lista
               </TabsTrigger>
-              <TabsTrigger value="calendario">
+              <TabsTrigger value="calendario" disabled>
                 <Calendar className="mr-2 h-4 w-4" /> Calendario
               </TabsTrigger>
             </TabsList>
@@ -75,24 +100,18 @@ export default function AttivitaPage() {
                 <div className="flex flex-col md:flex-row items-center gap-4">
                   <div className="relative flex-1 w-full">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="Cerca attività per descrizione..." className="pl-10" />
+                    <Input placeholder="Cerca attività per descrizione..." className="pl-10" disabled />
                   </div>
                   <div className="flex gap-2 w-full flex-1 md:w-auto">
-                    <Select>
+                    <Select disabled>
                       <SelectTrigger>
                         <SelectValue placeholder="Filtra per cliente" />
                       </SelectTrigger>
-                      <SelectContent>
-                        {clients.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                      </SelectContent>
                     </Select>
-                    <Select>
+                    <Select disabled>
                       <SelectTrigger>
                         <SelectValue placeholder="Filtra per tecnico" />
                       </SelectTrigger>
-                      <SelectContent>
-                         {technicians.map(t => <SelectItem key={t.id} value={t.id}>{t.firstName} {t.lastName}</SelectItem>)}
-                      </SelectContent>
                     </Select>
                   </div>
                 </div>
@@ -112,35 +131,74 @@ export default function AttivitaPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {tasks.map((task) => {
-                        const client = clients.find(c => c.id === task.clientId);
-                        const technician = technicians.find(t => t.id === task.technicianId);
-                        return (
-                          <TableRow key={task.id}>
-                            <TableCell className="font-medium">{task.description}</TableCell>
-                            <TableCell>{client?.name}</TableCell>
-                            <TableCell>{technician?.firstName} {technician?.lastName}</TableCell>
-                            <TableCell>
-                                <span className={cn("px-2 py-1 rounded-full text-xs font-medium", statusBadge[task.status])}>
-                                    {task.status}
+                      {loading ? (
+                         Array.from({ length: 4 }).map((_, i) => (
+                          <TableRow key={i}>
+                            <TableCell><Skeleton className="h-5 w-48" /></TableCell>
+                            <TableCell><Skeleton className="h-5 w-32" /></TableCell>
+                            <TableCell><Skeleton className="h-5 w-24" /></TableCell>
+                            <TableCell><Skeleton className="h-6 w-20 rounded-full" /></TableCell>
+                            <TableCell><Skeleton className="h-6 w-16 rounded-full" /></TableCell>
+                            <TableCell><Skeleton className="h-5 w-24" /></TableCell>
+                            <TableCell className="text-right"><Skeleton className="h-9 w-24" /></TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        tasks.map((task) => {
+                          const client = clients.find(
+                            (c) => c.id === task.clientId
+                          );
+                          const technician = technicians.find(
+                            (t) => t.id === task.technicianId
+                          );
+                          return (
+                            <TableRow key={task.id}>
+                              <TableCell className="font-medium">
+                                {task.description}
+                              </TableCell>
+                              <TableCell>{client?.name}</TableCell>
+                              <TableCell>
+                                {technician?.firstName} {technician?.lastName}
+                              </TableCell>
+                              <TableCell>
+                                <span
+                                  className={cn(
+                                    "px-2 py-1 rounded-full text-xs font-medium",
+                                    statusBadge[task.status]
+                                  )}
+                                >
+                                  {task.status}
                                 </span>
-                            </TableCell>
-                            <TableCell>
-                                <span className={cn("px-2 py-1 rounded-full text-xs font-medium", priorityBadge[task.priority])}>
-                                    {task.priority}
+                              </TableCell>
+                              <TableCell>
+                                <span
+                                  className={cn(
+                                    "px-2 py-1 rounded-full text-xs font-medium",
+                                    priorityBadge[task.priority]
+                                  )}
+                                >
+                                  {task.priority}
                                 </span>
-                            </TableCell>
-                            <TableCell>{task.date}</TableCell>
-                            <TableCell className="text-right">
-                              <Button variant="outline" size="sm" asChild>
-                                <Link href={`/attivita/${task.id}`}>
-                                  Visualizza
-                                </Link>
-                              </Button>
+                              </TableCell>
+                              <TableCell>{task.date}</TableCell>
+                              <TableCell className="text-right">
+                                <Button variant="outline" size="sm" asChild>
+                                  <Link href={`/attivita/${task.id}`}>
+                                    Visualizza
+                                  </Link>
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })
+                      )}
+                      {!loading && tasks.length === 0 && (
+                          <TableRow>
+                            <TableCell colSpan={7} className="text-center h-24">
+                              Nessuna attività trovata.
                             </TableCell>
                           </TableRow>
-                        );
-                      })}
+                        )}
                     </TableBody>
                   </Table>
                 </div>
@@ -154,7 +212,9 @@ export default function AttivitaPage() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-center h-96 bg-muted rounded-md">
-                    <p className="text-muted-foreground">La vista calendario sarà implementata qui.</p>
+                  <p className="text-muted-foreground">
+                    La vista calendario sarà implementata qui.
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -164,3 +224,4 @@ export default function AttivitaPage() {
     </div>
   );
 }
+
