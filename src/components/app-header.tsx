@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "./ui/button";
 import { ClipboardList, HardHat, UsersRound, LogOut } from "lucide-react";
 
@@ -15,12 +14,13 @@ export function AppHeader() {
     <header className="bg-card border-b p-4 sm:p-6 sticky top-0 z-50">
       <div className="flex items-center justify-between">
         <Link href="/">
-          <Image
+          {/* Using a standard img tag for debugging */}
+          <img
             src="/logo.png?v=1"
             alt="Logo"
-            width={180}
-            height={45}
-            priority
+            width="180"
+            height="45"
+            style={{ height: '45px', width: 'auto' }}
           />
         </Link>
         <nav className="hidden md:flex items-center gap-4">

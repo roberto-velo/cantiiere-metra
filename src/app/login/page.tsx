@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Image from "next/image";
 import Link from "next/link";
 
 
@@ -18,7 +17,14 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-4 text-center">
         <div className="flex justify-center items-center gap-2 mb-6">
-            <Image src="/logo.png?v=1" alt="Logo" width={200} height={50} />
+            {/* Using a standard img tag for debugging */}
+            <img 
+              src="/logo.png?v=1" 
+              alt="Logo" 
+              width="200" 
+              height="50"
+              style={{ height: '50px', width: 'auto' }}
+            />
         </div>
         <Card>
           <CardHeader>
