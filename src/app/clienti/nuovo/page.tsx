@@ -39,7 +39,7 @@ const formSchema = z.object({
   poolType: z.enum(['Interrata', 'Fuori terra']).optional().or(z.literal('')),
   poolShape: z.enum(['Rettangolare', 'Ovale', 'Forma libera']).optional().or(z.literal('')),
   poolDimensione: z.string().optional(),
-  poolVolume: z.coerce.number().positive("Il volume deve essere un numero positivo.").optional().nullable(),
+  poolVolume: z.coerce.number().positive("Il volume deve essere un numero positivo.").optional().or(z.literal('')),
   poolLiner: z.enum(['PVC', 'Piastrelle', 'Vernice']).optional().or(z.literal('')),
   poolFiltrationSystem: z.enum(['Sabbia', 'Cartuccia', 'Diatomee']).optional().or(z.literal('')),
 });
@@ -58,7 +58,7 @@ export default function NuovoClientePage() {
       poolType: "",
       poolShape: "",
       poolDimensione: "",
-      poolVolume: null,
+      poolVolume: '',
       poolLiner: "",
       poolFiltrationSystem: "",
     },
@@ -87,7 +87,7 @@ export default function NuovoClientePage() {
           type: values.poolType,
           shape: values.poolShape || null,
           dimensione: values.poolDimensione || null,
-          volume: values.poolVolume ?? null,
+          volume: values.poolVolume ? Number(values.poolVolume) : null,
           liner: values.poolLiner || null,
           filtrationSystem: values.poolFiltrationSystem || null,
         }
@@ -271,7 +271,7 @@ export default function NuovoClientePage() {
                                 <FormItem>
                                 <FormLabel>Volume (m³)</FormLabel>
                                 <FormControl>
-                                    <Input type="number" placeholder="Es: 75" {...field} onChange={event => field.onChange(event.target.value === '' ? null : +event.target.value)} value={field.value ?? ""} />
+                                    <Input type="number" placeholder="Es: 75" {...field} />
                                 </FormControl>
                                 <FormMessage />
                                 </FormItem>
@@ -307,7 +307,7 @@ export default function NuovoClientePage() {
                             render={({ field }) => (
                                 <FormItem>
                                 <FormLabel>Sistema Filtrazione</FormLabel>
-                                <Select onValuechange={field.onChange} value={field.value}>
+                                <Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Seleziona un sistema" />
