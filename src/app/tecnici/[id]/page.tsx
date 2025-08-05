@@ -1,7 +1,4 @@
 
-"use client";
-
-import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -14,7 +11,6 @@ import {
 } from "@/components/ui/table";
 import { getTechnician, getTasksByTechnicianId, getClients } from "@/lib/firebase";
 import {
-  Mail,
   Phone,
   ClipboardList,
   Award,
@@ -23,89 +19,20 @@ import {
   Trash2,
 } from "lucide-react";
 import Link from "next/link";
-import { notFound, useParams } from "next/navigation";
-import type { Client, Task, Technician } from '@/lib/types';
-import { Skeleton } from '@/components/ui/skeleton';
+import { notFound } from "next/navigation";
 
-export default function TechnicianDetailPage() {
-  const params = useParams<{ id: string }>();
-  const [technician, setTechnician] = useState<Technician | null>(null);
-  const [technicianTasks, setTechnicianTasks] = useState<Task[]>([]);
-  const [clients, setClients] = useState<Client[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-     if (params.id) {
-      const fetchTechnicianData = async () => {
-        setLoading(true);
-        const technicianData = await getTechnician(params.id as string);
-        if (technicianData) {
-          setTechnician(technicianData);
-          const [tasksData, clientsData] = await Promise.all([
-            getTasksByTechnicianId(params.id as string),
-            getClients()
-          ]);
-          setTechnicianTasks(tasksData);
-          setClients(clientsData);
-        }
-        setLoading(false);
-      };
-      fetchTechnicianData();
-    }
-  }, [params.id]);
-
-  if (loading) {
-    return (
-       <div className="flex flex-col flex-1">
-        <header className="bg-muted/30 border-b p-4 sm:p-6">
-            <div className="flex items-center justify-between gap-4">
-                <div>
-                    <Skeleton className="h-8 w-48 mb-2" />
-                    <Skeleton className="h-5 w-24" />
-                </div>
-                <div className="flex items-center gap-2">
-                    <Skeleton className="h-9 w-24" />
-                    <Skeleton className="h-9 w-24" />
-                </div>
-            </div>
-        </header>
-        <main className="flex-1 p-4 sm:p-6 grid gap-6 md:grid-cols-2">
-             <div className="space-y-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle><Skeleton className="h-7 w-48" /></CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <Skeleton className="h-6 w-full" />
-                    </CardContent>
-                </Card>
-                 <Card>
-                    <CardHeader>
-                        <CardTitle><Skeleton className="h-7 w-48" /></CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <Skeleton className="h-24 w-full" />
-                    </CardContent>
-                </Card>
-             </div>
-             <div className="space-y-6">
-                 <Card>
-                    <CardHeader>
-                         <CardTitle><Skeleton className="h-7 w-48" /></CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <Skeleton className="h-40 w-full" />
-                    </CardContent>
-                </Card>
-             </div>
-        </main>
-      </div>
-    );
-  }
+export default async function TechnicianDetailPage({ params }: { params: { id: string } }) {
+  
+  const technician = await getTechnician(params.id);
 
   if (!technician) {
     notFound();
   }
+
+  const [technicianTasks, clients] = await Promise.all([
+      getTasksByTechnicianId(params.id as string),
+      getClients()
+  ]);
 
   return (
     <div className="flex flex-col flex-1">
@@ -208,7 +135,7 @@ export default function TechnicianDetailPage() {
                       return (
                         <TableRow key={task.id}>
                           <TableCell>{task.date}</TableCell>
-                          <TableCell>{client?.name}</TableCell>
+                          <TableCell>{client?.name || 'N/A'}</TableCell>
                           <TableCell>{task.status}</TableCell>
                           <TableCell className="text-right">
                             <Button asChild variant="ghost" size="sm">
@@ -232,4 +159,3 @@ export default function TechnicianDetailPage() {
     </div>
   );
 }
-

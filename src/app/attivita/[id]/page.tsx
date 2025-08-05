@@ -1,12 +1,9 @@
 
-"use client";
-
-import { useState, useEffect } from "react";
 import { FileTagger } from "@/components/file-tagger";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { getTask, getClient, getTechnician, updateTaskStatus } from "@/lib/firebase";
+import { getTask, getClient, getTechnician } from "@/lib/firebase";
 import {
   Calendar,
   User,
@@ -19,84 +16,22 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound, useParams } from "next/navigation";
-import type { Task, TaskStatus, Client, Technician } from "@/lib/types";
-import { TaskTimer } from "@/components/task-timer";
-import { Skeleton } from "@/components/ui/skeleton";
+import { notFound } from "next/navigation";
+import type { Client, Technician } from "@/lib/types";
+import { TaskTimerWrapper } from "@/components/task-timer-wrapper";
 
-export default function TaskDetailPage() {
-  const params = useParams<{ id: string }>();
-  const [task, setTask] = useState<Task | null>(null);
-  const [client, setClient] = useState<Client | null>(null);
-  const [technician, setTechnician] = useState<Technician | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (params.id) {
-        const fetchTaskData = async () => {
-            setLoading(true);
-            const taskData = await getTask(params.id as string);
-            if(taskData) {
-                setTask(taskData);
-                const [clientData, technicianData] = await Promise.all([
-                    getClient(taskData.clientId),
-                    getTechnician(taskData.technicianId)
-                ]);
-                setClient(clientData);
-                setTechnician(technicianData);
-            }
-            setLoading(false);
-        }
-        fetchTaskData();
-    }
-  }, [params.id]);
-
-  const handleStatusChange = async (newStatus: TaskStatus) => {
-    if (!task) return;
-    setTask(prevTask => prevTask ? { ...prevTask, status: newStatus } : null);
-    await updateTaskStatus(task.id, newStatus);
-  };
-
-  if (loading) {
-     return (
-       <div className="flex flex-col flex-1">
-        <header className="bg-muted/30 border-b p-4 sm:p-6">
-            <div className="flex items-center gap-4">
-                <div>
-                    <Skeleton className="h-8 w-64 mb-2" />
-                    <Skeleton className="h-5 w-80" />
-                </div>
-            </div>
-        </header>
-        <main className="flex-1 p-4 sm:p-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <div className="lg:col-span-2 space-y-6">
-                <Card>
-                    <CardHeader><CardTitle><Skeleton className="h-7 w-48" /></CardTitle></CardHeader>
-                    <CardContent className="space-y-4">
-                       {Array.from({length: 5}).map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader><CardTitle><Skeleton className="h-7 w-32" /></CardTitle></CardHeader>
-                    <CardContent><Skeleton className="h-40 w-full" /></CardContent>
-                </Card>
-            </div>
-            <div className="lg:col-span-1 space-y-6">
-                 <Card>
-                    <CardHeader><CardTitle><Skeleton className="h-7 w-40" /></CardTitle></CardHeader>
-                    <CardContent><Skeleton className="h-24 w-full" /></CardContent>
-                </Card>
-                <Card>
-                    <CardHeader><CardTitle><Skeleton className="h-7 w-40" /></CardTitle></CardHeader>
-                    <CardContent><Skeleton className="h-48 w-full" /></CardContent>
-                </Card>
-            </div>
-        </main>
-      </div>
-     );
-  }
+export default async function TaskDetailPage({ params }: { params: { id: string } }) {
   
-  if (!task) notFound();
+  const task = await getTask(params.id);
+  
+  if (!task) {
+    notFound();
+  }
+
+  const [client, technician] = await Promise.all([
+      getClient(task.clientId),
+      getTechnician(task.technicianId)
+  ]);
 
   const details = [
     { icon: User, label: "Cliente", value: client?.name, href: `/clienti/${client?.id}` },
@@ -132,12 +67,12 @@ export default function TaskDetailPage() {
                     <detail.icon className="h-5 w-5 text-muted-foreground" />
                     <div className="flex-1">
                       <p className="text-muted-foreground">{detail.label}</p>
-                      {detail.href ? (
+                      {detail.href && detail.value ? (
                         <Link href={detail.href} className="font-medium text-primary hover:underline">
                           {detail.value}
                         </Link>
                       ) : (
-                        <p className="font-medium">{detail.value}</p>
+                        <p className="font-medium">{detail.value || 'N/A'}</p>
                       )}
                     </div>
                   </div>
@@ -196,7 +131,7 @@ export default function TaskDetailPage() {
         </div>
 
         <div className="lg:col-span-1 space-y-6">
-            <TaskTimer initialStatus={task.status} onStatusChange={handleStatusChange} />
+            <TaskTimerWrapper taskId={task.id} initialStatus={task.status} />
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -216,4 +151,3 @@ export default function TaskDetailPage() {
     </div>
   );
 }
-
