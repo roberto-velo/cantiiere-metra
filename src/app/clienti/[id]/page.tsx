@@ -16,6 +16,8 @@ import {
   FileText,
   ClipboardList,
   Upload,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -37,12 +39,22 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
   return (
     <div className="flex flex-col flex-1">
       <header className="bg-muted/30 border-b p-4 sm:p-6">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">{client.name}</h1>
             <p className="text-muted-foreground">
               Codice cliente: {client.clientCode}
             </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline">
+              <Pencil className="mr-2 h-4 w-4" />
+              Modifica
+            </Button>
+            <Button variant="destructive">
+              <Trash2 className="mr-2 h-4 w-4" />
+              Elimina
+            </Button>
           </div>
         </div>
       </header>
