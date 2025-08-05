@@ -16,7 +16,7 @@ export function AppHeader() {
       <div className="flex items-center justify-between">
         <Link href="/">
           <Image
-            src="/logo.png"
+            src="/logo.png?v=1"
             alt="Logo"
             width={180}
             height={45}
