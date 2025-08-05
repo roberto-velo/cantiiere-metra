@@ -99,6 +99,10 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
                         <p className="font-medium">Forma</p>
                         <p className="text-muted-foreground">{client.pool.shape}</p>
                     </div>
+                    <div>
+                        <p className="font-medium">Dimensione</p>
+                        <p className="text-muted-foreground">{client.pool.dimensione}</p>
+                    </div>
                      <div>
                         <p className="font-medium">Volume</p>
                         <p className="text-muted-foreground">{client.pool.volume} m³</p>

@@ -12,6 +12,7 @@ export const clients: Client[] = [
     pool: {
         type: 'Interrata',
         shape: 'Rettangolare',
+        dimensione: '12m x 6m',
         volume: 75,
         liner: 'Piastrelle',
         filtrationSystem: 'Sabbia',
@@ -28,6 +29,7 @@ export const clients: Client[] = [
     pool: {
         type: 'Fuori terra',
         shape: 'Ovale',
+        dimensione: '8m x 4m',
         volume: 30,
         liner: 'PVC',
         filtrationSystem: 'Cartuccia',

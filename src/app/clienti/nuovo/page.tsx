@@ -36,6 +36,7 @@ const formSchema = z.object({
   // Campi opzionali per la piscina
   poolType: z.enum(['Interrata', 'Fuori terra']).optional(),
   poolShape: z.enum(['Rettangolare', 'Ovale', 'Forma libera']).optional(),
+  poolDimensione: z.string().optional(),
   poolVolume: z.coerce.number().positive("Il volume deve essere un numero positivo.").optional(),
   poolLiner: z.enum(['PVC', 'Piastrelle', 'Vernice']).optional(),
   poolFiltrationSystem: z.enum(['Sabbia', 'Cartuccia', 'Diatomee']).optional(),
@@ -52,6 +53,7 @@ export default function NuovoClientePage() {
       address: "",
       poolType: undefined,
       poolShape: undefined,
+      poolDimensione: "",
       poolVolume: undefined,
       poolLiner: undefined,
       poolFiltrationSystem: undefined,
@@ -75,6 +77,7 @@ export default function NuovoClientePage() {
       pool: values.poolType ? {
         type: values.poolType,
         shape: values.poolShape,
+        dimensione: values.poolDimensione,
         volume: values.poolVolume,
         liner: values.poolLiner,
         filtrationSystem: values.poolFiltrationSystem,
@@ -229,6 +232,19 @@ export default function NuovoClientePage() {
                         />
                     </div>
                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <FormField
+                            control={form.control}
+                            name="poolDimensione"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Dimensione (es: 10x5m)</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Es: 10x5m" {...field} value={field.value ?? ""} />
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                         <FormField
                             control={form.control}
                             name="poolLiner"
