@@ -27,7 +27,7 @@ export default function ClientiPage() {
                 </p>
             </div>
             <Button asChild>
-                <Link href="#">
+                <Link href="/clienti/nuovo">
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Nuovo Cliente
                 </Link>
