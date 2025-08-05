@@ -17,7 +17,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-4 text-center">
         <div className="flex justify-center items-center gap-2 mb-6">
-            <Image src="/logo.png" alt="CantiereFlow Logo" width={200} height={50} />
+            <Image src="/logo.png" alt="Logo" width={200} height={50} />
         </div>
         <Card>
           <CardHeader>
