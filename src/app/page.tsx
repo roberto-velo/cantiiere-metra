@@ -44,7 +44,7 @@ export default function DashboardPage() {
 
       <main className="flex-1 p-4 sm:p-6 space-y-6">
         <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card className="transition-all duration-300 hover:scale-105 hover:shadow-lg">
+          <Card className="transition-all duration-300 hover:scale-102 hover:shadow-2xl hover:bg-card/80">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Attività Pianificate
@@ -58,7 +58,7 @@ export default function DashboardPage() {
               </p>
             </CardContent>
           </Card>
-          <Card className="transition-all duration-300 hover:scale-105 hover:shadow-lg">
+          <Card className="transition-all duration-300 hover:scale-102 hover:shadow-2xl hover:bg-card/80">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Attività Completate
@@ -72,7 +72,7 @@ export default function DashboardPage() {
               </p>
             </CardContent>
           </Card>
-          <Card className="transition-all duration-300 hover:scale-105 hover:shadow-lg">
+          <Card className="transition-all duration-300 hover:scale-102 hover:shadow-2xl hover:bg-card/80">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Tecnici Attivi
@@ -86,7 +86,7 @@ export default function DashboardPage() {
               </p>
             </CardContent>
           </Card>
-          <Card className="transition-all duration-300 hover:scale-105 hover:shadow-lg">
+          <Card className="transition-all duration-300 hover:scale-102 hover:shadow-2xl hover:bg-card/80">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Notifiche</CardTitle>
               <Bell className="h-4 w-4 text-muted-foreground" />
@@ -110,7 +110,7 @@ export default function DashboardPage() {
                 key={link.href}
                 asChild
                 variant="outline"
-                className="justify-start h-14 text-left transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                className="justify-start h-14 text-left transition-all duration-300 hover:scale-102 hover:shadow-lg hover:bg-accent"
               >
                 <Link href={link.href} className="flex items-center gap-4">
                   <div className="bg-muted p-3 rounded-md">
