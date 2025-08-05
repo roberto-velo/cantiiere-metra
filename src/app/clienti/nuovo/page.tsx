@@ -28,6 +28,7 @@ import {
 import { addClient } from "@/lib/firebase";
 import { firebaseConfig } from "@/lib/firebase-config";
 import { useRouter } from "next/navigation";
+import type { Client } from "@/lib/types";
 
 const formSchema = z.object({
   name: z.string().min(2, "Il nome deve avere almeno 2 caratteri."),
@@ -35,12 +36,12 @@ const formSchema = z.object({
   phone: z.string().min(5, "Il numero di telefono non sembra corretto."),
   address: z.string().min(5, "L'indirizzo deve avere almeno 5 caratteri."),
 
-  poolType: z.enum(['Interrata', 'Fuori terra']).optional(),
-  poolShape: z.enum(['Rettangolare', 'Ovale', 'Forma libera']).optional(),
+  poolType: z.enum(['Interrata', 'Fuori terra']).optional().or(z.literal('')),
+  poolShape: z.enum(['Rettangolare', 'Ovale', 'Forma libera']).optional().or(z.literal('')),
   poolDimensione: z.string().optional(),
   poolVolume: z.coerce.number().positive("Il volume deve essere un numero positivo.").optional(),
-  poolLiner: z.enum(['PVC', 'Piastrelle', 'Vernice']).optional(),
-  poolFiltrationSystem: z.enum(['Sabbia', 'Cartuccia', 'Diatomee']).optional(),
+  poolLiner: z.enum(['PVC', 'Piastrelle', 'Vernice']).optional().or(z.literal('')),
+  poolFiltrationSystem: z.enum(['Sabbia', 'Cartuccia', 'Diatomee']).optional().or(z.literal('')),
 });
 
 export default function NuovoClientePage() {
@@ -54,12 +55,12 @@ export default function NuovoClientePage() {
       email: "",
       phone: "",
       address: "",
-      poolType: undefined,
-      poolShape: undefined,
+      poolType: "",
+      poolShape: "",
       poolDimensione: "",
       poolVolume: undefined,
-      poolLiner: undefined,
-      poolFiltrationSystem: undefined,
+      poolLiner: "",
+      poolFiltrationSystem: "",
     },
   });
 
@@ -71,7 +72,7 @@ export default function NuovoClientePage() {
         
       const mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(values.address)}&output=embed`;
 
-      const newClient: any = {
+      const newClient: Omit<Client, 'id'> = {
         name: values.name,
         email: values.email,
         phone: values.phone,
@@ -109,7 +110,7 @@ export default function NuovoClientePage() {
     }
   }
 
-  const isFirebaseConfigured = !!firebaseConfig;
+  const isFirebaseConfigured = !!firebaseConfig.apiKey;
 
   return (
     <div className="flex flex-col flex-1">
@@ -270,7 +271,7 @@ export default function NuovoClientePage() {
                                 <FormItem>
                                 <FormLabel>Volume (m³)</FormLabel>
                                 <FormControl>
-                                    <Input type="number" placeholder="Es: 75" {...field} onChange={event => field.onChange(+event.target.value)} value={field.value ?? ""} />
+                                    <Input type="number" placeholder="Es: 75" {...field} onChange={event => field.onChange(event.target.value === '' ? undefined : +event.target.value)} value={field.value ?? ""} />
                                 </FormControl>
                                 <FormMessage />
                                 </FormItem>
@@ -340,5 +341,3 @@ export default function NuovoClientePage() {
     </div>
   );
 }
-
-    
