@@ -1,5 +1,6 @@
 
-import { getClients, getTechnicians } from "@/lib/firebase";
+
+import { getAllClients, getAllTechnicians } from "@/lib/firebase";
 import { NewTaskForm } from "@/components/new-task-form";
 
 // This is now a Server Component that fetches clients and technicians
@@ -7,8 +8,8 @@ import { NewTaskForm } from "@/components/new-task-form";
 export default async function NuovaAttivitaPage({ searchParams }: { searchParams: { [key: string]: string | undefined } }) {
   
   const [clients, technicians] = await Promise.all([
-    getClients(), 
-    getTechnicians()
+    getAllClients(), 
+    getAllTechnicians()
   ]);
 
   const clientId = searchParams.clientId;

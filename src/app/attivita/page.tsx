@@ -1,14 +1,7 @@
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -18,11 +11,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getTasks, getClients, getTechnicians } from "@/lib/firebase";
+import { getTasks, getAllClients, getAllTechnicians } from "@/lib/firebase";
 import type { TaskPriority, TaskStatus } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { PlusCircle, Search, ClipboardList, Calendar } from "lucide-react";
+import { PlusCircle, Search, ClipboardList, Calendar, ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { Suspense } from "react";
 
 const priorityBadge: Record<TaskPriority, string> = {
   Alta: "bg-red-500/20 text-red-700 border border-red-500/30",
@@ -36,12 +30,110 @@ const statusBadge: Record<TaskStatus, string> = {
   Completato: "bg-green-500/20 text-green-700 border border-green-500/30",
 };
 
-export default async function AttivitaPage() {
-  const [tasks, clients, technicians] = await Promise.all([
-    getTasks(),
-    getClients(),
-    getTechnicians(),
-  ]);
+
+async function TasksList({ currentPageId }: { currentPageId?: string }) {
+    const { tasks, lastVisibleId } = await getTasks(currentPageId);
+    const [clients, technicians] = await Promise.all([
+        getAllClients(),
+        getAllTechnicians()
+    ]);
+
+  return (
+    <>
+      <CardContent>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Attività</TableHead>
+                <TableHead>Cliente</TableHead>
+                <TableHead>Tecnico</TableHead>
+                <TableHead>Stato</TableHead>
+                <TableHead>Priorità</TableHead>
+                <TableHead>Data</TableHead>
+                <TableHead className="text-right"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {tasks.map((task) => {
+                const client = clients.find(
+                  (c) => c.id === task.clientId
+                );
+                const technician = technicians.find(
+                  (t) => t.id === task.technicianId
+                );
+                return (
+                  <TableRow key={task.id}>
+                    <TableCell className="font-medium">
+                      {task.description}
+                    </TableCell>
+                    <TableCell>{client?.name}</TableCell>
+                    <TableCell>
+                      {technician?.firstName} {technician?.lastName}
+                    </TableCell>
+                    <TableCell>
+                      <span
+                        className={cn(
+                          "px-2 py-1 rounded-full text-xs font-medium",
+                          statusBadge[task.status]
+                        )}
+                      >
+                        {task.status}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span
+                        className={cn(
+                          "px-2 py-1 rounded-full text-xs font-medium",
+                          priorityBadge[task.priority]
+                        )}
+                      >
+                        {task.priority}
+                      </span>
+                    </TableCell>
+                    <TableCell>{task.date}</TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="outline" size="sm" asChild>
+                        <Link href={`/attivita/${task.id}`}>
+                          Visualizza
+                        </Link>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+              {tasks.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center h-24">
+                    Nessuna attività trovata.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </CardContent>
+      <CardFooter>
+        <div className="flex w-full justify-end gap-2">
+            {/* Pagination controls will be added here. For now, this is a placeholder */}
+            <Button variant="outline" disabled={!currentPageId}>
+                <ArrowLeft className="mr-2" />
+                Precedente
+            </Button>
+            <Button variant="outline" asChild disabled={!lastVisibleId}>
+                <Link href={`/attivita?page=${lastVisibleId}`}>
+                    Successivo
+                    <ArrowRight className="ml-2" />
+                </Link>
+            </Button>
+        </div>
+      </CardFooter>
+    </>
+  );
+}
+
+export default async function AttivitaPage({ searchParams }: { searchParams?: { page?: string } }) {
+  const currentPageId = searchParams?.page;
 
   return (
     <div className="flex flex-col flex-1">
@@ -78,98 +170,14 @@ export default async function AttivitaPage() {
           <TabsContent value="lista">
             <Card>
               <CardHeader>
-                <div className="flex flex-col md:flex-row items-center gap-4">
-                  <div className="relative flex-1 w-full">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="Cerca attività per descrizione..." className="pl-10" disabled />
-                  </div>
-                  <div className="flex gap-2 w-full flex-1 md:w-auto">
-                    <Select disabled>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Filtra per cliente" />
-                      </SelectTrigger>
-                    </Select>
-                    <Select disabled>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Filtra per tecnico" />
-                      </SelectTrigger>
-                    </Select>
-                  </div>
+                <div className="relative flex-1 w-full">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input placeholder="Cerca attività per descrizione..." className="pl-10" disabled />
                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Attività</TableHead>
-                        <TableHead>Cliente</TableHead>
-                        <TableHead>Tecnico</TableHead>
-                        <TableHead>Stato</TableHead>
-                        <TableHead>Priorità</TableHead>
-                        <TableHead>Data</TableHead>
-                        <TableHead className="text-right"></TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {tasks.map((task) => {
-                          const client = clients.find(
-                            (c) => c.id === task.clientId
-                          );
-                          const technician = technicians.find(
-                            (t) => t.id === task.technicianId
-                          );
-                          return (
-                            <TableRow key={task.id}>
-                              <TableCell className="font-medium">
-                                {task.description}
-                              </TableCell>
-                              <TableCell>{client?.name}</TableCell>
-                              <TableCell>
-                                {technician?.firstName} {technician?.lastName}
-                              </TableCell>
-                              <TableCell>
-                                <span
-                                  className={cn(
-                                    "px-2 py-1 rounded-full text-xs font-medium",
-                                    statusBadge[task.status]
-                                  )}
-                                >
-                                  {task.status}
-                                </span>
-                              </TableCell>
-                              <TableCell>
-                                <span
-                                  className={cn(
-                                    "px-2 py-1 rounded-full text-xs font-medium",
-                                    priorityBadge[task.priority]
-                                  )}
-                                >
-                                  {task.priority}
-                                </span>
-                              </TableCell>
-                              <TableCell>{task.date}</TableCell>
-                              <TableCell className="text-right">
-                                <Button variant="outline" size="sm" asChild>
-                                  <Link href={`/attivita/${task.id}`}>
-                                    Visualizza
-                                  </Link>
-                                </Button>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      {tasks.length === 0 && (
-                          <TableRow>
-                            <TableCell colSpan={7} className="text-center h-24">
-                              Nessuna attività trovata.
-                            </TableCell>
-                          </TableRow>
-                        )}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
+              <Suspense fallback={<div className="text-center p-8">Caricamento...</div>}>
+                <TasksList currentPageId={currentPageId} />
+              </Suspense>
             </Card>
           </TabsContent>
           <TabsContent value="calendario">

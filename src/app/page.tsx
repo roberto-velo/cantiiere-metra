@@ -1,4 +1,5 @@
 
+
 import {
   Card,
   CardContent,
@@ -15,7 +16,7 @@ import {
   ListTodo,
 } from "lucide-react";
 import Link from "next/link";
-import { getTasks, getTechnicians, getClients } from "@/lib/firebase";
+import { getDashboardData } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
 import type { TaskStatus } from "@/lib/types";
 
@@ -28,11 +29,7 @@ const statusBadge: Record<TaskStatus, string> = {
 
 export default async function DashboardPage() {
   
-  const [tasks, technicians, clients] = await Promise.all([
-      getTasks(),
-      getTechnicians(),
-      getClients()
-  ]);
+  const { tasks, technicians, clients } = await getDashboardData();
 
   const scheduledTasks = tasks.filter(
     (task) => task.status === "Pianificato" || task.status === "In corso"
@@ -41,13 +38,13 @@ export default async function DashboardPage() {
     (task) => task.status === "Completato"
   ).length;
   const activeTechnicians = technicians.length;
-  const notifications = 3; // Mock data
+  const totalClients = clients.length;
 
   const statsCards = [
     { title: "Attività Pianificate", value: scheduledTasks, icon: ListTodo, note: "Da completare questa settimana" },
     { title: "Attività Completate", value: completedTasks, icon: CalendarCheck2, note: "Questa settimana" },
+    { title: "Clienti Attivi", value: totalClients, icon: UsersRound, note: "Totale clienti registrati" },
     { title: "Tecnici Attivi", value: activeTechnicians, icon: HardHat, note: "Disponibili per nuove attività" },
-    { title: "Notifiche", value: notifications, icon: Bell, note: "Da controllare" }
   ];
 
   return (
@@ -96,7 +93,7 @@ export default async function DashboardPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {tasks.slice(0, 3).map((task) => (
+                    {tasks.slice(0, 5).map((task) => (
                     <tr key={task.id} className="border-b last:border-b-0 hover:bg-muted/50 transition-colors">
                         <td className="p-4 font-medium text-foreground">{task.description}</td>
                         <td className="p-4 text-muted-foreground">

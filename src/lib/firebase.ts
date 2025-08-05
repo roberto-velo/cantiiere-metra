@@ -1,6 +1,6 @@
 
 import { initializeApp, getApp, getApps, type FirebaseOptions } from "firebase/app";
-import { getFirestore, collection, getDocs, doc, getDoc, addDoc, query, where, setDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, getDoc, addDoc, query, where, setDoc, updateDoc, deleteDoc, limit, startAfter, getCountFromServer, orderBy } from "firebase/firestore";
 import { firebaseConfig } from "./firebase-config";
 import type { Client, Task, Technician, TaskStatus } from "./types";
 
@@ -13,16 +13,31 @@ function getFirebaseApp() {
 }
 
 // Client functions
-export const getClients = async (): Promise<Client[]> => {
+export const getClients = async (lastId?: string): Promise<{ clients: Client[], lastVisibleId: string | null }> => {
     const app = getFirebaseApp();
-    if (!app) return [];
+    if (!app) return { clients: [], lastVisibleId: null };
     const db = getFirestore(app);
-    const querySnapshot = await getDocs(collection(db, "clients"));
+    const clientsRef = collection(db, "clients");
+    
+    let q;
+    if (lastId) {
+        const lastDocSnap = await getDoc(doc(db, "clients", lastId));
+        q = query(clientsRef, orderBy("name"), startAfter(lastDocSnap), limit(10));
+    } else {
+        q = query(clientsRef, orderBy("name"), limit(10));
+    }
+
+    const querySnapshot = await getDocs(q);
     const clients: Client[] = [];
     querySnapshot.forEach((doc) => {
         clients.push({ id: doc.id, ...doc.data() } as Client);
     });
-    return clients;
+
+    const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+    return {
+        clients,
+        lastVisibleId: lastVisible ? lastVisible.id : null,
+    };
 };
 
 export const getClient = async (id: string): Promise<Client | null> => {
@@ -36,6 +51,18 @@ export const getClient = async (id: string): Promise<Client | null> => {
     } else {
         return null;
     }
+};
+
+export const getAllClients = async (): Promise<Client[]> => {
+    const app = getFirebaseApp();
+    if (!app) return [];
+    const db = getFirestore(app);
+    const querySnapshot = await getDocs(collection(db, "clients"));
+    const clients: Client[] = [];
+    querySnapshot.forEach((doc) => {
+        clients.push({ id: doc.id, ...doc.data() } as Client);
+    });
+    return clients;
 };
 
 export const addClient = async (client: Omit<Client, 'id'>) => {
@@ -65,7 +92,34 @@ export const deleteClient = async (id: string) => {
 
 
 // Technician functions
-export const getTechnicians = async (): Promise<Technician[]> => {
+export const getTechnicians = async (lastId?: string): Promise<{ technicians: Technician[], lastVisibleId: string | null }> => {
+    const app = getFirebaseApp();
+    if (!app) return { technicians: [], lastVisibleId: null };
+    const db = getFirestore(app);
+    const techniciansRef = collection(db, "technicians");
+    
+    let q;
+    if (lastId) {
+        const lastDocSnap = await getDoc(doc(db, "technicians", lastId));
+        q = query(techniciansRef, orderBy("lastName"), startAfter(lastDocSnap), limit(10));
+    } else {
+        q = query(techniciansRef, orderBy("lastName"), limit(10));
+    }
+    
+    const querySnapshot = await getDocs(q);
+    const technicians: Technician[] = [];
+    querySnapshot.forEach((doc) => {
+        technicians.push({ id: doc.id, ...doc.data() } as Technician);
+    });
+
+    const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+    return {
+        technicians,
+        lastVisibleId: lastVisible ? lastVisible.id : null,
+    };
+};
+
+export const getAllTechnicians = async (): Promise<Technician[]> => {
     const app = getFirebaseApp();
     if (!app) return [];
     const db = getFirestore(app);
@@ -76,6 +130,7 @@ export const getTechnicians = async (): Promise<Technician[]> => {
     });
     return technicians;
 };
+
 
 export const getTechnician = async (id: string): Promise<Technician | null> => {
     const app = getFirebaseApp();
@@ -100,16 +155,49 @@ export const addTechnician = async (technician: Omit<Technician, 'id'>) => {
 
 
 // Task functions
-export const getTasks = async (): Promise<Task[]> => {
+export const getTasks = async (lastId?: string): Promise<{ tasks: Task[], lastVisibleId: string | null }> => {
     const app = getFirebaseApp();
-    if (!app) return [];
+    if (!app) return { tasks: [], lastVisibleId: null };
     const db = getFirestore(app);
-    const querySnapshot = await getDocs(collection(db, "tasks"));
+    const tasksRef = collection(db, "tasks");
+
+    let q;
+    if (lastId) {
+        const lastDocSnap = await getDoc(doc(db, "tasks", lastId));
+        q = query(tasksRef, orderBy("date", "desc"), startAfter(lastDocSnap), limit(10));
+    } else {
+        q = query(tasksRef, orderBy("date", "desc"), limit(10));
+    }
+
+    const querySnapshot = await getDocs(q);
     const tasks: Task[] = [];
     querySnapshot.forEach((doc) => {
         tasks.push({ id: doc.id, ...doc.data() } as Task);
     });
-    return tasks;
+    
+    const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+    return {
+        tasks,
+        lastVisibleId: lastVisible ? lastVisible.id : null,
+    };
+};
+
+export const getDashboardData = async () => {
+    const app = getFirebaseApp();
+    if (!app) return { tasks: [], technicians: [], clients: [] };
+    const db = getFirestore(app);
+
+    const [tasksSnapshot, techniciansSnapshot, clientsSnapshot] = await Promise.all([
+        getDocs(query(collection(db, "tasks"), orderBy("date", "desc"), limit(5))),
+        getDocs(collection(db, "technicians")),
+        getDocs(collection(db, "clients"))
+    ]);
+
+    const tasks: Task[] = tasksSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Task));
+    const technicians: Technician[] = techniciansSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Technician));
+    const clients: Client[] = clientsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Client));
+    
+    return { tasks, technicians, clients };
 };
 
 export const getTask = async (id: string): Promise<Task | null> => {
