@@ -1,7 +1,4 @@
 
-"use client";
-
-import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -20,8 +17,7 @@ import {
 import Link from "next/link";
 import { getTasks, getTechnicians, getClients } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
-import type { Task, TaskStatus, Client, Technician } from "@/lib/types";
-import { Skeleton } from "@/components/ui/skeleton";
+import type { TaskStatus } from "@/lib/types";
 
 const statusBadge: Record<TaskStatus, string> = {
   Pianificato: "bg-blue-500/20 text-blue-700 border border-blue-500/30",
@@ -30,28 +26,13 @@ const statusBadge: Record<TaskStatus, string> = {
 };
 
 
-export default function DashboardPage() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [technicians, setTechnicians] = useState<Technician[]>([]);
-  const [clients, setClients] = useState<Client[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-        setLoading(true);
-        const [tasksData, techniciansData, clientsData] = await Promise.all([
-            getTasks(),
-            getTechnicians(),
-            getClients()
-        ]);
-        setTasks(tasksData);
-        setTechnicians(techniciansData);
-        setClients(clientsData);
-        setLoading(false);
-    }
-    fetchData();
-  }, []);
-
+export default async function DashboardPage() {
+  
+  const [tasks, technicians, clients] = await Promise.all([
+      getTasks(),
+      getTechnicians(),
+      getClients()
+  ]);
 
   const scheduledTasks = tasks.filter(
     (task) => task.status === "Pianificato" || task.status === "In corso"
@@ -80,37 +61,22 @@ export default function DashboardPage() {
 
       <div className="flex-1 p-4 sm:p-6 space-y-8">
         <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {loading ? (
-             statsCards.map((_, index) => (
-                 <Card key={index}>
-                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <Skeleton className="h-5 w-3/4" />
-                        <Skeleton className="h-5 w-5" />
-                    </CardHeader>
-                     <CardContent>
-                        <Skeleton className="h-8 w-12 mb-1" />
-                        <Skeleton className="h-4 w-full" />
-                    </CardContent>
-                 </Card>
-             ))
-          ) : (
-            statsCards.map((card, index) => (
-                <Card key={index} className="glow-on-hover">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-primary">
-                    {card.title}
-                    </CardTitle>
-                    <card.icon className="h-5 w-5 text-primary" />
-                </CardHeader>
-                <CardContent>
-                    <div className="text-3xl font-bold text-foreground">{card.value}</div>
-                    <p className="text-xs text-muted-foreground pt-1">
-                    {card.note}
-                    </p>
-                </CardContent>
-                </Card>
-            ))
-          )}
+          {statsCards.map((card, index) => (
+              <Card key={index} className="glow-on-hover">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-primary">
+                  {card.title}
+                  </CardTitle>
+                  <card.icon className="h-5 w-5 text-primary" />
+              </CardHeader>
+              <CardContent>
+                  <div className="text-3xl font-bold text-foreground">{card.value}</div>
+                  <p className="text-xs text-muted-foreground pt-1">
+                  {card.note}
+                  </p>
+              </CardContent>
+              </Card>
+          ))}
         </section>
 
         <section>
@@ -130,40 +96,29 @@ export default function DashboardPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {loading ? (
-                       Array.from({length: 3}).map((_, i) => (
-                           <tr key={i} className="border-b last:border-b-0">
-                                <td className="p-4"><Skeleton className="h-5 w-full" /></td>
-                                <td className="p-4"><Skeleton className="h-5 w-32" /></td>
-                                <td className="p-4"><Skeleton className="h-6 w-20 rounded-full" /></td>
-                                <td className="p-4 text-right"><Skeleton className="h-9 w-24" /></td>
-                           </tr>
-                       ))
-                    ) : (
-                        tasks.slice(0, 3).map((task) => (
-                        <tr key={task.id} className="border-b last:border-b-0 hover:bg-muted/50 transition-colors">
-                            <td className="p-4 font-medium text-foreground">{task.description}</td>
-                            <td className="p-4 text-muted-foreground">
-                            {
-                                clients.find(c => c.id === task.clientId)?.name 
-                                ? clients.find(c => c.id === task.clientId)?.name 
-                                : 'N/A'
-                            }
-                            </td>
-                            <td className="p-4 text-muted-foreground">
-                            <span className={cn("px-2 py-1 rounded-full text-xs font-medium", statusBadge[task.status])}>
-                                {task.status}
-                            </span>
-                            </td>
-                            <td className="p-4 text-right">
-                            <Button asChild variant="ghost" size="sm">
-                                <Link href={`/attivita/${task.id}`}>Dettagli</Link>
-                            </Button>
-                            </td>
-                        </tr>
-                        ))
-                    )}
-                     {!loading && tasks.length === 0 && (
+                    {tasks.slice(0, 3).map((task) => (
+                    <tr key={task.id} className="border-b last:border-b-0 hover:bg-muted/50 transition-colors">
+                        <td className="p-4 font-medium text-foreground">{task.description}</td>
+                        <td className="p-4 text-muted-foreground">
+                        {
+                            clients.find(c => c.id === task.clientId)?.name 
+                            ? clients.find(c => c.id === task.clientId)?.name 
+                            : 'N/A'
+                        }
+                        </td>
+                        <td className="p-4 text-muted-foreground">
+                        <span className={cn("px-2 py-1 rounded-full text-xs font-medium", statusBadge[task.status])}>
+                            {task.status}
+                        </span>
+                        </td>
+                        <td className="p-4 text-right">
+                        <Button asChild variant="ghost" size="sm">
+                            <Link href={`/attivita/${task.id}`}>Dettagli</Link>
+                        </Button>
+                        </td>
+                    </tr>
+                    ))}
+                     {tasks.length === 0 && (
                       <tr>
                         <td colSpan={4} className="text-center h-24">
                           Nessuna attività recente.

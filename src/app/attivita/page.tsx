@@ -1,9 +1,6 @@
 
-"use client";
-
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -22,11 +19,10 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getTasks, getClients, getTechnicians } from "@/lib/firebase";
-import type { Task, Client, Technician, TaskPriority, TaskStatus } from "@/lib/types";
+import type { TaskPriority, TaskStatus } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { PlusCircle, Search, ClipboardList, Calendar } from "lucide-react";
 import Link from "next/link";
-import { Skeleton } from "@/components/ui/skeleton";
 
 const priorityBadge: Record<TaskPriority, string> = {
   Alta: "bg-red-500/20 text-red-700 border border-red-500/30",
@@ -40,27 +36,12 @@ const statusBadge: Record<TaskStatus, string> = {
   Completato: "bg-green-500/20 text-green-700 border border-green-500/30",
 };
 
-export default function AttivitaPage() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [clients, setClients] = useState<Client[]>([]);
-  const [technicians, setTechnicians] = useState<Technician[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const [tasksData, clientsData, techniciansData] = await Promise.all([
-        getTasks(),
-        getClients(),
-        getTechnicians(),
-      ]);
-      setTasks(tasksData);
-      setClients(clientsData);
-      setTechnicians(techniciansData);
-      setLoading(false);
-    };
-    fetchData();
-  }, []);
+export default async function AttivitaPage() {
+  const [tasks, clients, technicians] = await Promise.all([
+    getTasks(),
+    getClients(),
+    getTechnicians(),
+  ]);
 
   return (
     <div className="flex flex-col flex-1">
@@ -131,20 +112,7 @@ export default function AttivitaPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {loading ? (
-                         Array.from({ length: 4 }).map((_, i) => (
-                          <TableRow key={i}>
-                            <TableCell><Skeleton className="h-5 w-48" /></TableCell>
-                            <TableCell><Skeleton className="h-5 w-32" /></TableCell>
-                            <TableCell><Skeleton className="h-5 w-24" /></TableCell>
-                            <TableCell><Skeleton className="h-6 w-20 rounded-full" /></TableCell>
-                            <TableCell><Skeleton className="h-6 w-16 rounded-full" /></TableCell>
-                            <TableCell><Skeleton className="h-5 w-24" /></TableCell>
-                            <TableCell className="text-right"><Skeleton className="h-9 w-24" /></TableCell>
-                          </TableRow>
-                        ))
-                      ) : (
-                        tasks.map((task) => {
+                      {tasks.map((task) => {
                           const client = clients.find(
                             (c) => c.id === task.clientId
                           );
@@ -190,9 +158,8 @@ export default function AttivitaPage() {
                               </TableCell>
                             </TableRow>
                           );
-                        })
-                      )}
-                      {!loading && tasks.length === 0 && (
+                        })}
+                      {tasks.length === 0 && (
                           <TableRow>
                             <TableCell colSpan={7} className="text-center h-24">
                               Nessuna attività trovata.
@@ -224,4 +191,3 @@ export default function AttivitaPage() {
     </div>
   );
 }
-

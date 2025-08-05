@@ -17,8 +17,8 @@ import { getClients } from "@/lib/firebase";
 import { PlusCircle, Search, UsersRound } from "lucide-react";
 import Link from "next/link";
 import type { Client } from "@/lib/types";
-import { Skeleton } from "@/components/ui/skeleton";
 
+// This component remains a client component because of the search input state.
 export default function ClientiPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
@@ -86,14 +86,14 @@ export default function ClientiPage() {
                 </TableHeader>
                 <TableBody>
                   {loading ? (
-                    Array.from({ length: 3 }).map((_, i) => (
+                     Array.from({ length: 5 }).map((_, i) => (
                       <TableRow key={i}>
-                        <TableCell><Skeleton className="h-5 w-48" /></TableCell>
-                        <TableCell><Skeleton className="h-5 w-40" /></TableCell>
-                        <TableCell><Skeleton className="h-5 w-32" /></TableCell>
+                        <TableCell className="font-medium"><div className="h-5 w-32 bg-muted-foreground/20 animate-pulse rounded"></div></TableCell>
+                        <TableCell><div className="h-5 w-40 bg-muted-foreground/20 animate-pulse rounded"></div></TableCell>
+                        <TableCell><div className="h-5 w-24 bg-muted-foreground/20 animate-pulse rounded"></div></TableCell>
                         <TableCell className="text-right space-x-2">
-                           <Skeleton className="h-9 w-24 inline-block" />
-                           <Skeleton className="h-9 w-32 inline-block" />
+                           <div className="h-9 w-24 inline-block bg-muted-foreground/20 animate-pulse rounded"></div>
+                           <div className="h-9 w-32 inline-block bg-muted-foreground/20 animate-pulse rounded"></div>
                         </TableCell>
                       </TableRow>
                     ))
