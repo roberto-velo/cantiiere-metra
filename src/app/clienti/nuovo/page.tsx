@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, UsersRound, Droplet } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
@@ -287,15 +287,16 @@ export default function NuovoClientePage() {
                         />
                     </div>
                 </CardContent>
-                 <CardFooter className="flex justify-end gap-4">
-                    <Button type="button" variant="outline" asChild>
-                        <Link href="/clienti">Annulla</Link>
-                    </Button>
-                    <Button type="submit" disabled={form.formState.isSubmitting}>
-                      {form.formState.isSubmitting ? "Salvataggio..." : "Salva Cliente"}
-                    </Button>
-                </CardFooter>
             </Card>
+
+            <div className="flex justify-end gap-4">
+                <Button type="button" variant="outline" asChild>
+                    <Link href="/clienti">Annulla</Link>
+                </Button>
+                <Button type="submit" disabled={form.formState.isSubmitting}>
+                  {form.formState.isSubmitting ? "Salvataggio..." : "Salva Cliente"}
+                </Button>
+            </div>
           </form>
         </Form>
       </main>
