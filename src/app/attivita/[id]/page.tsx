@@ -1,8 +1,11 @@
+"use client";
+
+import { useState } from "react";
 import { FileTagger } from "@/components/file-tagger";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { clients, tasks, technicians } from "@/lib/data";
+import { clients, tasks as initialTasks, technicians } from "@/lib/data";
 import {
   Calendar,
   User,
@@ -16,14 +19,26 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Task, TaskStatus } from "@/lib/types";
+import { TaskTimer } from "@/components/task-timer";
 
 export default function TaskDetailPage({ params }: { params: { id: string } }) {
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const task = tasks.find((t) => t.id === params.id);
+  
   if (!task) notFound();
 
   const client = clients.find((c) => c.id === task.clientId);
   const technician = technicians.find((t) => t.id === task.technicianId);
 
+  const handleStatusChange = (newStatus: TaskStatus) => {
+    setTasks(prevTasks => 
+        prevTasks.map(t => 
+            t.id === task.id ? { ...t, status: newStatus } : t
+        )
+    );
+  };
+  
   const details = [
     { icon: User, label: "Cliente", value: client?.name, href: `/clienti/${client?.id}` },
     { icon: HardHat, label: "Tecnico Assegnato", value: `${technician?.firstName} ${technician?.lastName}`, href: `/tecnici/${technician?.id}` },
@@ -122,6 +137,7 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
         </div>
 
         <div className="lg:col-span-1 space-y-6">
+            <TaskTimer initialStatus={task.status} onStatusChange={handleStatusChange} />
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
