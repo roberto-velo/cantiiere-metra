@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { tasks, technicians, clients } from "@/lib/data";
-import { cn } from "@/lib/utils";
 
 export default function DashboardPage() {
   const scheduledTasks = tasks.filter(
@@ -33,90 +32,59 @@ export default function DashboardPage() {
     { href: "/attivita", label: "Attività", icon: ClipboardList },
   ];
 
+  const statsCards = [
+    { title: "Attività Pianificate", value: scheduledTasks, icon: ListTodo, note: "Da completare questa settimana" },
+    { title: "Attività Completate", value: completedTasks, icon: CalendarCheck2, note: "Questa settimana" },
+    { title: "Tecnici Attivi", value: activeTechnicians, icon: HardHat, note: "Disponibili per nuove attività" },
+    { title: "Notifiche", value: notifications, icon: Bell, note: "Da controllare" }
+  ];
+
   return (
     <div className="flex flex-col">
-      <header className="bg-card border-b p-4 sm:p-6">
-        <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
+      <header className="bg-background border-b p-4 sm:p-6">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h1>
         <p className="text-muted-foreground">
           Riepilogo giornaliero e settimanale delle tue attività.
         </p>
       </header>
 
-      <main className="flex-1 p-4 sm:p-6 space-y-6">
-        <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card className="transition-all duration-300 hover:scale-105 hover:shadow-lg">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Attività Pianificate
-              </CardTitle>
-              <ListTodo className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{scheduledTasks}</div>
-              <p className="text-xs text-muted-foreground">
-                Da completare questa settimana
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="transition-all duration-300 hover:scale-105 hover:shadow-lg">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Attività Completate
-              </CardTitle>
-              <CalendarCheck2 className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{completedTasks}</div>
-              <p className="text-xs text-muted-foreground">
-                Questa settimana
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="transition-all duration-300 hover:scale-105 hover:shadow-lg">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Tecnici Attivi
-              </CardTitle>
-              <HardHat className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{activeTechnicians}</div>
-              <p className="text-xs text-muted-foreground">
-                Disponibili per nuove attività
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="transition-all duration-300 hover:scale-105 hover:shadow-lg">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Notifiche</CardTitle>
-              <Bell className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{notifications}</div>
-              <p className="text-xs text-muted-foreground">
-                Da controllare
-              </p>
-            </CardContent>
-          </Card>
+      <main className="flex-1 p-4 sm:p-6 space-y-8">
+        <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {statsCards.map((card, index) => (
+            <Card key={index} className="transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-1 hover:shadow-primary/20">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {card.title}
+                </CardTitle>
+                <card.icon className="h-5 w-5 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-foreground">{card.value}</div>
+                <p className="text-xs text-muted-foreground pt-1">
+                  {card.note}
+                </p>
+              </CardContent>
+            </Card>
+          ))}
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold tracking-tight mb-4">
+          <h2 className="text-2xl font-semibold tracking-tight mb-4 text-foreground">
             Accesso Rapido
           </h2>
-          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3">
             {quickLinks.map((link) => (
               <Button
                 key={link.href}
                 asChild
                 variant="outline"
-                className="justify-start h-14 text-left transition-all duration-300 hover:scale-105 hover:shadow-md hover:bg-accent"
+                className="justify-start h-20 text-left transition-all duration-300 ease-in-out group hover:bg-card hover:shadow-xl hover:scale-105 hover:border-primary"
               >
-                <Link href={link.href} className="flex items-center gap-4">
-                  <div className="bg-muted p-3 rounded-md">
-                    <link.icon className="h-6 w-6 text-primary" />
+                <Link href={link.href} className="flex items-center gap-4 p-4">
+                  <div className="bg-primary/10 p-4 rounded-lg transition-colors duration-300 group-hover:bg-primary">
+                    <link.icon className="h-7 w-7 text-primary transition-colors duration-300 group-hover:text-primary-foreground" />
                   </div>
-                  <span className="text-lg font-medium">{link.label}</span>
+                  <span className="text-xl font-semibold text-foreground">{link.label}</span>
                 </Link>
               </Button>
             ))}
@@ -124,34 +92,34 @@ export default function DashboardPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold tracking-tight mb-4">
+          <h2 className="text-2xl font-semibold tracking-tight mb-4 text-foreground">
             Attività Recenti
           </h2>
-          <Card>
+          <Card className="overflow-hidden">
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-muted/50">
                     <tr className="border-b">
-                      <th className="text-left font-medium p-3">Descrizione</th>
-                      <th className="text-left font-medium p-3">Cliente</th>
-                      <th className="text-left font-medium p-3">Stato</th>
-                      <th className="text-left font-medium p-3"></th>
+                      <th className="text-left font-semibold p-4 text-muted-foreground">Descrizione</th>
+                      <th className="text-left font-semibold p-4 text-muted-foreground">Cliente</th>
+                      <th className="text-left font-semibold p-4 text-muted-foreground">Stato</th>
+                      <th className="text-left font-semibold p-4 text-muted-foreground"></th>
                     </tr>
                   </thead>
                   <tbody>
                     {tasks.slice(0, 3).map((task) => (
-                      <tr key={task.id} className="border-b">
-                        <td className="p-3">{task.description}</td>
-                        <td className="p-3">
+                      <tr key={task.id} className="border-b last:border-b-0 hover:bg-muted/50 transition-colors">
+                        <td className="p-4 font-medium text-foreground">{task.description}</td>
+                        <td className="p-4 text-muted-foreground">
                           {
                             clients.find(c => c.id === task.clientId)?.name 
                               ? clients.find(c => c.id === task.clientId)?.name 
                               : 'N/A'
                           }
                         </td>
-                        <td className="p-3">{task.status}</td>
-                        <td className="p-3 text-right">
+                        <td className="p-4 text-muted-foreground">{task.status}</td>
+                        <td className="p-4 text-right">
                           <Button asChild variant="ghost" size="sm">
                             <Link href={`/attivita/${task.id}`}>Dettagli</Link>
                           </Button>
