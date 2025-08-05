@@ -26,6 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { addClient } from "@/lib/firebase";
+import { firebaseConfig } from "@/lib/firebase-config";
 import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
@@ -103,6 +104,8 @@ export default function NuovoClientePage() {
       console.error("Error adding client: ", error);
     }
   }
+
+  const isFirebaseConfigured = !!firebaseConfig;
 
   return (
     <div className="flex flex-col flex-1">
@@ -323,7 +326,7 @@ export default function NuovoClientePage() {
                 <Button type="button" variant="outline" asChild>
                     <Link href="/clienti">Annulla</Link>
                 </Button>
-                <Button type="submit" disabled={form.formState.isSubmitting}>
+                <Button type="submit" disabled={form.formState.isSubmitting || !isFirebaseConfigured} title={!isFirebaseConfigured ? "Firebase non è configurato. Contatta il supporto." : ""}>
                   {form.formState.isSubmitting ? "Salvataggio..." : "Salva Cliente"}
                 </Button>
             </div>
@@ -333,3 +336,5 @@ export default function NuovoClientePage() {
     </div>
   );
 }
+
+    
