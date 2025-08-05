@@ -17,22 +17,33 @@ import { useToast } from "@/hooks/use-toast";
 import localApi from "@/lib/data";
 import { Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import type { Task } from "@/lib/types";
 
-export function TaskActions({ task }: { task: Task }) {
+interface TaskActionsProps {
+  taskId: string;
+  description: string;
+}
+
+export function TaskActions({ taskId, description }: TaskActionsProps) {
   const router = useRouter();
   const { toast } = useToast();
 
   const handleDeleteTask = async () => {
-    if (!task) return;
     try {
-      await localApi.deleteTask(task.id);
-      toast({
-        title: "Attività Eliminata",
-        description: `L'attività "${task.description}" è stata eliminata con successo.`,
-      });
-      router.push("/attivita");
-      router.refresh(); // Force a refresh to see changes
+      const success = await localApi.deleteTask(taskId);
+      if (success) {
+        toast({
+          title: "Attività Eliminata",
+          description: `L'attività "${description}" è stata eliminata con successo.`,
+        });
+        router.push("/attivita");
+        router.refresh(); 
+      } else {
+         toast({
+          title: "Errore",
+          description: "Eliminazione fallita. L'attività non è stata trovata.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       toast({
         title: "Errore",

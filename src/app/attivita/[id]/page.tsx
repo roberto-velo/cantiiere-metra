@@ -52,7 +52,7 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
             </h1>
             <p className="text-muted-foreground">{task.description}</p>
           </div>
-          <TaskActions task={task} />
+          <TaskActions taskId={task.id} description={task.description} />
         </div>
       </header>
 
