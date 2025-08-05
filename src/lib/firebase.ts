@@ -189,8 +189,8 @@ export const getDashboardData = async () => {
 
     const [tasksSnapshot, techniciansSnapshot, clientsSnapshot] = await Promise.all([
         getDocs(query(collection(db, "tasks"), orderBy("date", "desc"), limit(5))),
-        getDocs(collection(db, "technicians")),
-        getDocs(collection(db, "clients"))
+        getDocs(query(collection(db, "technicians"))), // This still fetches all technicians
+        getDocs(query(collection(db, "clients"))) // This still fetches all clients
     ]);
 
     const tasks: Task[] = tasksSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Task));

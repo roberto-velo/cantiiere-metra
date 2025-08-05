@@ -30,6 +30,8 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
     notFound();
   }
 
+  // For now, we fetch all tasks. In a real-world scenario with many tasks,
+  // this should be paginated.
   const clientTasks = await getTasksByClientId(client.id);
 
   const clientInfo = [

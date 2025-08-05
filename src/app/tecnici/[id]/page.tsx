@@ -29,9 +29,11 @@ export default async function TechnicianDetailPage({ params }: { params: { id: s
     notFound();
   }
 
+  // For now, we fetch all tasks and clients. In a real-world scenario,
+  // this should be optimized or paginated.
   const [technicianTasks, clients] = await Promise.all([
       getTasksByTechnicianId(params.id as string),
-      getClients()
+      getClients() // This could be slow if there are many clients.
   ]);
 
   return (
