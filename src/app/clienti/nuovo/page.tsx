@@ -71,32 +71,25 @@ export default function NuovoClientePage() {
         
       const mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(values.address)}&output=embed`;
 
-      const newClient = {
+      const newClient: any = {
         name: values.name,
         email: values.email,
         phone: values.phone,
         address: values.address,
         clientCode,
         mapUrl,
-        pool: values.poolType ? {
-          type: values.poolType,
-          shape: values.poolShape,
-          dimensione: values.poolDimensione,
-          volume: values.poolVolume,
-          liner: values.poolLiner,
-          filtrationSystem: values.poolFiltrationSystem,
-        } : undefined,
       };
 
-      // Firestore doesn't accept undefined values.
-      if (newClient.pool) {
-          if (newClient.pool.shape === undefined) newClient.pool.shape = null;
-          if (newClient.pool.dimensione === undefined) newClient.pool.dimensione = null;
-          if (newClient.pool.volume === undefined) newClient.pool.volume = null;
-          if (newClient.pool.liner === undefined) newClient.pool.liner = null;
-          if (newClient.pool.filtrationSystem === undefined) newClient.pool.filtrationSystem = null;
+      if (values.poolType) {
+        newClient.pool = {
+          type: values.poolType,
+          shape: values.poolShape || null,
+          dimensione: values.poolDimensione || null,
+          volume: values.poolVolume || null,
+          liner: values.poolLiner || null,
+          filtrationSystem: values.poolFiltrationSystem || null,
+        }
       }
-
 
       await addClient(newClient);
       
@@ -346,5 +339,3 @@ export default function NuovoClientePage() {
     </div>
   );
 }
-
-    
