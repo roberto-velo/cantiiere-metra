@@ -18,6 +18,7 @@ import {
   Play,
   Pause,
   CheckCircle,
+  Trash2,
 } from "lucide-react";
 
 export function AppHeader() {
@@ -60,11 +61,11 @@ export function AppHeader() {
       <div className="flex items-center justify-between">
         <Link href="/">
           <img
-            src="/logo.png"
+            src="https://placehold.co/180x45.png"
             alt="Logo"
             width="180"
             height="45"
-            style={{ height: "45px", width: "auto" }}
+            className="h-[45px] w-auto"
           />
         </Link>
         <nav className="hidden md:flex items-center gap-4">
@@ -104,9 +105,22 @@ export function AppHeader() {
                   </div>
                 </DropdownMenuItem>
               ))}
-               <DropdownMenuSeparator />
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="flex items-center gap-2 cursor-pointer text-red-500 focus:text-red-500 focus:bg-red-500/10">
+                <Trash2 className="h-4 w-4" />
+                <span>Elimina Notifiche</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                    <LogOut className="h-5 w-5"/>
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
                 <DropdownMenuItem asChild>
-                    <Link href="/login" className="flex items-center gap-2 cursor-pointer">
+                     <Link href="/login" className="flex items-center gap-2 cursor-pointer">
                         <LogOut className="h-4 w-4" />
                         <span>Logout</span>
                     </Link>
