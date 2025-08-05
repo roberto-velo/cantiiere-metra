@@ -18,11 +18,12 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import type { Task, TaskStatus } from "@/lib/types";
 import { TaskTimer } from "@/components/task-timer";
 
-export default function TaskDetailPage({ params }: { params: { id: string } }) {
+export default function TaskDetailPage() {
+  const params = useParams<{ id: string }>();
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const task = tasks.find((t) => t.id === params.id);
   
