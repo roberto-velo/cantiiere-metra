@@ -28,7 +28,7 @@ import {
 import { addClient } from "@/lib/firebase";
 import { firebaseConfig } from "@/lib/firebase-config";
 import { useRouter } from "next/navigation";
-import type { Client } from "@/lib/types";
+import type { Client, Pool } from "@/lib/types";
 
 const formSchema = z.object({
   name: z.string().min(2, "Il nome deve avere almeno 2 caratteri."),
@@ -36,12 +36,12 @@ const formSchema = z.object({
   phone: z.string().min(5, "Il numero di telefono non sembra corretto."),
   address: z.string().min(5, "L'indirizzo deve avere almeno 5 caratteri."),
 
-  poolType: z.enum(['Interrata', 'Fuori terra']).optional().or(z.literal('')),
-  poolShape: z.enum(['Rettangolare', 'Ovale', 'Forma libera']).optional().or(z.literal('')),
+  poolType: z.enum(['Interrata', 'Fuori terra', '']).optional(),
+  poolShape: z.enum(['Rettangolare', 'Ovale', 'Forma libera', '']).optional(),
   poolDimensione: z.string().optional(),
   poolVolume: z.coerce.number().positive("Il volume deve essere un numero positivo.").optional().or(z.literal('')),
-  poolLiner: z.enum(['PVC', 'Piastrelle', 'Vernice']).optional().or(z.literal('')),
-  poolFiltrationSystem: z.enum(['Sabbia', 'Cartuccia', 'Diatomee']).optional().or(z.literal('')),
+  poolLiner: z.enum(['PVC', 'Piastrelle', 'Vernice', '']).optional(),
+  poolFiltrationSystem: z.enum(['Sabbia', 'Cartuccia', 'Diatomee', '']).optional(),
 });
 
 export default function NuovoClientePage() {
@@ -212,7 +212,7 @@ export default function NuovoClientePage() {
                             render={({ field }) => (
                                 <FormItem>
                                 <FormLabel>Tipo Piscina</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value}>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Seleziona un tipo" />
@@ -233,7 +233,7 @@ export default function NuovoClientePage() {
                             render={({ field }) => (
                                 <FormItem>
                                 <FormLabel>Forma</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value}>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Seleziona una forma" />
@@ -285,7 +285,7 @@ export default function NuovoClientePage() {
                             render={({ field }) => (
                                 <FormItem>
                                 <FormLabel>Rivestimento</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value}>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Seleziona un tipo" />
@@ -307,7 +307,7 @@ export default function NuovoClientePage() {
                             render={({ field }) => (
                                 <FormItem>
                                 <FormLabel>Sistema Filtrazione</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value}>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Seleziona un sistema" />
