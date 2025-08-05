@@ -1,3 +1,4 @@
+
 export type Client = {
   id: string;
   name: string;
@@ -13,7 +14,6 @@ export type Pool = {
   type: 'Interrata' | 'Fuori terra';
   shape: 'Rettangolare' | 'Ovale' | 'Forma libera' | null;
   dimensione: string | null;
-  volume: number | null; // in m³
   liner: 'PVC' | 'Piastrelle' | 'Vernice' | null;
   filtrationSystem: 'Sabbia' | 'Cartuccia' | 'Diatomee' | null;
 };

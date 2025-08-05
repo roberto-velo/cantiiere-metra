@@ -39,7 +39,6 @@ const formSchema = z.object({
   poolType: z.enum(['Interrata', 'Fuori terra', '']).optional(),
   poolShape: z.enum(['Rettangolare', 'Ovale', 'Forma libera', '']).optional(),
   poolDimensione: z.string().optional(),
-  poolVolume: z.coerce.number().positive("Il volume deve essere un numero positivo.").optional().or(z.literal('')),
   poolLiner: z.enum(['PVC', 'Piastrelle', 'Vernice', '']).optional(),
   poolFiltrationSystem: z.enum(['Sabbia', 'Cartuccia', 'Diatomee', '']).optional(),
 });
@@ -58,7 +57,6 @@ export default function NuovoClientePage() {
       poolType: "",
       poolShape: "",
       poolDimensione: "",
-      poolVolume: '',
       poolLiner: "",
       poolFiltrationSystem: "",
     },
@@ -87,7 +85,6 @@ export default function NuovoClientePage() {
           type: values.poolType,
           shape: values.poolShape || null,
           dimensione: values.poolDimensione || null,
-          volume: values.poolVolume ? Number(values.poolVolume) : null,
           liner: values.poolLiner || null,
           filtrationSystem: values.poolFiltrationSystem || null,
         }
@@ -259,19 +256,6 @@ export default function NuovoClientePage() {
                                 <FormLabel>Dimensione (es: 10x5m)</FormLabel>
                                 <FormControl>
                                     <Input placeholder="Es: 10x5m" {...field} value={field.value ?? ""} />
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="poolVolume"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Volume (m³)</FormLabel>
-                                <FormControl>
-                                    <Input type="number" placeholder="Es: 75" {...field} />
                                 </FormControl>
                                 <FormMessage />
                                 </FormItem>

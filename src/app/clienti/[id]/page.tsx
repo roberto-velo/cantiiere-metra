@@ -181,10 +181,6 @@ export default function ClientDetailPage() {
                         <p className="text-muted-foreground">{client.pool.dimensione}</p>
                     </div>
                      <div>
-                        <p className="font-medium">Volume</p>
-                        <p className="text-muted-foreground">{client.pool.volume} m³</p>
-                    </div>
-                     <div>
                         <p className="font-medium">Rivestimento</p>
                         <p className="text-muted-foreground">{client.pool.liner}</p>
                     </div>
@@ -299,4 +295,3 @@ export default function ClientDetailPage() {
     </div>
   );
 }
-
