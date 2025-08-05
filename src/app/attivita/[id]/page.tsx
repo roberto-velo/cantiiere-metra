@@ -19,6 +19,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { TaskTimerWrapper } from "@/components/task-timer-wrapper";
+import { TaskActions } from "@/components/task-actions";
 
 export default async function TaskDetailPage({ params }: { params: { id: string } }) {
   
@@ -44,13 +45,14 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
   return (
     <div className="flex flex-col flex-1">
       <header className="bg-muted/30 border-b p-4 sm:p-6">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">
               Dettaglio Attività
             </h1>
             <p className="text-muted-foreground">{task.description}</p>
           </div>
+          <TaskActions task={task} />
         </div>
       </header>
 

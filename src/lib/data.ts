@@ -193,6 +193,10 @@ const localApi = {
         }
         return null;
     },
+    deleteTask: async (id: string) => {
+        tasks = tasks.filter(t => t.id !== id);
+        return true;
+    },
 
     // Dashboard
     getDashboardData: async () => {
