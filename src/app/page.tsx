@@ -26,12 +26,6 @@ export default function DashboardPage() {
   const activeTechnicians = technicians.length;
   const notifications = 3; // Mock data
 
-  const quickLinks = [
-    { href: "/clienti", label: "Clienti", icon: UsersRound },
-    { href: "/tecnici", label: "Tecnici", icon: HardHat },
-    { href: "/attivita", label: "Attività", icon: ClipboardList },
-  ];
-
   const statsCards = [
     { title: "Attività Pianificate", value: scheduledTasks, icon: ListTodo, note: "Da completare questa settimana" },
     { title: "Attività Completate", value: completedTasks, icon: CalendarCheck2, note: "Questa settimana" },
@@ -40,15 +34,15 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="flex flex-col bg-muted/30">
-      <header className="bg-card border-b p-4 sm:p-6">
+    <div className="flex flex-col flex-1">
+      <header className="bg-muted/30 border-b p-4 sm:p-6">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h1>
         <p className="text-muted-foreground">
           Riepilogo giornaliero e settimanale delle tue attività.
         </p>
       </header>
 
-      <main className="flex-1 p-4 sm:p-6 space-y-8">
+      <div className="flex-1 p-4 sm:p-6 space-y-8">
         <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {statsCards.map((card, index) => (
             <Card key={index} className="glow-on-hover">
@@ -66,29 +60,6 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           ))}
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-semibold tracking-tight mb-4 text-foreground">
-            Accesso Rapido
-          </h2>
-          <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3">
-            {quickLinks.map((link) => (
-              <Button
-                key={link.href}
-                asChild
-                variant="outline"
-                className="justify-start h-24 text-left group glow-on-hover bg-card"
-              >
-                <Link href={link.href} className="flex items-center gap-4 p-4">
-                  <div className="bg-primary/10 p-4 rounded-lg transition-colors duration-300 group-hover:bg-primary">
-                    <link.icon className="h-7 w-7 text-primary transition-colors duration-300 group-hover:text-primary-foreground" />
-                  </div>
-                  <span className="text-xl font-semibold text-foreground">{link.label}</span>
-                </Link>
-              </Button>
-            ))}
-          </div>
         </section>
 
         <section>
@@ -132,7 +103,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         </section>
-      </main>
+      </div>
     </div>
   );
 }

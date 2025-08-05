@@ -15,8 +15,8 @@ import Link from "next/link";
 
 export default function ClientiPage() {
   return (
-    <div className="flex flex-col">
-      <header className="bg-card border-b p-4 sm:p-6">
+    <div className="flex flex-col flex-1">
+      <header className="bg-muted/30 border-b p-4 sm:p-6">
         <div className="flex items-center justify-between">
             <div className="space-y-1">
                 <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">

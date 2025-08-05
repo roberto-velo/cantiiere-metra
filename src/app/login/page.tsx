@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Building } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -17,8 +17,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-4 text-center">
         <div className="flex justify-center items-center gap-2 mb-6">
-            <Building className="h-8 w-8 text-primary"/>
-            <h1 className="text-3xl font-bold">CantiereFlow</h1>
+            <Image src="/logo.png" alt="CantiereFlow Logo" width={200} height={50} />
         </div>
         <Card>
           <CardHeader>

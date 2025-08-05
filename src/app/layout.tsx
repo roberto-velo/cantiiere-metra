@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { AppHeader } from "@/components/app-header";
 
 export const metadata: Metadata = {
   title: "CantiereFlow",
@@ -27,8 +28,9 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <div className="min-h-screen w-full bg-background">
-          {children}
+        <div className="min-h-screen w-full bg-background flex flex-col">
+          <AppHeader />
+          <main className="flex-1 flex flex-col">{children}</main>
         </div>
         <Toaster />
       </body>

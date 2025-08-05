@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { clients, tasks, technicians } from "@/lib/data";
 import {
-  ArrowLeft,
   Calendar,
   User,
   HardHat,
@@ -34,15 +33,9 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
   ];
 
   return (
-    <div className="flex flex-col">
-      <header className="bg-card border-b p-4 sm:p-6">
+    <div className="flex flex-col flex-1">
+      <header className="bg-muted/30 border-b p-4 sm:p-6">
         <div className="flex items-center gap-4">
-          <Button variant="outline" size="icon" asChild>
-            <Link href="/attivita">
-              <ArrowLeft className="h-4 w-4" />
-              <span className="sr-only">Indietro</span>
-            </Link>
-          </Button>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">
               Dettaglio Attività

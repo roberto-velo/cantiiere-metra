@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/table";
 import { clients, tasks as allTasks } from "@/lib/data";
 import {
-  ArrowLeft,
   Mail,
   MapPin,
   Phone,
@@ -36,15 +35,9 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
   ];
 
   return (
-    <div className="flex flex-col">
-      <header className="bg-card border-b p-4 sm:p-6">
+    <div className="flex flex-col flex-1">
+      <header className="bg-muted/30 border-b p-4 sm:p-6">
         <div className="flex items-center gap-4">
-          <Button variant="outline" size="icon" asChild>
-            <Link href="/clienti">
-              <ArrowLeft className="h-4 w-4" />
-              <span className="sr-only">Indietro</span>
-            </Link>
-          </Button>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">{client.name}</h1>
             <p className="text-muted-foreground">
