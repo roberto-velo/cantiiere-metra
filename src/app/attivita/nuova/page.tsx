@@ -23,11 +23,13 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ClipboardList } from "lucide-react";
+import { ArrowLeft, ClipboardList, Mail, MapPin, Phone, Upload, Camera, FileText } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { clients, technicians } from "@/lib/data";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import type { Client } from "@/lib/types";
 
 const formSchema = z.object({
   clientId: z.string({ required_error: "Il cliente è obbligatorio." }),
@@ -37,6 +39,8 @@ const formSchema = z.object({
   description: z.string().min(5, "La descrizione deve avere almeno 5 caratteri."),
   priority: z.enum(["Bassa", "Media", "Alta"]),
   notes: z.string().optional(),
+  photos: z.any().optional(),
+  documents: z.any().optional(),
 });
 
 export default function NuovaAttivitaPage() {
@@ -44,6 +48,7 @@ export default function NuovaAttivitaPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const clientIdFromParams = searchParams.get("clientId");
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -58,12 +63,32 @@ export default function NuovaAttivitaPage() {
     },
   });
 
+  const clientId = form.watch("clientId");
+
+  useEffect(() => {
+    if (clientId) {
+      const client = clients.find((c) => c.id === clientId);
+      setSelectedClient(client || null);
+    } else {
+      setSelectedClient(null);
+    }
+  }, [clientId]);
+  
+  // Set initial client if coming from params
+  useEffect(() => {
+    if (clientIdFromParams) {
+       const client = clients.find((c) => c.id === clientIdFromParams);
+       setSelectedClient(client || null);
+    }
+  }, [clientIdFromParams])
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     const newActivity = {
       ...values,
       id: crypto.randomUUID(),
       status: "Pianificato",
-      photos: [],
+      // In a real app, you'd handle file uploads and get back URLs
+      photos: [], 
       documents: [],
     };
     
@@ -75,6 +100,12 @@ export default function NuovaAttivitaPage() {
     });
     router.push('/attivita');
   }
+
+  const clientInfo = selectedClient ? [
+    { icon: Phone, label: "Telefono", value: selectedClient.phone },
+    { icon: Mail, label: "Email", value: selectedClient.email },
+    { icon: MapPin, label: "Indirizzo", value: selectedClient.address },
+  ] : [];
 
   return (
     <div className="flex flex-col flex-1">
@@ -250,6 +281,82 @@ export default function NuovaAttivitaPage() {
               </CardContent>
             </Card>
 
+            {selectedClient && (
+                 <div className="space-y-8">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Dettagli Cliente Selezionato</CardTitle>
+                        </CardHeader>
+                        <CardContent className="grid gap-6 md:grid-cols-2">
+                             <ul className="space-y-4">
+                                {clientInfo.map((info) => (
+                                <li key={info.label} className="flex items-start gap-4">
+                                    <info.icon className="h-5 w-5 text-muted-foreground mt-1" />
+                                    <div>
+                                    <p className="font-medium">{info.label}</p>
+                                    <p className="text-muted-foreground">{info.value}</p>
+                                    </div>
+                                </li>
+                                ))}
+                            </ul>
+                            <div className="aspect-video w-full">
+                                <iframe
+                                className="w-full h-full rounded-md border"
+                                src={selectedClient.mapUrl}
+                                loading="lazy"
+                                ></iframe>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                         <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Camera className="h-5 w-5" />
+                                Carica Foto
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                             <FormField
+                                control={form.control}
+                                name="photos"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>Seleziona una o più foto</FormLabel>
+                                    <FormControl>
+                                        <Input type="file" multiple accept="image/*" onChange={(e) => field.onChange(e.target.files)} />
+                                    </FormControl>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                                />
+                        </CardContent>
+                    </Card>
+                     <Card>
+                         <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <FileText className="h-5 w-5" />
+                                Carica Documenti
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <FormField
+                                control={form.control}
+                                name="documents"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>Seleziona uno o più documenti</FormLabel>
+                                    <FormControl>
+                                        <Input type="file" multiple onChange={(e) => field.onChange(e.target.files)} />
+                                    </FormControl>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                                />
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
+
             <div className="flex justify-end gap-4">
               <Button type="button" variant="outline" asChild>
                 <Link href="/attivita">Annulla</Link>
@@ -262,3 +369,5 @@ export default function NuovaAttivitaPage() {
     </div>
   );
 }
+
+    
