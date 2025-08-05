@@ -237,7 +237,7 @@ export default function NuovoClientePage() {
                                     <FormControl>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Seleziona una forma" />
-                                    </Trigger>
+                                    </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
                                         <SelectItem value="Rettangolare">Rettangolare</SelectItem>
@@ -307,7 +307,7 @@ export default function NuovoClientePage() {
                             render={({ field }) => (
                                 <FormItem>
                                 <FormLabel>Sistema Filtrazione</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value}>
+                                <Select onValuechange={field.onChange} value={field.value}>
                                     <FormControl>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Seleziona un sistema" />
