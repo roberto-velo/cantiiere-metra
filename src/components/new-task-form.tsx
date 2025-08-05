@@ -26,7 +26,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ClipboardList, Mail, MapPin, Phone, Upload, Camera, FileText } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
-import { addTask } from "@/lib/firebase";
+import localApi from "@/lib/data";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import type { Client, Technician } from "@/lib/types";
@@ -99,13 +99,14 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
             documents: [],
         };
         
-        await addTask(newActivity);
+        await localApi.addTask(newActivity);
 
         toast({
         title: "Attività Creata!",
         description: `L'attività "${values.description}" è stata creata con successo.`,
         });
         router.push('/attivita');
+        router.refresh();
 
     } catch (error) {
         toast({

@@ -1,4 +1,5 @@
 
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,15 +11,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getClients } from "@/lib/firebase";
+import localApi from "@/lib/data";
 import { PlusCircle, Search, UsersRound, ArrowRight, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 
-async function ClientsList({ currentPageId, searchTerm }: { currentPageId?: string, searchTerm?: string }) {
-  // Note: The search functionality is complex with pagination and will be implemented later.
-  // The searchTerm is a placeholder for now.
-  const { clients, lastVisibleId } = await getClients(currentPageId);
+async function ClientsList({ page, searchTerm }: { page: number, searchTerm?: string }) {
+  const { clients, totalPages } = await localApi.getClients(page);
   
   const filteredClients = searchTerm
     ? clients.filter((client) =>
@@ -76,11 +75,13 @@ async function ClientsList({ currentPageId, searchTerm }: { currentPageId?: stri
       </CardContent>
       <CardFooter>
         <div className="flex w-full justify-end gap-2">
-            <Button variant="outline" disabled={!currentPageId}>
-                <ArrowLeft className="mr-2 h-4 w-4" /> Precedente
+            <Button variant="outline" asChild disabled={page <= 1}>
+                <Link href={`/clienti?page=${page - 1}`}>
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Precedente
+                </Link>
             </Button>
-            <Button variant="outline" asChild disabled={!lastVisibleId}>
-                <Link href={`/clienti?page=${lastVisibleId}`}>
+            <Button variant="outline" asChild disabled={page >= totalPages}>
+                <Link href={`/clienti?page=${page + 1}`}>
                     Successivo <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
             </Button>
@@ -92,7 +93,7 @@ async function ClientsList({ currentPageId, searchTerm }: { currentPageId?: stri
 
 
 export default function ClientiPage({ searchParams }: { searchParams?: { page?: string, q?: string } }) {
-  const currentPageId = searchParams?.page;
+  const currentPage = Number(searchParams?.page) || 1;
   const searchTerm = searchParams?.q;
 
   return (
@@ -129,7 +130,7 @@ export default function ClientiPage({ searchParams }: { searchParams?: { page?: 
             </div>
           </CardHeader>
           <Suspense fallback={<div className="text-center p-8">Caricamento...</div>}>
-            <ClientsList currentPageId={currentPageId} searchTerm={searchTerm} />
+            <ClientsList page={currentPage} searchTerm={searchTerm} />
           </Suspense>
         </Card>
       </main>

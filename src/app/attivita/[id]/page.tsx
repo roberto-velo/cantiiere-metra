@@ -1,9 +1,10 @@
 
+
 import { FileTagger } from "@/components/file-tagger";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { getTask, getClient, getTechnician } from "@/lib/firebase";
+import localApi from "@/lib/data";
 import {
   Calendar,
   User,
@@ -17,20 +18,19 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import type { Client, Technician } from "@/lib/types";
 import { TaskTimerWrapper } from "@/components/task-timer-wrapper";
 
 export default async function TaskDetailPage({ params }: { params: { id: string } }) {
   
-  const task = await getTask(params.id);
+  const task = await localApi.getTask(params.id);
   
   if (!task) {
     notFound();
   }
 
   const [client, technician] = await Promise.all([
-      getClient(task.clientId),
-      getTechnician(task.technicianId)
+      localApi.getClient(task.clientId),
+      localApi.getTechnician(task.technicianId)
   ]);
 
   const details = [

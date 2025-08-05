@@ -1,9 +1,7 @@
 
 import { notFound } from "next/navigation";
-import { getClient } from "@/lib/firebase";
+import localApi from "@/lib/data";
 import { EditClientForm } from "@/components/edit-client-form";
-import type { Client } from "@/lib/types";
-import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -12,7 +10,7 @@ import Link from "next/link";
 // This is now a Server Component that fetches the client data
 // and passes it to the client component form.
 export default async function ModificaClientePage({ params }: { params: { id: string } }) {
-  const client = await getClient(params.id);
+  const client = await localApi.getClient(params.id);
 
   if (!client) {
     notFound();

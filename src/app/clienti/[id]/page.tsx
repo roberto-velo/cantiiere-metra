@@ -1,4 +1,5 @@
 
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -9,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getClient, getTasksByClientId } from "@/lib/firebase";
+import localApi from "@/lib/data";
 import {
   Mail,
   MapPin,
@@ -24,7 +25,7 @@ import { ClientActions } from "@/components/client-actions";
 
 export default async function ClientDetailPage({ params }: { params: { id: string } }) {
   
-  const client = await getClient(params.id);
+  const client = await localApi.getClient(params.id);
   
   if (!client) {
     notFound();
@@ -32,7 +33,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
 
   // For now, we fetch all tasks. In a real-world scenario with many tasks,
   // this should be paginated.
-  const clientTasks = await getTasksByClientId(client.id);
+  const clientTasks = await localApi.getTasksByClientId(client.id);
 
   const clientInfo = [
     { icon: Phone, label: "Telefono", value: client.phone },

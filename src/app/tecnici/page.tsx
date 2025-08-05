@@ -11,14 +11,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getTechnicians } from "@/lib/firebase";
+import localApi from "@/lib/data";
 import { PlusCircle, Search, HardHat, ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 
-async function TechniciansList({ currentPageId, searchTerm }: { currentPageId?: string, searchTerm?: string }) {
-    // Note: The search functionality is complex with pagination and will be implemented later.
-    const { technicians, lastVisibleId } = await getTechnicians(currentPageId);
+async function TechniciansList({ page, searchTerm }: { page: number, searchTerm?: string }) {
+    const { technicians, totalPages } = await localApi.getTechnicians(page);
     
     const filteredTechnicians = searchTerm
         ? technicians.filter(
@@ -78,12 +77,14 @@ async function TechniciansList({ currentPageId, searchTerm }: { currentPageId?: 
             </CardContent>
             <CardFooter>
                 <div className="flex w-full justify-end gap-2">
-                    <Button variant="outline" disabled={!currentPageId}>
-                        <ArrowLeft className="mr-2" />
-                        Precedente
+                    <Button variant="outline" asChild disabled={page <= 1}>
+                        <Link href={`/tecnici?page=${page - 1}`}>
+                            <ArrowLeft className="mr-2" />
+                            Precedente
+                        </Link>
                     </Button>
-                    <Button variant="outline" asChild disabled={!lastVisibleId}>
-                        <Link href={`/tecnici?page=${lastVisibleId}`}>
+                    <Button variant="outline" asChild disabled={page >= totalPages}>
+                        <Link href={`/tecnici?page=${page + 1}`}>
                             Successivo
                             <ArrowRight className="ml-2" />
                         </Link>
@@ -96,7 +97,7 @@ async function TechniciansList({ currentPageId, searchTerm }: { currentPageId?: 
 
 
 export default function TecniciPage({ searchParams }: { searchParams?: { page?: string, q?: string } }) {
-  const currentPageId = searchParams?.page;
+  const currentPage = Number(searchParams?.page) || 1;
   const searchTerm = searchParams?.q;
 
   return (
@@ -133,7 +134,7 @@ export default function TecniciPage({ searchParams }: { searchParams?: { page?: 
               </div>
           </CardHeader>
            <Suspense fallback={<div className="text-center p-8">Caricamento...</div>}>
-                <TechniciansList currentPageId={currentPageId} searchTerm={searchTerm} />
+                <TechniciansList page={currentPage} searchTerm={searchTerm} />
            </Suspense>
         </Card>
       </main>

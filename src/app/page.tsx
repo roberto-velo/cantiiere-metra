@@ -16,7 +16,7 @@ import {
   ListTodo,
 } from "lucide-react";
 import Link from "next/link";
-import { getDashboardData } from "@/lib/firebase";
+import localApi from "@/lib/data";
 import { cn } from "@/lib/utils";
 import type { TaskStatus } from "@/lib/types";
 
@@ -29,7 +29,7 @@ const statusBadge: Record<TaskStatus, string> = {
 
 export default async function DashboardPage() {
   
-  const { tasks, technicians, clients } = await getDashboardData();
+  const { tasks, technicians, clients } = await localApi.getDashboardData();
 
   const scheduledTasks = tasks.filter(
     (task) => task.status === "Pianificato" || task.status === "In corso"

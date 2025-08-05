@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
-import { updateClient } from "@/lib/firebase";
+import localApi from "@/lib/data";
 import { useRouter } from "next/navigation";
 import type { Client } from "@/lib/types";
 
@@ -58,7 +58,7 @@ export function EditClientForm({ client }: EditClientFormProps) {
         mapUrl,
       };
 
-      await updateClient(client.id, updatedClient);
+      await localApi.updateClient(client.id, updatedClient);
       
       toast({
         title: "Cliente Aggiornato!",

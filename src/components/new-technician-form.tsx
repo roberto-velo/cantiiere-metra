@@ -32,7 +32,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { addTechnician } from "@/lib/firebase";
+import localApi from "@/lib/data";
 import { useRouter } from "next/navigation";
 
 const qualificationSchema = z.object({
@@ -80,13 +80,14 @@ export function NewTechnicianForm() {
         }))
       };
       
-      await addTechnician(newTechnician);
+      await localApi.addTechnician(newTechnician);
       
       toast({
         title: "Tecnico Creato!",
         description: `Il tecnico "${values.firstName} ${values.lastName}" è stato salvato con successo.`,
       });
       router.push("/tecnici");
+      router.refresh();
     } catch (error) {
        toast({
         title: "Errore",

@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { deleteClient } from "@/lib/firebase";
+import localApi from "@/lib/data";
 import { Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -27,12 +27,13 @@ export function ClientActions({ client }: { client: Client }) {
   const handleDeleteClient = async () => {
     if (!client) return;
     try {
-      await deleteClient(client.id);
+      await localApi.deleteClient(client.id);
       toast({
         title: "Cliente Eliminato",
         description: `Il cliente "${client.name}" è stato eliminato con successo.`,
       });
       router.push("/clienti");
+      router.refresh();
     } catch (error) {
       toast({
         title: "Errore",

@@ -1,4 +1,5 @@
 
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,7 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getTasks, getAllClients, getAllTechnicians } from "@/lib/firebase";
+import localApi from "@/lib/data";
 import type { TaskPriority, TaskStatus } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { PlusCircle, Search, ClipboardList, Calendar, ArrowLeft, ArrowRight } from "lucide-react";
@@ -31,11 +32,11 @@ const statusBadge: Record<TaskStatus, string> = {
 };
 
 
-async function TasksList({ currentPageId }: { currentPageId?: string }) {
-    const { tasks, lastVisibleId } = await getTasks(currentPageId);
+async function TasksList({ page }: { page: number }) {
+    const { tasks, totalPages } = await localApi.getTasks(page);
     const [clients, technicians] = await Promise.all([
-        getAllClients(),
-        getAllTechnicians()
+        localApi.getAllClients(),
+        localApi.getAllTechnicians()
     ]);
 
   return (
@@ -115,13 +116,14 @@ async function TasksList({ currentPageId }: { currentPageId?: string }) {
       </CardContent>
       <CardFooter>
         <div className="flex w-full justify-end gap-2">
-            {/* Pagination controls will be added here. For now, this is a placeholder */}
-            <Button variant="outline" disabled={!currentPageId}>
-                <ArrowLeft className="mr-2" />
-                Precedente
+            <Button variant="outline" asChild disabled={page <= 1}>
+                <Link href={`/attivita?page=${page - 1}`}>
+                    <ArrowLeft className="mr-2" />
+                    Precedente
+                </Link>
             </Button>
-            <Button variant="outline" asChild disabled={!lastVisibleId}>
-                <Link href={`/attivita?page=${lastVisibleId}`}>
+            <Button variant="outline" asChild disabled={page >= totalPages}>
+                <Link href={`/attivita?page=${page + 1}`}>
                     Successivo
                     <ArrowRight className="ml-2" />
                 </Link>
@@ -133,7 +135,7 @@ async function TasksList({ currentPageId }: { currentPageId?: string }) {
 }
 
 export default async function AttivitaPage({ searchParams }: { searchParams?: { page?: string } }) {
-  const currentPageId = searchParams?.page;
+  const currentPage = Number(searchParams?.page) || 1;
 
   return (
     <div className="flex flex-col flex-1">
@@ -176,7 +178,7 @@ export default async function AttivitaPage({ searchParams }: { searchParams?: { 
                 </div>
               </CardHeader>
               <Suspense fallback={<div className="text-center p-8">Caricamento...</div>}>
-                <TasksList currentPageId={currentPageId} />
+                <TasksList page={currentPage} />
               </Suspense>
             </Card>
           </TabsContent>

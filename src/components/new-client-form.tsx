@@ -18,7 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, UsersRound } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
-import { addClient } from "@/lib/firebase";
+import localApi from "@/lib/data";
 import { useRouter } from "next/navigation";
 import type { Client } from "@/lib/types";
 
@@ -60,13 +60,14 @@ export function NewClientForm() {
         mapUrl,
       };
 
-      await addClient(newClient);
+      await localApi.addClient(newClient);
       
       toast({
         title: "Cliente Creato!",
         description: `Il cliente "${values.name}" è stato salvato con successo.`,
       });
       router.push("/clienti");
+      router.refresh();
     } catch (error) {
        toast({
         title: "Errore",

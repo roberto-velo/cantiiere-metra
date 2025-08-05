@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getTechnician, getTasksByTechnicianId, getClients } from "@/lib/firebase";
+import localApi from "@/lib/data";
 import {
   Phone,
   ClipboardList,
@@ -23,7 +23,7 @@ import { notFound } from "next/navigation";
 
 export default async function TechnicianDetailPage({ params }: { params: { id: string } }) {
   
-  const technician = await getTechnician(params.id);
+  const technician = await localApi.getTechnician(params.id);
 
   if (!technician) {
     notFound();
@@ -32,8 +32,8 @@ export default async function TechnicianDetailPage({ params }: { params: { id: s
   // For now, we fetch all tasks and clients. In a real-world scenario,
   // this should be optimized or paginated.
   const [technicianTasks, clients] = await Promise.all([
-      getTasksByTechnicianId(params.id as string),
-      getClients() // This could be slow if there are many clients.
+      localApi.getTasksByTechnicianId(params.id as string),
+      localApi.getAllClients() // This could be slow if there are many clients.
   ]);
 
   return (
