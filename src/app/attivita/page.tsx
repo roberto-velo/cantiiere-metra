@@ -32,7 +32,7 @@ const priorityBadge: Record<TaskPriority, string> = {
 const statusBadge: Record<TaskStatus, string> = {
   Pianificato: "bg-blue-500/20 text-blue-700 border border-blue-500/30",
   "In corso": "bg-orange-500/20 text-orange-700 border border-orange-500/30",
-  Completato: "bg-gray-500/20 text-gray-700 border border-gray-500/30",
+  Completato: "bg-green-500/20 text-green-700 border border-green-500/30",
 };
 
 export default function AttivitaPage() {
