@@ -194,8 +194,9 @@ const localApi = {
         return null;
     },
     deleteTask: async (id: string) => {
+        const initialLength = tasks.length;
         tasks = tasks.filter(t => t.id !== id);
-        return true;
+        return tasks.length < initialLength;
     },
 
     // Dashboard
