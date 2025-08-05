@@ -15,6 +15,15 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { tasks, technicians, clients } from "@/lib/data";
+import { cn } from "@/lib/utils";
+import type { TaskStatus } from "@/lib/types";
+
+const statusBadge: Record<TaskStatus, string> = {
+  Pianificato: "bg-blue-500/20 text-blue-700 border border-blue-500/30",
+  "In corso": "bg-orange-500/20 text-orange-700 border border-orange-500/30",
+  Completato: "bg-gray-500/20 text-gray-700 border border-gray-500/30",
+};
+
 
 export default function DashboardPage() {
   const scheduledTasks = tasks.filter(
@@ -89,7 +98,11 @@ export default function DashboardPage() {
                               : 'N/A'
                           }
                         </td>
-                        <td className="p-4 text-muted-foreground">{task.status}</td>
+                        <td className="p-4 text-muted-foreground">
+                          <span className={cn("px-2 py-1 rounded-full text-xs font-medium", statusBadge[task.status])}>
+                            {task.status}
+                          </span>
+                        </td>
                         <td className="p-4 text-right">
                           <Button asChild variant="ghost" size="sm">
                             <Link href={`/attivita/${task.id}`}>Dettagli</Link>
