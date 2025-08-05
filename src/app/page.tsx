@@ -40,8 +40,8 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="flex flex-col">
-      <header className="bg-background border-b p-4 sm:p-6">
+    <div className="flex flex-col bg-muted/30">
+      <header className="bg-card border-b p-4 sm:p-6">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h1>
         <p className="text-muted-foreground">
           Riepilogo giornaliero e settimanale delle tue attività.
@@ -51,12 +51,12 @@ export default function DashboardPage() {
       <main className="flex-1 p-4 sm:p-6 space-y-8">
         <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {statsCards.map((card, index) => (
-            <Card key={index} className="transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-1 hover:shadow-primary/20">
+            <Card key={index} className="glow-on-hover">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {card.title}
                 </CardTitle>
-                <card.icon className="h-5 w-5 text-muted-foreground" />
+                <card.icon className="h-5 w-5 text-primary" />
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-foreground">{card.value}</div>
@@ -78,7 +78,7 @@ export default function DashboardPage() {
                 key={link.href}
                 asChild
                 variant="outline"
-                className="justify-start h-20 text-left transition-all duration-300 ease-in-out group hover:bg-card hover:shadow-xl hover:scale-105 hover:border-primary"
+                className="justify-start h-24 text-left group glow-on-hover bg-card"
               >
                 <Link href={link.href} className="flex items-center gap-4 p-4">
                   <div className="bg-primary/10 p-4 rounded-lg transition-colors duration-300 group-hover:bg-primary">
