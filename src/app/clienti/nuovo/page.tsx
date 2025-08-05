@@ -15,16 +15,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, UsersRound, Droplet } from "lucide-react";
+import { ArrowLeft, UsersRound } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { addClient } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import type { Client } from "@/lib/types";
@@ -34,10 +27,6 @@ const formSchema = z.object({
   email: z.string().email("Inserisci un'email valida."),
   phone: z.string().min(5, "Il numero di telefono non sembra corretto."),
   address: z.string().min(5, "L'indirizzo deve avere almeno 5 caratteri."),
-  poolType: z.enum(['Interrata', 'Fuori terra']).nullable().optional(),
-  poolShape: z.enum(['Rettangolare', 'Ovale', 'Forma libera']).nullable().optional(),
-  poolLiner: z.enum(['PVC', 'Piastrelle', 'Vernice']).nullable().optional(),
-  poolFiltrationSystem: z.enum(['Sabbia', 'Cartuccia', 'Diatomee']).nullable().optional(),
 });
 
 export default function NuovoClientePage() {
@@ -51,10 +40,6 @@ export default function NuovoClientePage() {
       email: "",
       phone: "",
       address: "",
-      poolType: null,
-      poolShape: null,
-      poolLiner: null,
-      poolFiltrationSystem: null,
     },
   });
 
@@ -73,17 +58,7 @@ export default function NuovoClientePage() {
         address: values.address,
         clientCode,
         mapUrl,
-        pool: null,
       };
-      
-      if (values.poolType) {
-        newClient.pool = {
-          type: values.poolType,
-          shape: values.poolShape || null,
-          liner: values.poolLiner || null,
-          filtrationSystem: values.poolFiltrationSystem || null,
-        }
-      }
 
       await addClient(newClient);
       
@@ -117,7 +92,7 @@ export default function NuovoClientePage() {
               <UsersRound className="h-6 w-6" /> Nuovo Cliente
             </h1>
             <p className="text-muted-foreground">
-              Compila il modulo per aggiungere un nuovo cliente e i dati della sua piscina.
+              Compila il modulo per aggiungere un nuovo cliente.
             </p>
           </div>
         </div>
@@ -185,108 +160,6 @@ export default function NuovoClientePage() {
                   )}
                 />
               </CardContent>
-            </Card>
-
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Droplet className="h-5 w-5" />
-                        Dati Piscina (opzionale)
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <FormField
-                            control={form.control}
-                            name="poolType"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Tipo Piscina</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
-                                    <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Seleziona un tipo" />
-                                    </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        <SelectItem value="Interrata">Interrata</SelectItem>
-                                        <SelectItem value="Fuori terra">Fuori terra</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="poolShape"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Forma</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
-                                    <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Seleziona una forma" />
-                                    </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        <SelectItem value="Rettangolare">Rettangolare</SelectItem>
-                                        <SelectItem value="Ovale">Ovale</SelectItem>
-                                        <SelectItem value="Forma libera">Forma libera</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <FormField
-                            control={form.control}
-                            name="poolLiner"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Rivestimento</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
-                                    <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Seleziona un tipo" />
-                                    </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        <SelectItem value="PVC">PVC</SelectItem>
-                                        <SelectItem value="Piastrelle">Piastrelle</SelectItem>
-                                        <SelectItem value="Vernice">Vernice</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="poolFiltrationSystem"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Sistema Filtrazione</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
-                                    <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Seleziona un sistema" />
-                                    </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        <SelectItem value="Sabbia">Sabbia</SelectItem>
-                                        <SelectItem value="Cartuccia">Cartuccia</SelectItem>
-                                        <SelectItem value="Diatomee">Diatomee</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-                </CardContent>
             </Card>
 
             <div className="flex justify-end gap-4">

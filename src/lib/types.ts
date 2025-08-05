@@ -7,14 +7,6 @@ export type Client = {
   email: string;
   clientCode: string;
   mapUrl: string;
-  pool?: Pool | null;
-};
-
-export type Pool = {
-  type: 'Interrata' | 'Fuori terra';
-  shape: 'Rettangolare' | 'Ovale' | 'Forma libera' | null;
-  liner: 'PVC' | 'Piastrelle' | 'Vernice' | null;
-  filtrationSystem: 'Sabbia' | 'Cartuccia' | 'Diatomee' | null;
 };
 
 export type Qualification = {
