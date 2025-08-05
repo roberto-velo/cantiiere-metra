@@ -13,7 +13,6 @@ import {
   ClipboardList,
   HardHat,
   UsersRound,
-  LogOut,
   PlusCircle,
   Play,
   Pause,
@@ -63,8 +62,6 @@ export function AppHeader() {
           <img
             src="https://placehold.co/180x45.png"
             alt="Logo"
-            width="180"
-            height="45"
             className="h-[45px] w-auto"
           />
         </Link>
@@ -110,21 +107,6 @@ export function AppHeader() {
                 <Trash2 className="h-4 w-4" />
                 <span>Elimina Notifiche</span>
               </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                    <LogOut className="h-5 w-5"/>
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-                <DropdownMenuItem asChild>
-                     <Link href="/login" className="flex items-center gap-2 cursor-pointer">
-                        <LogOut className="h-4 w-4" />
-                        <span>Logout</span>
-                    </Link>
-                </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </nav>
