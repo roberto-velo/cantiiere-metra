@@ -13,7 +13,6 @@ export type Client = {
 export type Pool = {
   type: 'Interrata' | 'Fuori terra';
   shape: 'Rettangolare' | 'Ovale' | 'Forma libera' | null;
-  dimensione: string | null;
   liner: 'PVC' | 'Piastrelle' | 'Vernice' | null;
   filtrationSystem: 'Sabbia' | 'Cartuccia' | 'Diatomee' | null;
 };

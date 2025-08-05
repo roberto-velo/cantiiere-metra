@@ -176,10 +176,6 @@ export default function ClientDetailPage() {
                         <p className="font-medium">Forma</p>
                         <p className="text-muted-foreground">{client.pool.shape}</p>
                     </div>
-                    <div>
-                        <p className="font-medium">Dimensione</p>
-                        <p className="text-muted-foreground">{client.pool.dimensione}</p>
-                    </div>
                      <div>
                         <p className="font-medium">Rivestimento</p>
                         <p className="text-muted-foreground">{client.pool.liner}</p>

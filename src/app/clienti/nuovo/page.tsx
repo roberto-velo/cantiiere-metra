@@ -28,7 +28,7 @@ import {
 import { addClient } from "@/lib/firebase";
 import { firebaseConfig } from "@/lib/firebase-config";
 import { useRouter } from "next/navigation";
-import type { Client, Pool } from "@/lib/types";
+import type { Client } from "@/lib/types";
 
 const formSchema = z.object({
   name: z.string().min(2, "Il nome deve avere almeno 2 caratteri."),
