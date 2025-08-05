@@ -1,7 +1,7 @@
 
 'use client';
 import { initializeApp, getApp, getApps, type FirebaseOptions } from "firebase/app";
-import { getFirestore, collection, getDocs, doc, getDoc, addDoc, query, where, setDoc, updateDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, getDoc, addDoc, query, where, setDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { firebaseConfig } from "./firebase-config";
 import type { Client, Task, Technician, TaskStatus } from "./types";
 
@@ -46,6 +46,24 @@ export const addClient = async (client: Omit<Client, 'id'>) => {
     const docRef = await addDoc(collection(db, "clients"), client);
     return docRef.id;
 }
+
+export const updateClient = async (id: string, client: Partial<Omit<Client, 'id' | 'clientCode'>>) => {
+    const app = getFirebaseApp();
+    if (!app) throw new Error("Firebase not configured");
+    const db = getFirestore(app);
+    const docRef = doc(db, "clients", id);
+    await updateDoc(docRef, client);
+};
+
+export const deleteClient = async (id: string) => {
+    const app = getFirebaseApp();
+    if (!app) throw new Error("Firebase not configured");
+    const db = getFirestore(app);
+    // TODO: Add logic to delete associated tasks
+    const docRef = doc(db, "clients", id);
+    await deleteDoc(docRef);
+};
+
 
 // Technician functions
 export const getTechnicians = async (): Promise<Technician[]> => {
