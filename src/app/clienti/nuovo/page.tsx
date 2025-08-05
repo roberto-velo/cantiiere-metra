@@ -35,10 +35,8 @@ const formSchema = z.object({
   email: z.string().email("Inserisci un'email valida."),
   phone: z.string().min(5, "Il numero di telefono non sembra corretto."),
   address: z.string().min(5, "L'indirizzo deve avere almeno 5 caratteri."),
-
   poolType: z.enum(['Interrata', 'Fuori terra', '']).optional(),
   poolShape: z.enum(['Rettangolare', 'Ovale', 'Forma libera', '']).optional(),
-  poolDimensione: z.string().optional(),
   poolLiner: z.enum(['PVC', 'Piastrelle', 'Vernice', '']).optional(),
   poolFiltrationSystem: z.enum(['Sabbia', 'Cartuccia', 'Diatomee', '']).optional(),
 });
@@ -56,7 +54,6 @@ export default function NuovoClientePage() {
       address: "",
       poolType: "",
       poolShape: "",
-      poolDimensione: "",
       poolLiner: "",
       poolFiltrationSystem: "",
     },
@@ -84,7 +81,6 @@ export default function NuovoClientePage() {
         newClient.pool = {
           type: values.poolType,
           shape: values.poolShape || null,
-          dimensione: values.poolDimensione || null,
           liner: values.poolLiner || null,
           filtrationSystem: values.poolFiltrationSystem || null,
         }
@@ -242,21 +238,6 @@ export default function NuovoClientePage() {
                                         <SelectItem value="Forma libera">Forma libera</SelectItem>
                                     </SelectContent>
                                 </Select>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <FormField
-                            control={form.control}
-                            name="poolDimensione"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Dimensione (es: 10x5m)</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Es: 10x5m" {...field} value={field.value ?? ""} />
-                                </FormControl>
                                 <FormMessage />
                                 </FormItem>
                             )}
