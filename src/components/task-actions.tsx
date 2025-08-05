@@ -46,8 +46,8 @@ export function TaskActions({ task }: { task: Task }) {
   return (
     <div className="flex items-center gap-2">
       <Button variant="outline" disabled>
-          <Pencil className="mr-2 h-4 w-4" />
-          Modifica
+        <Pencil className="mr-2 h-4 w-4" />
+        Modifica
       </Button>
       <AlertDialog>
         <AlertDialogTrigger asChild>
