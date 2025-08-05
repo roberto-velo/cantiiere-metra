@@ -19,7 +19,7 @@ export default function LoginPage() {
         <div className="flex justify-center items-center gap-2 mb-6">
             {/* Using a standard img tag for debugging */}
             <img 
-              src="/logo.png?v=1" 
+              src="https://placehold.co/200x50.png" 
               alt="Logo" 
               width="200" 
               height="50"

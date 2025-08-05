@@ -16,7 +16,7 @@ export function AppHeader() {
         <Link href="/">
           {/* Using a standard img tag for debugging */}
           <img
-            src="/logo.png?v=1"
+            src="https://placehold.co/180x45.png"
             alt="Logo"
             width="180"
             height="45"
