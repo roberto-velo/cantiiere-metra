@@ -50,6 +50,11 @@ export default function NuovoClientePage() {
       email: "",
       phone: "",
       address: "",
+      poolType: undefined,
+      poolShape: undefined,
+      poolVolume: undefined,
+      poolLiner: undefined,
+      poolFiltrationSystem: undefined,
     },
   });
 
@@ -185,7 +190,7 @@ export default function NuovoClientePage() {
                             render={({ field }) => (
                                 <FormItem>
                                 <FormLabel>Tipo Piscina</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Seleziona un tipo" />
@@ -206,7 +211,7 @@ export default function NuovoClientePage() {
                             render={({ field }) => (
                                 <FormItem>
                                 <FormLabel>Forma</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Seleziona una forma" />
@@ -230,7 +235,7 @@ export default function NuovoClientePage() {
                             render={({ field }) => (
                                 <FormItem>
                                 <FormLabel>Rivestimento</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Seleziona un tipo" />
@@ -252,7 +257,7 @@ export default function NuovoClientePage() {
                             render={({ field }) => (
                                 <FormItem>
                                 <FormLabel>Sistema Filtrazione</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Seleziona un sistema" />
@@ -275,7 +280,7 @@ export default function NuovoClientePage() {
                                 <FormItem>
                                 <FormLabel>Volume (m³)</FormLabel>
                                 <FormControl>
-                                    <Input type="number" placeholder="Es: 75" {...field} onChange={event => field.onChange(+event.target.value)} />
+                                    <Input type="number" placeholder="Es: 75" {...field} onChange={event => field.onChange(+event.target.value)} value={field.value ?? ""} />
                                 </FormControl>
                                 <FormMessage />
                                 </FormItem>
