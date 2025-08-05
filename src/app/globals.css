@@ -9,9 +9,9 @@ body {
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 180 100% 25%;
+    --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
-    --card-foreground: 180 100% 25%;
+    --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
     --primary: 180 100% 25%; /* Teal */
@@ -19,7 +19,7 @@ body {
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
-    --muted-foreground: 180 50% 45%;
+    --muted-foreground: 222.2 47.4% 11.2%;
     --accent: 120 73% 75%; /* A vibrant green */
     --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
@@ -47,9 +47,9 @@ body {
 
   .dark {
     --background: 220 20% 7%;
-    --foreground: 180 100% 75%;
+    --foreground: 210 20% 98%;
     --card: 220 20% 10%;
-    --card-foreground: 180 100% 75%;
+    --card-foreground: 210 20% 98%;
     --popover: 220 20% 7%;
     --popover-foreground: 210 20% 98%;
     --primary: 180 100% 35%; /* Teal Dark */
@@ -57,7 +57,7 @@ body {
     --secondary: 220 20% 15%;
     --secondary-foreground: 210 20% 98%;
     --muted: 220 20% 15%;
-    --muted-foreground: 180 50% 65%;
+    --muted-foreground: 210 20% 90.5%;
     --accent: 220 20% 20%;
     --accent-foreground: 210 20% 98%;
     --destructive: 0 62.8% 30.6%;
