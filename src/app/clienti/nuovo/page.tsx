@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -14,19 +15,34 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, UsersRound } from "lucide-react";
+import { ArrowLeft, UsersRound, Droplet } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 
 const formSchema = z.object({
   name: z.string().min(2, "La ragione sociale deve avere almeno 2 caratteri."),
   email: z.string().email("Inserisci un'email valida."),
   phone: z.string().min(5, "Il numero di telefono non sembra corretto."),
   address: z.string().min(5, "L'indirizzo deve avere almeno 5 caratteri."),
+  
+  // Campi opzionali per la piscina
+  poolType: z.enum(['Interrata', 'Fuori terra']).optional(),
+  poolShape: z.enum(['Rettangolare', 'Ovale', 'Forma libera']).optional(),
+  poolVolume: z.coerce.number().positive("Il volume deve essere un numero positivo.").optional(),
+  poolLiner: z.enum(['PVC', 'Piastrelle', 'Vernice']).optional(),
+  poolFiltrationSystem: z.enum(['Sabbia', 'Cartuccia', 'Diatomee']).optional(),
 });
 
 export default function NuovoClientePage() {
-    const { toast } = useToast();
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,9 +61,19 @@ export default function NuovoClientePage() {
     const mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(values.address)}&output=embed`;
 
     const newClient = {
-      ...values,
+      name: values.name,
+      email: values.email,
+      phone: values.phone,
+      address: values.address,
       clientCode,
       mapUrl,
+      pool: values.poolType ? {
+        type: values.poolType,
+        shape: values.poolShape,
+        volume: values.poolVolume,
+        liner: values.poolLiner,
+        filtrationSystem: values.poolFiltrationSystem,
+      } : undefined,
     };
 
     console.log(newClient);
@@ -74,19 +100,19 @@ export default function NuovoClientePage() {
               <UsersRound className="h-6 w-6" /> Nuovo Cliente
             </h1>
             <p className="text-muted-foreground">
-              Compila il modulo per aggiungere un nuovo cliente.
+              Compila il modulo per aggiungere un nuovo cliente e i dati della sua piscina.
             </p>
           </div>
         </div>
       </header>
       <main className="flex-1 p-4 sm:p-6">
-        <Card className="max-w-4xl mx-auto">
-          <CardHeader>
-            <CardTitle>Anagrafica Cliente</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-4xl mx-auto">
+            <Card>
+              <CardHeader>
+                <CardTitle>Anagrafica Cliente</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-8">
                 <FormField
                   control={form.control}
                   name="name"
@@ -141,18 +167,132 @@ export default function NuovoClientePage() {
                     </FormItem>
                   )}
                 />
-                
-                <div className="flex justify-end gap-4">
-                    <Button type="button" variant="outline" asChild>
-                        <Link href="/clienti">Annulla</Link>
-                    </Button>
-                    <Button type="submit">Salva Cliente</Button>
-                </div>
+              </CardContent>
+            </Card>
 
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Droplet className="h-5 w-5" />
+                        Dati Piscina (opzionale)
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <FormField
+                            control={form.control}
+                            name="poolType"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Tipo Piscina</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Seleziona un tipo" />
+                                    </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="Interrata">Interrata</SelectItem>
+                                        <SelectItem value="Fuori terra">Fuori terra</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="poolShape"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Forma</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Seleziona una forma" />
+                                    </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="Rettangolare">Rettangolare</SelectItem>
+                                        <SelectItem value="Ovale">Ovale</SelectItem>
+                                        <SelectItem value="Forma libera">Forma libera</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <FormField
+                            control={form.control}
+                            name="poolLiner"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Rivestimento</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Seleziona un tipo" />
+                                    </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="PVC">PVC</SelectItem>
+                                        <SelectItem value="Piastrelle">Piastrelle</SelectItem>
+                                        <SelectItem value="Vernice">Vernice</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="poolFiltrationSystem"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Sistema Filtrazione</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Seleziona un sistema" />
+                                    </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="Sabbia">Sabbia</SelectItem>
+                                        <SelectItem value="Cartuccia">Cartuccia</SelectItem>
+                                        <SelectItem value="Diatomee">Diatomee</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                         <FormField
+                            control={form.control}
+                            name="poolVolume"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Volume (m³)</FormLabel>
+                                <FormControl>
+                                    <Input type="number" placeholder="Es: 75" {...field} onChange={event => field.onChange(+event.target.value)} />
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                </CardContent>
+            </Card>
+            
+            <div className="flex justify-end gap-4">
+                <Button type="button" variant="outline" asChild>
+                    <Link href="/clienti">Annulla</Link>
+                </Button>
+                <Button type="submit">Salva Cliente</Button>
+            </div>
+          </form>
+        </Form>
       </main>
     </div>
   );

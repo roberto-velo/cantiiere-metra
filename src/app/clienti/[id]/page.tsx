@@ -18,6 +18,7 @@ import {
   Upload,
   Pencil,
   Trash2,
+  Droplet,
 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -80,6 +81,42 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
             </CardContent>
           </Card>
           
+          {client.pool && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Droplet className="h-5 w-5"/>
+                    Dati Piscina
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                    <div>
+                        <p className="font-medium">Tipo</p>
+                        <p className="text-muted-foreground">{client.pool.type}</p>
+                    </div>
+                     <div>
+                        <p className="font-medium">Forma</p>
+                        <p className="text-muted-foreground">{client.pool.shape}</p>
+                    </div>
+                     <div>
+                        <p className="font-medium">Volume</p>
+                        <p className="text-muted-foreground">{client.pool.volume} m³</p>
+                    </div>
+                     <div>
+                        <p className="font-medium">Rivestimento</p>
+                        <p className="text-muted-foreground">{client.pool.liner}</p>
+                    </div>
+                     <div>
+                        <p className="font-medium">Sistema Filtrazione</p>
+                        <p className="text-muted-foreground">{client.pool.filtrationSystem}</p>
+                    </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2">

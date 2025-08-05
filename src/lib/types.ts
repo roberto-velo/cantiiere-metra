@@ -6,6 +6,15 @@ export type Client = {
   email: string;
   clientCode: string;
   mapUrl: string;
+  pool?: Pool;
+};
+
+export type Pool = {
+  type: 'Interrata' | 'Fuori terra';
+  shape: 'Rettangolare' | 'Ovale' | 'Forma libera';
+  volume: number; // in m³
+  liner: 'PVC' | 'Piastrelle' | 'Vernice';
+  filtrationSystem: 'Sabbia' | 'Cartuccia' | 'Diatomee';
 };
 
 export type Qualification = {

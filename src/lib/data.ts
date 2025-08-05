@@ -9,6 +9,13 @@ export const clients: Client[] = [
     email: 'info@rossicostruzioni.it',
     clientCode: 'MRC001',
     mapUrl: 'https://maps.google.com/maps?q=Via+Roma,+1,+20121+Milano+MI&output=embed',
+    pool: {
+        type: 'Interrata',
+        shape: 'Rettangolare',
+        volume: 75,
+        liner: 'Piastrelle',
+        filtrationSystem: 'Sabbia',
+    }
   },
   {
     id: '2',
@@ -18,6 +25,13 @@ export const clients: Client[] = [
     email: 'amministrazione@bianchispa.it',
     clientCode: 'BF002',
     mapUrl: 'https://maps.google.com/maps?q=Corso+Vittorio+Emanuele,+15,+10123+Torino+TO&output=embed',
+    pool: {
+        type: 'Fuori terra',
+        shape: 'Ovale',
+        volume: 30,
+        liner: 'PVC',
+        filtrationSystem: 'Cartuccia',
+    }
   },
   {
     id: '3',
