@@ -63,10 +63,15 @@ export default function TecniciPage() {
                       </TableCell>
                       <TableCell>{technician.role}</TableCell>
                       <TableCell>{technician.phone}</TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-right space-x-2">
                         <Button variant="outline" size="sm" asChild>
                           <Link href={`/tecnici/${technician.id}`}>
                             Visualizza
+                          </Link>
+                        </Button>
+                         <Button size="sm" asChild>
+                          <Link href={`/attivita/nuova?technicianId=${technician.id}`}>
+                            Nuova Attività
                           </Link>
                         </Button>
                       </TableCell>

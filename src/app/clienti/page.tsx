@@ -61,10 +61,15 @@ export default function ClientiPage() {
                       <TableCell className="font-medium">{client.name}</TableCell>
                       <TableCell>{client.email}</TableCell>
                       <TableCell>{client.phone}</TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-right space-x-2">
                         <Button variant="outline" size="sm" asChild>
                           <Link href={`/clienti/${client.id}`}>
                             Visualizza
+                          </Link>
+                        </Button>
+                        <Button size="sm" asChild>
+                          <Link href={`/attivita/nuova?clientId=${client.id}`}>
+                            Nuova Attività
                           </Link>
                         </Button>
                       </TableCell>
