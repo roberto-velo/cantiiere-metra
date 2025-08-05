@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { ArrowLeft, UsersRound, Droplet } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
@@ -26,7 +26,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { addClient } from "@/lib/firebase";
-import { firebaseConfig } from "@/lib/firebase-config";
 import { useRouter } from "next/navigation";
 import type { Client } from "@/lib/types";
 
@@ -102,8 +101,6 @@ export default function NuovoClientePage() {
       console.error("Error adding client: ", error);
     }
   }
-
-  const isFirebaseConfigured = !!firebaseConfig.apiKey;
 
   return (
     <div className="flex flex-col flex-1">
@@ -290,16 +287,15 @@ export default function NuovoClientePage() {
                         />
                     </div>
                 </CardContent>
+                 <CardFooter className="flex justify-end gap-4">
+                    <Button type="button" variant="outline" asChild>
+                        <Link href="/clienti">Annulla</Link>
+                    </Button>
+                    <Button type="submit" disabled={form.formState.isSubmitting}>
+                      {form.formState.isSubmitting ? "Salvataggio..." : "Salva Cliente"}
+                    </Button>
+                </CardFooter>
             </Card>
-            
-            <div className="flex justify-end gap-4">
-                <Button type="button" variant="outline" asChild>
-                    <Link href="/clienti">Annulla</Link>
-                </Button>
-                <Button type="submit" disabled={form.formState.isSubmitting || !isFirebaseConfigured} title={!isFirebaseConfigured ? "Firebase non è configurato. Contatta il supporto." : ""}>
-                  {form.formState.isSubmitting ? "Salvataggio..." : "Salva Cliente"}
-                </Button>
-            </div>
           </form>
         </Form>
       </main>
