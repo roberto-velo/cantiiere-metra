@@ -128,7 +128,7 @@ const localApi = {
         clients.push(newClient);
         return newClient;
     },
-    updateClient: async (id: string, clientData: Partial<Client>) => {
+    updateClient: async (id: string, clientData: Partial<Omit<Client, 'id'>>) => {
         const index = clients.findIndex(c => c.id === id);
         if (index > -1) {
             clients[index] = { ...clients[index], ...clientData };
@@ -175,10 +175,12 @@ const localApi = {
     getTask: async (id: string) => tasks.find(t => t.id === id) || null,
     getTasksByClientId: async (clientId: string) => tasks.filter(t => t.clientId === clientId),
     getTasksByTechnicianId: async (technicianId: string) => tasks.filter(t => t.technicianId === technicianId),
-    addTask: async (taskData: Omit<Task, 'id'>) => {
+    addTask: async (taskData: Omit<Task, 'id' | 'photos' | 'documents'> & { photos?: any, documents?: any }) => {
         const newTask: Task = {
             id: String(tasks.length + 1),
-            ...taskData
+            ...taskData,
+            photos: [], // Placeholder for real upload logic
+            documents: [], // Placeholder for real upload logic
         };
         tasks.push(newTask);
         return newTask;
@@ -196,7 +198,7 @@ const localApi = {
     getDashboardData: async () => {
         const sortedTasks = tasks.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         return {
-            tasks: sortedTasks.slice(0, 5),
+            tasks: sortedTasks,
             technicians,
             clients
         }
