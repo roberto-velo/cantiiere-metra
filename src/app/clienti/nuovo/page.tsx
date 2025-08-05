@@ -88,6 +88,16 @@ export default function NuovoClientePage() {
         } : undefined,
       };
 
+      // Firestore doesn't accept undefined values.
+      if (newClient.pool) {
+          if (newClient.pool.shape === undefined) newClient.pool.shape = null;
+          if (newClient.pool.dimensione === undefined) newClient.pool.dimensione = null;
+          if (newClient.pool.volume === undefined) newClient.pool.volume = null;
+          if (newClient.pool.liner === undefined) newClient.pool.liner = null;
+          if (newClient.pool.filtrationSystem === undefined) newClient.pool.filtrationSystem = null;
+      }
+
+
       await addClient(newClient);
       
       toast({

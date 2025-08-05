@@ -6,16 +6,16 @@ export type Client = {
   email: string;
   clientCode: string;
   mapUrl: string;
-  pool?: Pool;
+  pool?: Pool | null;
 };
 
 export type Pool = {
   type: 'Interrata' | 'Fuori terra';
-  shape: 'Rettangolare' | 'Ovale' | 'Forma libera';
-  dimensione: string;
-  volume: number; // in m³
-  liner: 'PVC' | 'Piastrelle' | 'Vernice';
-  filtrationSystem: 'Sabbia' | 'Cartuccia' | 'Diatomee';
+  shape: 'Rettangolare' | 'Ovale' | 'Forma libera' | null;
+  dimensione: string | null;
+  volume: number | null; // in m³
+  liner: 'PVC' | 'Piastrelle' | 'Vernice' | null;
+  filtrationSystem: 'Sabbia' | 'Cartuccia' | 'Diatomee' | null;
 };
 
 export type Qualification = {
