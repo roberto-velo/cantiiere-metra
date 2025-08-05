@@ -26,21 +26,13 @@ export function TaskActions({ task }: { task: Task }) {
   const handleDeleteTask = async () => {
     if (!task) return;
     try {
-      const success = await localApi.deleteTask(task.id);
-      if (success) {
-        toast({
-          title: "Attività Eliminata",
-          description: `L'attività "${task.description}" è stata eliminata con successo.`,
-        });
-        router.push("/attivita");
-        router.refresh();
-      } else {
-         toast({
-          title: "Errore Non Previsto",
-          description: "L'eliminazione non è riuscita per un motivo sconosciuto.",
-          variant: "destructive",
-        });
-      }
+      await localApi.deleteTask(task.id);
+      toast({
+        title: "Attività Eliminata",
+        description: `L'attività "${task.description}" è stata eliminata con successo.`,
+      });
+      router.push("/attivita");
+      router.refresh(); // Force a refresh to see changes
     } catch (error) {
       toast({
         title: "Errore",
@@ -53,7 +45,7 @@ export function TaskActions({ task }: { task: Task }) {
 
   return (
     <div className="flex items-center gap-2">
-      <Button variant="outline">
+      <Button variant="outline" disabled>
         <Pencil className="mr-2 h-4 w-4" />
         Modifica
       </Button>
