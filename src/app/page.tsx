@@ -56,10 +56,10 @@ export default function DashboardPage() {
           {statsCards.map((card, index) => (
             <Card key={index} className="glow-on-hover">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-dashboard-teal">
+                <CardTitle className="text-sm font-medium text-primary">
                   {card.title}
                 </CardTitle>
-                <card.icon className="h-5 w-5 text-dashboard-teal" />
+                <card.icon className="h-5 w-5 text-primary" />
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-foreground">{card.value}</div>
