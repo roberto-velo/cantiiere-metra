@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -49,7 +50,7 @@ export default function AttivitaPage() {
                 </p>
             </div>
             <Button asChild>
-                <Link href="#">
+                <Link href="/attivita/nuova">
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Nuova Attività
                 </Link>
