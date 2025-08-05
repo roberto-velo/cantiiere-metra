@@ -23,7 +23,6 @@ const formSchema = z.object({
   email: z.string().email("Inserisci un'email valida."),
   phone: z.string().min(5, "Il numero di telefono non sembra corretto."),
   address: z.string().min(5, "L'indirizzo deve avere almeno 5 caratteri."),
-  clientCode: z.string().min(3, "Il codice cliente deve avere almeno 3 caratteri."),
 });
 
 export default function NuovoClientePage() {
@@ -35,12 +34,23 @@ export default function NuovoClientePage() {
       email: "",
       phone: "",
       address: "",
-      clientCode: "",
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    const clientCode =
+      values.name.substring(0, 3).toUpperCase() +
+      Math.floor(100 + Math.random() * 900);
+      
+    const mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(values.address)}&output=embed`;
+
+    const newClient = {
+      ...values,
+      clientCode,
+      mapUrl,
+    };
+
+    console.log(newClient);
     // TODO: In a real application, you would save this data.
     toast({
       title: "Cliente Creato!",
@@ -131,20 +141,7 @@ export default function NuovoClientePage() {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="clientCode"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Codice Cliente</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Es: MRC001" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
+                
                 <div className="flex justify-end gap-4">
                     <Button type="button" variant="outline" asChild>
                         <Link href="/clienti">Annulla</Link>
