@@ -49,7 +49,7 @@ export default function ClientiPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Ragione Sociale</TableHead>
+                    <TableHead>Nome</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Telefono</TableHead>
                     <TableHead className="text-right">Azioni</TableHead>

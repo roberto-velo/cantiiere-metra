@@ -28,7 +28,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 
 const formSchema = z.object({
-  name: z.string().min(2, "La ragione sociale deve avere almeno 2 caratteri."),
+  name: z.string().min(2, "Il nome deve avere almeno 2 caratteri."),
   email: z.string().email("Inserisci un'email valida."),
   phone: z.string().min(5, "Il numero di telefono non sembra corretto."),
   address: z.string().min(5, "L'indirizzo deve avere almeno 5 caratteri."),
@@ -118,9 +118,9 @@ export default function NuovoClientePage() {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Ragione Sociale</FormLabel>
+                      <FormLabel>Nome</FormLabel>
                       <FormControl>
-                        <Input placeholder="Es: Mario Rossi S.R.L." {...field} />
+                        <Input placeholder="Es: Mario Rossi" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
