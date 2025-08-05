@@ -78,6 +78,7 @@ export default function NuovoClientePage() {
         address: values.address,
         clientCode,
         mapUrl,
+        pool: null,
       };
 
       if (values.poolType) {
@@ -339,3 +340,5 @@ export default function NuovoClientePage() {
     </div>
   );
 }
+
+    
