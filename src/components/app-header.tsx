@@ -9,6 +9,7 @@ import {
   UsersRound,
   Trash2,
   Menu,
+  Building,
 } from "lucide-react";
 import { useNotifications, type NotificationType } from "@/hooks/use-notifications";
 import { Button } from "./ui/button";
@@ -50,12 +51,9 @@ export function AppHeader() {
   return (
     <header className="bg-primary text-primary-foreground border-b p-4 sm:p-6 sticky top-0 z-50">
       <div className="flex items-center justify-between">
-        <Link href="/">
-          <img
-            src="/logo.png"
-            alt="Logo"
-            className="h-[45px] w-auto"
-          />
+        <Link href="/" className="flex items-center gap-2 text-xl font-bold">
+          <Building className="h-6 w-6" />
+          <span>CantiereFlow</span>
         </Link>
         <nav className="hidden md:flex items-center gap-4">
           {navLinks.map((link) => (
