@@ -58,12 +58,12 @@ export function TaskTimer({ initialStatus, initialDuration = 0, onStatusChange, 
   const handleStart = useCallback(() => {
     if (isCompleted) return;
 
-    setIsRunning(true);
     if (status === 'Pianificato') {
       const newStatus = 'In corso';
       setStatus(newStatus);
       onStatusChange(newStatus);
     }
+    setIsRunning(true);
   }, [status, onStatusChange, isCompleted]);
 
   const handlePause = useCallback(() => {
