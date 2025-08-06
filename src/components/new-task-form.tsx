@@ -312,10 +312,10 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
                              <ul className="space-y-4">
                                 {clientInfo.map((info) => (
                                 <li key={info.label} className="flex items-start gap-4">
-                                    <info.icon className="h-5 w-5 text-muted-foreground mt-1" />
+                                    <info.icon className="h-5 w-5 text-primary mt-1" />
                                     <div>
-                                    <p className="font-medium">{info.label}</p>
-                                    <p className="text-muted-foreground">{info.value}</p>
+                                    <p className="font-medium text-primary">{info.label}</p>
+                                    <p className="text-foreground font-semibold">{info.value}</p>
                                     </div>
                                 </li>
                                 ))}
