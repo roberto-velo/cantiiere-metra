@@ -18,7 +18,8 @@ import {
   FileText,
   ClipboardList,
   Upload,
-  Droplet
+  Droplet,
+  Navigation
 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -198,14 +199,13 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                 Mappa
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="aspect-video w-full">
-                <iframe
-                  className="w-full h-full rounded-md border"
-                  src={client.mapUrl}
-                  loading="lazy"
-                ></iframe>
-              </div>
+            <CardContent className="flex items-center justify-center h-full">
+              <Button asChild className="w-full">
+                <a href={client.mapUrl} target="_blank" rel="noopener noreferrer">
+                  <Navigation className="mr-2 h-4 w-4" />
+                  Avvia Navigazione
+                </a>
+              </Button>
             </CardContent>
           </Card>
         </div>

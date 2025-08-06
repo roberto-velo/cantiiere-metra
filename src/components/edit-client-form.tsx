@@ -66,7 +66,9 @@ export function EditClientForm({ client }: EditClientFormProps) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(values.address)}&output=embed`;
+      const mapUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+        values.address
+      )}&travelmode=driving`;
       
       const updatedClient = {
         ...values,

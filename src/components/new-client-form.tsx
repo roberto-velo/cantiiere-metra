@@ -65,7 +65,9 @@ export function NewClientForm() {
         values.name.substring(0, 3).toUpperCase() +
         Math.floor(100 + Math.random() * 900);
         
-      const mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(values.address)}&output=embed`;
+      const mapUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+        values.address
+      )}&travelmode=driving`;
 
       const newClient = {
         name: values.name,

@@ -1,3 +1,4 @@
+
 [
   {
     "id": "2",
@@ -6,7 +7,7 @@
     "phone": "02 98765432",
     "email": "rossi@costruzioni.com",
     "clientCode": "ROS456",
-    "mapUrl": "https://maps.google.com/maps?q=Corso%20Magenta%2C%2045%2C%2020123%20Milano%20MI&output=embed"
+    "mapUrl": "https://www.google.com/maps/dir/?api=1&destination=Corso%20Magenta%2C%2045%2C%2020123%20Milano%20MI&travelmode=driving"
   },
   {
     "id": "3",
@@ -15,7 +16,7 @@
     "phone": "051 11223344",
     "email": "amministrazione@verdiimpianti.it",
     "clientCode": "VER789",
-    "mapUrl": "https://maps.google.com/maps?q=Via%20San%20Felice%2C%201%2C%2040122%20Bologna%20BO&output=embed"
+    "mapUrl": "https://www.google.com/maps/dir/?api=1&destination=Via%20San%20Felice%2C%201%2C%2040122%20Bologna%20BO&travelmode=driving"
   },
   {
     "id": "1754456985711",
@@ -24,7 +25,7 @@
     "phone": "3396187374",
     "address": "via monte cavallo 16 cordenons",
     "clientCode": "ROB638",
-    "mapUrl": "https://maps.google.com/maps?q=via%20monte%20cavallo%2016%20cordenons&output=embed",
+    "mapUrl": "https://www.google.com/maps/dir/?api=1&destination=via%20monte%20cavallo%2016%20cordenons&travelmode=driving",
     "poolType": "Interrata",
     "poolDimensions": "8x4x1.5",
     "poolVolume": "50",

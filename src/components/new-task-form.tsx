@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ClipboardList, Mail, MapPin, Phone, Upload, Camera, FileText } from "lucide-react";
+import { ArrowLeft, ClipboardList, Mail, MapPin, Phone, Upload, Camera, FileText, Navigation } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
@@ -308,7 +308,7 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
                         <CardHeader>
                             <CardTitle>Dettagli Cliente Selezionato</CardTitle>
                         </CardHeader>
-                        <CardContent className="grid gap-6 md:grid-cols-2">
+                        <CardContent className="space-y-4">
                              <ul className="space-y-4">
                                 {clientInfo.map((info) => (
                                 <li key={info.label} className="flex items-start gap-4">
@@ -320,13 +320,12 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
                                 </li>
                                 ))}
                             </ul>
-                            <div className="aspect-video w-full">
-                                <iframe
-                                className="w-full h-full rounded-md border"
-                                src={selectedClient.mapUrl}
-                                loading="lazy"
-                                ></iframe>
-                            </div>
+                            <Button asChild className="w-full mt-4">
+                                <a href={selectedClient.mapUrl} target="_blank" rel="noopener noreferrer">
+                                <Navigation className="mr-2 h-4 w-4" />
+                                Avvia Navigazione
+                                </a>
+                            </Button>
                         </CardContent>
                     </Card>
                     <Card>
