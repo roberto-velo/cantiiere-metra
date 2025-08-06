@@ -12,7 +12,6 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Bell, Trash2 } from "lucide-react";
-import { SheetHeader, SheetTitle } from "./ui/sheet";
 
 export function NotificationMenu() {
   const { notifications, getIcon, clearNotifications } = useNotifications();
@@ -32,9 +31,6 @@ export function NotificationMenu() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-80">
-        <SheetHeader>
-            <SheetTitle className="sr-only">Notifiche</SheetTitle>
-        </SheetHeader>
         <DropdownMenuLabel className="flex items-center justify-between">
             <span>Notifiche Recenti</span>
             {notifications.length > 0 && (
