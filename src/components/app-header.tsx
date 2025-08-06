@@ -27,7 +27,9 @@ export function AppHeader() {
     <header className="bg-primary text-primary-foreground border-b p-4 sm:p-6 sticky top-0 z-50">
       <div className="flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
-          <Image src="/metra-logo.png" alt="Metra Logo" width={250} height={63} />
+          <div style={{ width: '250px', height: '63px' }}>
+            <Image src="/metra-logo.png" alt="Metra Logo" width={250} height={63} />
+          </div>
         </Link>
         <div className="flex items-center gap-4">
             <nav className="hidden md:flex items-center gap-4">
