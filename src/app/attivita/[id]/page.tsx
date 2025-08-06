@@ -1,6 +1,6 @@
 
 
-import { FileTagger } from "@/components/file-tagger";
+import { FileUpload } from "@/components/file-upload";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -21,7 +21,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { TaskTimerWrapper } from "@/components/task-timer-wrapper";
 import { TaskActions } from "@/components/task-actions";
-import { FileUpload } from "@/components/file-upload";
 
 export default async function TaskDetailPage({ params }: { params: { id: string } }) {
   
@@ -152,7 +151,6 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
                     </p>
                 </CardContent>
             </Card>
-            <FileTagger context={`File for task: ${task.description}`} />
         </div>
       </main>
     </div>
