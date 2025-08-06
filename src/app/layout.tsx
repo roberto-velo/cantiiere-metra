@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { AppHeader } from "@/components/app-header";
 
 export const metadata: Metadata = {
-  title: "CantiereFlow",
+  title: "Detra",
   description: "Gestione Tecnici Cantiere",
 };
 

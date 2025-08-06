@@ -9,7 +9,6 @@ import {
   UsersRound,
   Trash2,
   Menu,
-  Building,
 } from "lucide-react";
 import { useNotifications, type NotificationType } from "@/hooks/use-notifications";
 import { Button } from "./ui/button";
@@ -23,6 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
+import Image from "next/image";
 
 
 const notificationColorClasses: Record<NotificationType, string> = {
@@ -52,8 +52,7 @@ export function AppHeader() {
     <header className="bg-primary text-primary-foreground border-b p-4 sm:p-6 sticky top-0 z-50">
       <div className="flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 text-xl font-bold">
-          <Building className="h-6 w-6" />
-          <span>CantiereFlow</span>
+          <Image src="/logo.png" alt="Detra Composite Materials Logo" width={180} height={40} />
         </Link>
         <nav className="hidden md:flex items-center gap-4">
           {navLinks.map((link) => (
