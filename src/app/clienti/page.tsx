@@ -104,7 +104,7 @@ export default function ClientiPage({ searchParams }: { searchParams?: { page?: 
             <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
               <UsersRound className="h-6 w-6" /> Clienti
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-primary">
               Gestisci l'anagrafinca dei tuoi clienti.
             </p>
           </div>
