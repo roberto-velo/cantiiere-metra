@@ -106,6 +106,10 @@ export function TaskActions({ taskId, description }: TaskActionsProps) {
               <SheetHeader>
                 <SheetTitle className="sr-only">Azioni Attività</SheetTitle>
               </SheetHeader>
+              <DropdownMenuItem disabled>
+                <Pencil className="mr-2 h-4 w-4" />
+                <span>Modifica</span>
+              </DropdownMenuItem>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                    <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600 focus:text-red-600 focus:bg-red-50">
