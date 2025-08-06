@@ -35,12 +35,16 @@ export function TaskFilters() {
     [searchParams]
   );
   
-  const handleStatusClick = (value: TaskStatus) => {
-    const newQueryString = createQueryString([{ 
-        name: 'status', 
-        value: currentStatus === value ? null : value 
-    }]);
-    router.replace(`${pathname}?${newQueryString}`);
+  const handleStatusClick = (value: TaskStatus | null) => {
+    // This filter should only refer to the status
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('page');
+    if (value === null) {
+        params.delete('status');
+    } else {
+        params.set('status', value);
+    }
+    router.replace(`${pathname}?${params.toString()}`);
   };
 
   const handleRangeClick = (value: string) => {
