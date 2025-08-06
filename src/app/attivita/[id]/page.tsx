@@ -14,16 +14,13 @@ import {
   Camera,
   FileText,
   MessageSquare,
-  Upload,
   ArrowLeft,
-  Pencil,
-  Trash2,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { TaskTimerWrapper } from "@/components/task-timer-wrapper";
 import { TaskActions } from "@/components/task-actions";
+import { AttachmentItem } from "@/components/attachment-item";
 
 export default async function TaskDetailPage({ params }: { params: { id: string } }) {
   
@@ -111,26 +108,7 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
             </CardHeader>
             <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {task.photos.map((photo) => (
-                <div key={photo.id} className="space-y-2">
-                   <div className="aspect-square w-full overflow-hidden rounded-md relative group">
-                     <Image
-                        src={photo.url}
-                        alt={photo.description}
-                        fill
-                        className="object-cover"
-                        data-ai-hint="construction site"
-                    />
-                    <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button variant="outline" size="icon" className="h-7 w-7 bg-white/80 hover:bg-white" disabled>
-                           <Pencil className="h-4 w-4" />
-                        </Button>
-                         <Button variant="destructive" size="icon" className="h-7 w-7" disabled>
-                           <Trash2 className="h-4 w-4" />
-                        </Button>
-                    </div>
-                  </div>
-                  <p className="text-xs text-muted-foreground text-center">{photo.description}</p>
-                </div>
+                <AttachmentItem key={photo.id} type="photo" item={photo} taskId={task.id} />
               ))}
                {task.photos.length === 0 && <p className="text-muted-foreground col-span-full">Nessuna foto allegata.</p>}
             </CardContent>
@@ -148,20 +126,7 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
                <div className="overflow-x-auto">
                 <ul className="space-y-2">
                     {task.documents.map((doc) => (
-                        <li key={doc.id} className="flex items-center justify-between rounded-md border p-3 min-w-[300px] group">
-                            <span className="font-medium truncate pr-4">{doc.name}</span>
-                            <div className="flex items-center gap-2">
-                                <Button variant="ghost" size="sm" asChild>
-                                    <a href={doc.url} download>Scarica</a>
-                                </Button>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity" disabled>
-                                    <Pencil className="h-4 w-4" />
-                                </Button>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity" disabled>
-                                    <Trash2 className="h-4 w-4" />
-                                </Button>
-                            </div>
-                        </li>
+                        <AttachmentItem key={doc.id} type="document" item={doc} taskId={task.id} />
                     ))}
                     {task.documents.length === 0 && <p className="text-muted-foreground text-center py-4">Nessun documento allegato.</p>}
                 </ul>

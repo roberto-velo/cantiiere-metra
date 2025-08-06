@@ -240,3 +240,53 @@ export async function addAttachmentToTaskAction(
         return { success: false, message: `Failed to add ${type}.` };
     }
 }
+
+export async function deleteAttachmentAction({ taskId, attachmentId, type }: { taskId: string, attachmentId: string, type: 'photo' | 'document' }) {
+    try {
+        const tasks: Task[] = readData('tasks.json');
+        const taskIndex = tasks.findIndex(t => t.id === taskId);
+        if (taskIndex === -1) {
+            return { success: false, message: "Attività non trovata." };
+        }
+
+        if (type === 'photo') {
+            tasks[taskIndex].photos = tasks[taskIndex].photos.filter(p => p.id !== attachmentId);
+        } else {
+            tasks[taskIndex].documents = tasks[taskIndex].documents.filter(d => d.id !== attachmentId);
+        }
+        
+        writeData('tasks.json', tasks);
+        revalidatePath(`/attivita/${taskId}`);
+        return { success: true, message: "Allegato eliminato con successo." };
+    } catch (error) {
+        return { success: false, message: "Errore durante l'eliminazione dell'allegato." };
+    }
+}
+
+export async function updateAttachmentAction({ taskId, attachmentId, type, data }: { taskId: string, attachmentId: string, type: 'photo' | 'document', data: { name?: string, description?: string } }) {
+     try {
+        const tasks: Task[] = readData('tasks.json');
+        const taskIndex = tasks.findIndex(t => t.id === taskId);
+        if (taskIndex === -1) {
+            return { success: false, message: "Attività non trovata." };
+        }
+
+        if (type === 'photo') {
+            const photoIndex = tasks[taskIndex].photos.findIndex(p => p.id === attachmentId);
+            if (photoIndex !== -1) {
+                tasks[taskIndex].photos[photoIndex].description = data.description || tasks[taskIndex].photos[photoIndex].description;
+            }
+        } else {
+            const docIndex = tasks[taskIndex].documents.findIndex(d => d.id === attachmentId);
+            if (docIndex !== -1) {
+                 tasks[taskIndex].documents[docIndex].name = data.name || tasks[taskIndex].documents[docIndex].name;
+            }
+        }
+        
+        writeData('tasks.json', tasks);
+        revalidatePath(`/attivita/${taskId}`);
+        return { success: true, message: "Allegato aggiornato con successo." };
+    } catch (error) {
+        return { success: false, message: "Errore durante l'aggiornamento dell'allegato." };
+    }
+}
