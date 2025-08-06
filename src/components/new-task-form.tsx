@@ -344,7 +344,7 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
                                     <FormItem>
                                     <FormLabel>Seleziona una o più foto</FormLabel>
                                     <FormControl>
-                                        <Input type="file" multiple accept="image/*" onChange={(e) => field.onChange(e.target.files)} disabled />
+                                        <Input type="file" multiple accept="image/*" onChange={(e) => field.onChange(e.target.files)} />
                                     </FormControl>
                                     <FormMessage />
                                     </FormItem>
@@ -367,7 +367,7 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
                                     <FormItem>
                                     <FormLabel>Seleziona uno o più documenti</FormLabel>
                                     <FormControl>
-                                        <Input type="file" multiple onChange={(e) => field.onChange(e.target.files)} disabled />
+                                        <Input type="file" multiple onChange={(e) => field.onChange(e.target.files)} />
                                     </FormControl>
                                     <FormMessage />
                                     </FormItem>
