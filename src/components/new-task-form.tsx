@@ -163,7 +163,7 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
             <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
               <ClipboardList className="h-6 w-6" /> Nuova Attività
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-primary">
               Compila il modulo per creare una nuova attività.
             </p>
           </div>
