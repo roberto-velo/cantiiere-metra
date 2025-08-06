@@ -7,17 +7,11 @@ import {
   HardHat,
   UsersRound,
   Menu,
+  Bell,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import dynamic from 'next/dynamic';
-import { Skeleton } from "./ui/skeleton";
-
-
-const NotificationMenu = dynamic(() => import('./notification-menu').then(mod => mod.NotificationMenu), {
-  ssr: false,
-  loading: () => <Skeleton className="h-8 w-8 rounded-full" />,
-});
+import { NotificationMenu } from "./notification-menu";
 
 
 export function AppHeader() {
@@ -58,7 +52,7 @@ export function AppHeader() {
                     </SheetTrigger>
                     <SheetContent side="right" className="w-[250px] bg-primary text-primary-foreground">
                         <SheetHeader>
-                            <SheetTitle className="sr-only">Menu Principale</SheetTitle>
+                            <SheetTitle>Menu Principale</SheetTitle>
                         </SheetHeader>
                          <nav className="flex flex-col gap-4 mt-8">
                             {navLinks.map((link) => (
