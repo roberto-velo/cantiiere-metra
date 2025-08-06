@@ -12,9 +12,26 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Bell, Trash2 } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export function NotificationMenu() {
   const { notifications, getIcon, clearNotifications } = useNotifications();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    // This hook only runs on the client, after the component has mounted.
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    // Render a placeholder or nothing on the server
+    return (
+      <Button variant="ghost" size="icon" className="relative">
+        <Bell className="h-5 w-5" />
+        <span className="sr-only">Notifiche</span>
+      </Button>
+    );
+  }
 
   return (
     <DropdownMenu>
