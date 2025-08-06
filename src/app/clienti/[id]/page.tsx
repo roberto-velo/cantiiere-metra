@@ -47,6 +47,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
       { label: "Dimensioni", value: client.poolDimensions },
       { label: "Volume", value: client.poolVolume },
       { label: "Tipo Filtro", value: client.filterType },
+      { label: "Tipo Trattamento", value: client.treatmentType },
   ].filter(info => info.value);
 
 

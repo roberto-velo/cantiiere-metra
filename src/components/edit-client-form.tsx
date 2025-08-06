@@ -14,6 +14,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
@@ -31,6 +38,7 @@ const formSchema = z.object({
   poolDimensions: z.string().optional(),
   poolVolume: z.string().optional(),
   filterType: z.string().optional(),
+  treatmentType: z.string().optional(),
 });
 
 interface EditClientFormProps {
@@ -52,6 +60,7 @@ export function EditClientForm({ client }: EditClientFormProps) {
       poolDimensions: client.poolDimensions || "",
       poolVolume: client.poolVolume || "",
       filterType: client.filterType || "",
+      treatmentType: client.treatmentType || "",
     },
   });
 
@@ -167,9 +176,17 @@ export function EditClientForm({ client }: EditClientFormProps) {
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Tipo Piscina</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Es: Interrata, Fuori terra" {...field} />
-                                </FormControl>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Seleziona un tipo" />
+                                    </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                    <SelectItem value="Interrata">Interrata</SelectItem>
+                                    <SelectItem value="Fuori terra">Fuori terra</SelectItem>
+                                    </SelectContent>
+                                </Select>
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -208,14 +225,44 @@ export function EditClientForm({ client }: EditClientFormProps) {
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Tipo Filtro</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Es: A sabbia, a cartuccia" {...field} />
-                                </FormControl>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Seleziona un tipo" />
+                                    </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                    <SelectItem value="A sabbia">A sabbia</SelectItem>
+                                    <SelectItem value="Eco Summer">Eco Summer</SelectItem>
+                                    </SelectContent>
+                                </Select>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
                 </div>
+                 <FormField
+                    control={form.control}
+                    name="treatmentType"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Tipo Trattamento</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Seleziona un tipo" />
+                                </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    <SelectItem value="Centralina sale">Centralina sale</SelectItem>
+                                    <SelectItem value="Centralina sale/PH">Centralina sale/PH</SelectItem>
+                                    <SelectItem value="Centralina CL/PH">Centralina CL/PH</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
             </CardContent>
         </Card>
 

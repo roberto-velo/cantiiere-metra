@@ -11,6 +11,7 @@ export type Client = {
   poolDimensions?: string;
   poolVolume?: string;
   filterType?: string;
+  treatmentType?: string;
 };
 
 export type Qualification = {
