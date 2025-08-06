@@ -107,4 +107,8 @@ body {
   .dark .text-dashboard-teal {
     color: hsl(180 100% 35%);
   }
+  .notification-color-blue { color: #3b82f6; }
+  .notification-color-orange { color: #f97316; }
+  .notification-color-yellow { color: #eab308; }
+  .notification-color-green { color: #22c55e; }
 }

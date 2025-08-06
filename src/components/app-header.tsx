@@ -73,7 +73,7 @@ export function AppHeader() {
                     const Icon = getIcon(notification.type);
                     return (
                         <DropdownMenuItem key={notification.id} className="flex items-start gap-3">
-                           <Icon className={`h-5 w-5 mt-1 shrink-0 ${notification.color || 'text-primary'}`} />
+                           <Icon className={`h-5 w-5 mt-1 shrink-0 ${notification.color}`} />
                             <div className="flex-1">
                                 <p className="text-sm font-medium whitespace-normal">
                                 {notification.text}

@@ -28,10 +28,10 @@ const iconMap: Record<NotificationType, LucideIcon> = {
 };
 
 const colorMap: Record<NotificationType, string> = {
-    'task-created': 'text-blue-500',
-    'task-started': 'text-orange-500',
-    'task-paused': 'text-yellow-500',
-    'task-completed': 'text-green-500'
+    'task-created': 'notification-color-blue',
+    'task-started': 'notification-color-orange',
+    'task-paused': 'notification-color-yellow',
+    'task-completed': 'notification-color-green'
 };
 
 
