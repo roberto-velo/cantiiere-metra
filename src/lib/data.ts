@@ -73,9 +73,9 @@ const localApi = {
 
         // 3. Filter by dateRange or specific date
         if (date) {
-            try {
+             try {
                 const selectedDate = parseISO(date);
-                 if (isValid(selectedDate)) {
+                if (isValid(selectedDate)) {
                     const dayInterval = { start: startOfDay(selectedDate), end: endOfDay(selectedDate) };
                     filteredTasks = filteredTasks.filter(task => {
                         try {
@@ -86,8 +86,8 @@ const localApi = {
                         }
                     });
                 }
-            } catch {
-                // Ignore invalid date format
+            } catch (e) {
+                console.error("Error parsing date for filtering: ", e);
             }
         } else if (dateRange) {
             const now = new Date();
