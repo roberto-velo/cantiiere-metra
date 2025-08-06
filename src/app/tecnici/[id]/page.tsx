@@ -45,7 +45,7 @@ export default async function TechnicianDetailPage({ params }: { params: { id: s
             <h1 className="text-2xl font-bold tracking-tight">
               {technician.firstName} {technician.lastName}
             </h1>
-            <p className="text-muted-foreground">{technician.role}</p>
+            <p className="text-primary">{technician.role}</p>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" disabled>
