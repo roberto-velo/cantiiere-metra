@@ -16,6 +16,8 @@ import {
   MessageSquare,
   Upload,
   ArrowLeft,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -110,14 +112,23 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
             <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {task.photos.map((photo) => (
                 <div key={photo.id} className="space-y-2">
-                  <Image
-                    src={photo.url}
-                    alt={photo.description}
-                    width={200}
-                    height={200}
-                    className="rounded-md object-cover aspect-square w-full"
-                    data-ai-hint="construction site"
-                  />
+                   <div className="aspect-square w-full overflow-hidden rounded-md relative group">
+                     <Image
+                        src={photo.url}
+                        alt={photo.description}
+                        fill
+                        className="object-cover"
+                        data-ai-hint="construction site"
+                    />
+                    <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button variant="outline" size="icon" className="h-7 w-7 bg-white/80 hover:bg-white" disabled>
+                           <Pencil className="h-4 w-4" />
+                        </Button>
+                         <Button variant="destructive" size="icon" className="h-7 w-7" disabled>
+                           <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </div>
+                  </div>
                   <p className="text-xs text-muted-foreground text-center">{photo.description}</p>
                 </div>
               ))}
@@ -137,11 +148,19 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
                <div className="overflow-x-auto">
                 <ul className="space-y-2">
                     {task.documents.map((doc) => (
-                        <li key={doc.id} className="flex items-center justify-between rounded-md border p-3 min-w-[300px]">
+                        <li key={doc.id} className="flex items-center justify-between rounded-md border p-3 min-w-[300px] group">
                             <span className="font-medium truncate pr-4">{doc.name}</span>
-                            <Button variant="ghost" size="sm" asChild>
-                                <a href={doc.url} download>Scarica</a>
-                            </Button>
+                            <div className="flex items-center gap-2">
+                                <Button variant="ghost" size="sm" asChild>
+                                    <a href={doc.url} download>Scarica</a>
+                                </Button>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity" disabled>
+                                    <Pencil className="h-4 w-4" />
+                                </Button>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity" disabled>
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </div>
                         </li>
                     ))}
                     {task.documents.length === 0 && <p className="text-muted-foreground text-center py-4">Nessun documento allegato.</p>}
