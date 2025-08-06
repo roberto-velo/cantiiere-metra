@@ -77,7 +77,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
               <ul className="space-y-4">
                 {clientInfo.map((info) => (
                   <li key={info.label} className="flex items-start gap-4">
-                    <info.icon className="h-5 w-5 mt-1 text-muted-foreground" />
+                    <info.icon className="h-5 w-5 mt-1 text-primary" />
                     <div>
                       <p className="font-medium text-primary">{info.label}</p>
                       <p className="font-semibold text-foreground">{info.value}</p>
@@ -113,7 +113,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-primary">
                 <ClipboardList className="h-5 w-5" />
                 Storico Lavorazioni
               </CardTitle>
