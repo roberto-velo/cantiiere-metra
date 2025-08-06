@@ -79,8 +79,8 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                   <li key={info.label} className="flex items-start gap-4">
                     <info.icon className="h-5 w-5 text-muted-foreground mt-1" />
                     <div>
-                      <p className="font-medium">{info.label}</p>
-                      <p className="text-muted-foreground">{info.value}</p>
+                      <p className="font-medium text-muted-foreground">{info.label}</p>
+                      <p className="text-foreground font-semibold">{info.value}</p>
                     </div>
                   </li>
                 ))}
@@ -101,8 +101,8 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                         {poolInfo.map((info) => (
                             <li key={info.label} className="flex items-start gap-3">
                                 <div>
-                                    <p className="font-medium">{info.label}</p>
-                                    <p className="text-muted-foreground">{info.value}</p>
+                                    <p className="font-medium text-muted-foreground">{info.label}</p>
+                                    <p className="text-foreground font-semibold">{info.value}</p>
                                 </div>
                             </li>
                         ))}

@@ -24,6 +24,11 @@
     "phone": "3396187374",
     "address": "via monte cavallo 16 cordenons",
     "clientCode": "ROB638",
-    "mapUrl": "https://maps.google.com/maps?q=via%20monte%20cavallo%2016%20cordenons&output=embed"
+    "mapUrl": "https://maps.google.com/maps?q=via%20monte%20cavallo%2016%20cordenons&output=embed",
+    "poolType": "Interrata",
+    "poolDimensions": "8x4x1.5",
+    "poolVolume": "50",
+    "filterType": "A sabbia",
+    "treatmentType": "Centralina sale/PH"
   }
 ]
