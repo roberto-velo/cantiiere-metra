@@ -1,7 +1,9 @@
 
 import type { Client, Technician, Task, TaskStatus } from './types';
-import fs from 'fs';
 import path from 'path';
+
+// Using require inside the functions ensures fs is only used server-side.
+const fs = require('fs');
 
 // Define paths to the JSON data files
 const dataDir = path.join(process.cwd(), 'src', 'lib', 'db');
