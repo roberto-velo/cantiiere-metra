@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import { revalidatePath } from 'next/cache';
 import type { Client, Task, TaskStatus, Technician, Photo, Document } from './types';
+import { randomUUID } from 'crypto';
 
 const dataDir = path.join(process.cwd(), 'src', 'lib', 'db');
 const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
@@ -234,8 +235,8 @@ export async function addAttachmentToTaskAction(
         }
         
         const [, mimeType, base64Data] = matches;
-        const fileExtension = mimeType.split('/')[1];
-        const fileName = `${Date.now()}.${fileExtension}`;
+        const extension = mimeType.split('/').pop() || 'tmp';
+        const fileName = `${randomUUID()}.${extension}`;
         const filePath = path.join(uploadsDir, fileName);
         
         const fileBuffer = Buffer.from(base64Data, 'base64');

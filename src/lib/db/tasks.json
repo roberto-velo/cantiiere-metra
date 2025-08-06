@@ -11,7 +11,14 @@
     "priority": "Media",
     "notes": "",
     "photos": [],
-    "documents": [],
+    "documents": [
+      {
+        "id": "1754489857174",
+        "name": "image.jpg",
+        "description": "",
+        "url": "/uploads/1754489857166.jpeg"
+      }
+    ],
     "status": "Completato",
     "duration": 5
   }
