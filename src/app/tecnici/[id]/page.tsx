@@ -17,9 +17,11 @@ import {
   Calendar,
   Pencil,
   Trash2,
+  ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { TechnicianActions } from "@/components/technician-actions";
 
 export default async function TechnicianDetailPage({ params }: { params: { id: string } }) {
   
@@ -41,22 +43,21 @@ export default async function TechnicianDetailPage({ params }: { params: { id: s
     <div className="flex flex-col flex-1">
       <header className="bg-muted/30 border-b p-4 sm:p-6">
         <div className="flex items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">
-              {technician.firstName} {technician.lastName}
-            </h1>
-            <p className="text-primary">{technician.role}</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" disabled>
-              <Pencil className="mr-2 h-4 w-4" />
-              Modifica
+          <div className="flex items-center gap-4">
+            <Button variant="outline" size="icon" asChild>
+                <Link href="/tecnici">
+                    <ArrowLeft className="h-4 w-4" />
+                    <span className="sr-only">Torna indietro</span>
+                </Link>
             </Button>
-            <Button variant="destructive" disabled>
-              <Trash2 className="mr-2 h-4 w-4" />
-              Elimina
-            </Button>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">
+                {technician.firstName} {technician.lastName}
+              </h1>
+              <p className="text-primary">{technician.role}</p>
+            </div>
           </div>
+          <TechnicianActions technician={technician} />
         </div>
       </header>
 

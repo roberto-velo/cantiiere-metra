@@ -99,6 +99,41 @@ export async function addTechnicianAction(technicianData: Omit<Technician, 'id'>
     }
 }
 
+export async function updateTechnicianAction(id: string, technicianData: Partial<Omit<Technician, 'id'>>) {
+    try {
+        const technicians = readData('technicians.json');
+        const technicianIndex = technicians.findIndex((t: Technician) => t.id === id);
+        if (technicianIndex === -1) {
+            return { success: false, message: 'Technician not found.' };
+        }
+        const updatedTechnician = { ...technicians[technicianIndex], ...technicianData };
+        technicians[technicianIndex] = updatedTechnician;
+        writeData('technicians.json', technicians);
+        revalidatePath('/tecnici');
+        revalidatePath(`/tecnici/${id}`);
+        return { success: true, technician: updatedTechnician };
+    } catch (error) {
+        console.error('Error updating technician:', error);
+        return { success: false, message: 'Failed to update technician.' };
+    }
+}
+
+export async function deleteTechnicianAction(id: string) {
+    try {
+        const technicians = readData('technicians.json');
+        const updatedTechnicians = technicians.filter((t: Technician) => t.id !== id);
+        if (technicians.length === updatedTechnicians.length) {
+            return { success: false, message: 'Technician not found.' };
+        }
+        writeData('technicians.json', updatedTechnicians);
+        revalidatePath('/tecnici');
+        return { success: true };
+    } catch (error) {
+        console.error('Error deleting technician:', error);
+        return { success: false, message: 'Failed to delete technician.' };
+    }
+}
+
 // --- Task Actions ---
 export async function addTaskAction(taskData: Omit<Task, 'id' | 'photos' | 'documents'> & { photos?: any, documents?: any }) {
     try {
