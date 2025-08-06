@@ -2,7 +2,14 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import {
+  Bell,
+  ClipboardList,
+  HardHat,
+  UsersRound,
+  Trash2,
+} from "lucide-react";
+import { useNotifications } from "@/hooks/use-notifications";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -12,47 +19,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Bell,
-  ClipboardList,
-  HardHat,
-  UsersRound,
-  PlusCircle,
-  Play,
-  Pause,
-  CheckCircle,
-  Trash2,
-} from "lucide-react";
-
-const initialNotifications = [
-    {
-      icon: CheckCircle,
-      text: "Attività 'Riparazione quadro...' terminata.",
-      time: "2 min fa",
-      color: "text-green-500",
-    },
-    {
-      icon: Pause,
-      text: "Attività 'Sostituzione caldaia' in pausa.",
-      time: "15 min fa",
-      color: "text-orange-500",
-    },
-    {
-      icon: Play,
-      text: "Attività 'Sostituzione caldaia' avviata.",
-      time: "1 ora fa",
-      color: "text-blue-500",
-    },
-    {
-      icon: PlusCircle,
-      text: "Nuova attività 'Rifacimento intonaco...' creata.",
-      time: "3 ore fa",
-      color: "text-primary",
-    },
-  ];
 
 export function AppHeader() {
-  const [notifications, setNotifications] = useState(initialNotifications);
+  const { notifications, clearNotifications, getIcon } = useNotifications();
 
   const navLinks = [
     { href: "/", label: "Dashboard", icon: ClipboardList },
@@ -63,7 +32,7 @@ export function AppHeader() {
   
   const handleClearNotifications = (e: React.MouseEvent) => {
     e.preventDefault();
-    setNotifications([]);
+    clearNotifications();
   };
 
   return (
@@ -101,21 +70,22 @@ export function AppHeader() {
               <DropdownMenuLabel>Notifiche Recenti</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {notifications.length > 0 ? (
-                notifications.map((notification, index) => (
-                    <DropdownMenuItem key={index} className="flex items-start gap-3">
-                    <notification.icon
-                        className={`h-5 w-5 mt-1 shrink-0 ${notification.color}`}
-                    />
-                    <div className="flex-1">
-                        <p className="text-sm font-medium whitespace-normal">
-                        {notification.text}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                        {notification.time}
-                        </p>
-                    </div>
-                    </DropdownMenuItem>
-                ))
+                notifications.map((notification) => {
+                    const Icon = getIcon(notification.type);
+                    return (
+                        <DropdownMenuItem key={notification.id} className="flex items-start gap-3">
+                           <Icon className={`h-5 w-5 mt-1 shrink-0 ${notification.color || 'text-primary'}`} />
+                            <div className="flex-1">
+                                <p className="text-sm font-medium whitespace-normal">
+                                {notification.text}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                {notification.time}
+                                </p>
+                            </div>
+                        </DropdownMenuItem>
+                    )
+                })
               ) : (
                 <p className="p-4 text-sm text-center text-muted-foreground">
                     Nessuna notifica.

@@ -26,13 +26,12 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ClipboardList, Mail, MapPin, Phone, Upload, Camera, FileText, Map, Droplet, Users } from "lucide-react";
+import { ArrowLeft, ClipboardList, Mail, MapPin, Phone, Camera, FileText, Map, Droplet, Users } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
@@ -106,8 +105,6 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
         const newActivity = {
             ...values,
             status: "Pianificato",
-            // In a real app, you'd handle file uploads to a service like Firebase Storage
-            // and get back URLs to save in Firestore.
             photos: [], 
             documents: [],
             duration: 0,
@@ -117,8 +114,8 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
 
         if (result.success) {
             toast({
-            title: "Attività Creata!",
-            description: `L'attività "${values.description}" è stata creata con successo.`,
+              title: "Attività Creata!",
+              description: `L'attività "${values.description}" è stata creata con successo.`,
             });
             router.push('/attivita');
         } else {
