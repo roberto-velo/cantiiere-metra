@@ -26,10 +26,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ClipboardList, Mail, MapPin, Phone, Upload, Camera, FileText } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
-import localApi from "@/lib/data";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import type { Client, Technician } from "@/lib/types";
+import { addTaskAction } from "@/lib/actions";
 
 const formSchema = z.object({
   clientId: z.string({ required_error: "Il cliente è obbligatorio." }),
@@ -99,19 +99,22 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
             documents: [],
         };
         
-        await localApi.addTask(newActivity);
+        const result = await addTaskAction(newActivity);
 
-        toast({
-        title: "Attività Creata!",
-        description: `L'attività "${values.description}" è stata creata con successo.`,
-        });
-        router.push('/attivita');
-        router.refresh();
+        if (result.success) {
+            toast({
+            title: "Attività Creata!",
+            description: `L'attività "${values.description}" è stata creata con successo.`,
+            });
+            router.push('/attivita');
+        } else {
+            throw new Error(result.message);
+        }
 
     } catch (error) {
         toast({
             title: "Errore",
-            description: "Si è verificato un errore durante la creazione dell'attività.",
+            description: (error instanceof Error) ? error.message : "Si è verificato un errore durante la creazione dell'attività.",
             variant: "destructive"
         });
         console.error("Error adding task: ", error);

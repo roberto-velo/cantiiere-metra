@@ -9,6 +9,8 @@ import technicians from './db/technicians.json';
 import tasks from './db/tasks.json';
 
 // --- API Simulation using in-memory data ---
+// This file is now ONLY for READING data. All mutation (write) logic
+// has been moved to server actions in /lib/actions/*.ts to fix the 'fs' module error.
 
 const localApi = {
     // Clients
@@ -26,29 +28,7 @@ const localApi = {
     getClient: async (id: string) => {
         return clients.find(c => c.id === id) || null;
     },
-    addClient: async (clientData: Omit<Client, 'id'>) => {
-        console.warn("Data mutation is disabled in this version to fix build errors.");
-        const newClient: Client = {
-            id: String(Date.now()),
-            ...clientData
-        };
-        // In a real scenario, this would write to a DB or a file on the server.
-        // For now, we do nothing to prevent build errors.
-        return newClient;
-    },
-    updateClient: async (id: string, clientData: Partial<Omit<Client, 'id'>>) => {
-        console.warn("Data mutation is disabled in this version to fix build errors.");
-        const client = clients.find(c => c.id === id);
-        if (client) {
-            return { ...client, ...clientData };
-        }
-        return null;
-    },
-    deleteClient: async (id: string) => {
-        console.warn("Data mutation is disabled in this version to fix build errors.");
-        return true;
-    },
-
+    
     // Technicians
     getTechnicians: async (page = 1, limit = 10) => {
         const start = (page - 1) * limit;
@@ -63,14 +43,6 @@ const localApi = {
     },
     getTechnician: async (id: string) => {
         return technicians.find(t => t.id === id) || null;
-    },
-    addTechnician: async (technicianData: Omit<Technician, 'id'>) => {
-        console.warn("Data mutation is disabled in this version to fix build errors.");
-        const newTechnician: Technician = {
-            id: String(Date.now()),
-            ...technicianData
-        };
-        return newTechnician;
     },
 
     // Tasks
@@ -92,29 +64,7 @@ const localApi = {
     getTasksByTechnicianId: async (technicianId: string) => {
         return tasks.filter(t => t.technicianId === technicianId);
     },
-    addTask: async (taskData: Omit<Task, 'id' | 'photos' | 'documents'> & { photos?: any, documents?: any }) => {
-        console.warn("Data mutation is disabled in this version to fix build errors.");
-        const newTask: Task = {
-            id: String(Date.now()),
-            ...taskData,
-            photos: [],
-            documents: [],
-        };
-        return newTask;
-    },
-    updateTaskStatus: async (taskId: string, status: TaskStatus) => {
-        console.warn("Data mutation is disabled in this version to fix build errors.");
-        const task = tasks.find(t => t.id === taskId);
-        if (task) {
-            return { ...task, status };
-        }
-        return null;
-    },
-    deleteTask: async (id: string) => {
-        console.warn("Data mutation is disabled in this version to fix build errors.");
-        return true;
-    },
-
+    
     // Dashboard
     getDashboardData: async () => {
         const sortedTasks = [...tasks].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());

@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import localApi from "@/lib/data";
+import { deleteClientAction } from "@/lib/actions";
 import { Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -27,17 +27,22 @@ export function ClientActions({ client }: { client: Client }) {
   const handleDeleteClient = async () => {
     if (!client) return;
     try {
-      await localApi.deleteClient(client.id);
-      toast({
-        title: "Cliente Eliminato",
-        description: `Il cliente "${client.name}" è stato eliminato con successo.`,
-      });
-      router.push("/clienti");
-      router.refresh();
+      const result = await deleteClientAction(client.id);
+
+      if (result.success) {
+        toast({
+          title: "Cliente Eliminato",
+          description: `Il cliente "${client.name}" è stato eliminato con successo.`,
+        });
+        router.push("/clienti");
+      } else {
+        throw new Error(result.message);
+      }
+
     } catch (error) {
       toast({
         title: "Errore",
-        description: "Si è verificato un errore durante l'eliminazione del cliente.",
+        description: (error instanceof Error) ? error.message : "Si è verificato un errore durante l'eliminazione del cliente.",
         variant: "destructive",
       });
       console.error("Error deleting client: ", error);

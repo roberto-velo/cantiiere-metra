@@ -32,8 +32,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { format } from "date-fns";
-import localApi from "@/lib/data";
 import { useRouter } from "next/navigation";
+import { addTechnicianAction } from "@/lib/actions";
 
 const qualificationSchema = z.object({
   name: z.string().min(1, "Il nome della qualifica è obbligatorio."),
@@ -80,18 +80,21 @@ export function NewTechnicianForm() {
         }))
       };
       
-      await localApi.addTechnician(newTechnician);
+      const result = await addTechnicianAction(newTechnician);
       
-      toast({
-        title: "Tecnico Creato!",
-        description: `Il tecnico "${values.firstName} ${values.lastName}" è stato salvato con successo.`,
-      });
-      router.push("/tecnici");
-      router.refresh();
+      if (result.success) {
+        toast({
+          title: "Tecnico Creato!",
+          description: `Il tecnico "${values.firstName} ${values.lastName}" è stato salvato con successo.`,
+        });
+        router.push("/tecnici");
+      } else {
+        throw new Error(result.message);
+      }
     } catch (error) {
        toast({
         title: "Errore",
-        description: "Si è verificato un errore durante il salvataggio del tecnico.",
+        description: (error instanceof Error) ? error.message : "Si è verificato un errore durante il salvataggio del tecnico.",
         variant: "destructive"
       });
       console.error("Error adding technician: ", error);

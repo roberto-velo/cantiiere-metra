@@ -17,9 +17,9 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
-import localApi from "@/lib/data";
 import { useRouter } from "next/navigation";
 import type { Client } from "@/lib/types";
+import { updateClientAction } from "@/lib/actions";
 
 const formSchema = z.object({
   name: z.string().min(2, "Il nome deve avere almeno 2 caratteri."),
@@ -58,18 +58,22 @@ export function EditClientForm({ client }: EditClientFormProps) {
         mapUrl,
       };
 
-      await localApi.updateClient(client.id, updatedClient);
+      const result = await updateClientAction(client.id, updatedClient);
       
-      toast({
-        title: "Cliente Aggiornato!",
-        description: `Il cliente "${values.name}" è stato aggiornato con successo.`,
-      });
-      router.push(`/clienti/${client.id}`);
-      router.refresh(); // To see the changes immediately
+      if (result.success) {
+        toast({
+          title: "Cliente Aggiornato!",
+          description: `Il cliente "${values.name}" è stato aggiornato con successo.`,
+        });
+        router.push(`/clienti/${client.id}`);
+      } else {
+        throw new Error(result.message);
+      }
+
     } catch (error) {
        toast({
         title: "Errore",
-        description: "Si è verificato un errore durante l'aggiornamento del cliente.",
+        description: (error instanceof Error) ? error.message : "Si è verificato un errore durante l'aggiornamento del cliente.",
         variant: "destructive"
       });
       console.error("Error updating client: ", error);

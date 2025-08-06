@@ -18,9 +18,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, UsersRound } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
-import localApi from "@/lib/data";
 import { useRouter } from "next/navigation";
-import type { Client } from "@/lib/types";
+import { addClientAction } from "@/lib/actions";
 
 const formSchema = z.object({
   name: z.string().min(2, "Il nome deve avere almeno 2 caratteri."),
@@ -51,7 +50,7 @@ export function NewClientForm() {
         
       const mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(values.address)}&output=embed`;
 
-      const newClient: Omit<Client, 'id'> = {
+      const newClient = {
         name: values.name,
         email: values.email,
         phone: values.phone,
@@ -60,18 +59,21 @@ export function NewClientForm() {
         mapUrl,
       };
 
-      await localApi.addClient(newClient);
-      
-      toast({
-        title: "Cliente Creato!",
-        description: `Il cliente "${values.name}" è stato salvato con successo.`,
-      });
-      router.push("/clienti");
-      router.refresh();
+      const result = await addClientAction(newClient);
+
+      if (result.success) {
+        toast({
+          title: "Cliente Creato!",
+          description: `Il cliente "${values.name}" è stato salvato con successo.`,
+        });
+        router.push("/clienti");
+      } else {
+        throw new Error(result.message);
+      }
     } catch (error) {
        toast({
         title: "Errore",
-        description: "Si è verificato un errore durante il salvataggio del cliente.",
+        description: (error instanceof Error) ? error.message : "Si è verificato un errore durante il salvataggio del cliente.",
         variant: "destructive"
       });
       console.error("Error adding client: ", error);

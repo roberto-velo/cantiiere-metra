@@ -2,9 +2,9 @@
 "use client";
 
 import { useState } from "react";
-import localApi from "@/lib/data";
 import type { TaskStatus } from "@/lib/types";
 import { TaskTimer } from "./task-timer";
+import { updateTaskStatusAction } from "@/lib/actions";
 
 
 export function TaskTimerWrapper({ taskId, initialStatus }: { taskId: string, initialStatus: TaskStatus }) {
@@ -12,7 +12,9 @@ export function TaskTimerWrapper({ taskId, initialStatus }: { taskId: string, in
 
   const handleStatusChange = async (newStatus: TaskStatus) => {
     setStatus(newStatus);
-    await localApi.updateTaskStatus(taskId, newStatus);
+    // We call the server action, but don't need to block/wait for the UI.
+    // Error handling can be added here if needed.
+    await updateTaskStatusAction(taskId, newStatus);
   };
 
   return <TaskTimer initialStatus={status} onStatusChange={handleStatusChange} />;

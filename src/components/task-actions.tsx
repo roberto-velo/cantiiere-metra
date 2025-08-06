@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import localApi from "@/lib/data";
+import { deleteTaskAction } from "@/lib/actions";
 import { Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -29,25 +29,24 @@ export function TaskActions({ taskId, description }: TaskActionsProps) {
 
   const handleDeleteTask = async () => {
     try {
-      const success = await localApi.deleteTask(taskId);
-      if (success) {
+      const result = await deleteTaskAction(taskId);
+      if (result.success) {
         toast({
           title: "Attività Eliminata",
           description: `L'attività "${description}" è stata eliminata con successo.`,
         });
         router.push("/attivita");
-        router.refresh(); 
       } else {
          toast({
           title: "Errore",
-          description: "Eliminazione fallita. L'attività non è stata trovata.",
+          description: result.message || "Eliminazione fallita. L'attività non è stata trovata.",
           variant: "destructive",
         });
       }
     } catch (error) {
       toast({
         title: "Errore",
-        description: "Si è verificato un errore durante l'eliminazione dell'attività.",
+        description: (error instanceof Error) ? error.message : "Si è verificato un errore durante l'eliminazione dell'attività.",
         variant: "destructive",
       });
       console.error("Error deleting task: ", error);
