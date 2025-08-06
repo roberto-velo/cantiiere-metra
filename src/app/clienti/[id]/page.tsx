@@ -102,7 +102,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
           {poolInfo.length > 0 && (
              <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-foreground">
+                    <CardTitle className="flex items-center gap-2">
                         <Droplet className="h-5 w-5" />
                         Informazioni Piscina
                     </CardTitle>
