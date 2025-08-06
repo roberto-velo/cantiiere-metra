@@ -6,7 +6,7 @@ import { DayPicker, type DateFormatter } from "react-day-picker";
 import { it } from 'date-fns/locale';
 import { parseISO, format } from 'date-fns';
 import { cn } from "@/lib/utils";
-import { type Task, type TaskStatus } from "@/lib/types";
+import { type Task, type TaskStatus, type Client } from "@/lib/types";
 import {
   Popover,
   PopoverContent,
@@ -17,6 +17,7 @@ import { Button } from "./ui/button";
 
 interface TaskCalendarProps {
   tasks: Task[];
+  clients: Client[];
 }
 
 const statusBadgeColors: Record<TaskStatus, string> = {
@@ -25,7 +26,7 @@ const statusBadgeColors: Record<TaskStatus, string> = {
   Completato: "bg-green-500",
 };
 
-export function TaskCalendar({ tasks }: TaskCalendarProps) {
+export function TaskCalendar({ tasks, clients }: TaskCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const tasksByDate = tasks.reduce((acc, task) => {
@@ -67,18 +68,23 @@ export function TaskCalendar({ tasks }: TaskCalendarProps) {
                     <h4 className="font-medium leading-none">Attività del {format(props.date, 'PPP', {locale: it})}</h4>
                 </div>
                 <div className="grid gap-2">
-                   {tasksForDay.map(task => (
+                   {tasksForDay.map(task => {
+                    const client = clients.find(c => c.id === task.clientId);
+                    return (
                      <div key={task.id} className="grid grid-cols-[25px_1fr] items-start pb-4 last:pb-0">
                         <span className={cn("flex h-2 w-2 translate-y-1 rounded-full", statusBadgeColors[task.status])} />
                         <div className="grid gap-1">
                             <p className="font-medium">{task.description}</p>
-                            <p className="text-sm text-muted-foreground">{task.time}</p>
+                            <p className="text-sm text-muted-foreground">
+                                {client?.name ? `${client.name} - ` : ''} 
+                                Ore: {task.time}
+                            </p>
                             <Button variant="link" size="sm" asChild className="p-0 h-auto justify-start">
                                 <Link href={`/attivita/${task.id}`}>Visualizza Dettagli</Link>
                             </Button>
                         </div>
                     </div>
-                   ))}
+                   )})}
                 </div>
             </div>
         </PopoverContent>
