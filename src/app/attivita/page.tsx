@@ -171,7 +171,7 @@ async function TasksList({
   );
 }
 
-export default async function AttivitaPage({ searchParams }: { searchParams?: { [key: string]: string | string[] | undefined } }) {
+export default function AttivitaPage({ searchParams }: { searchParams?: { [key: string]: string | string[] | undefined } }) {
   const currentPage = Number(searchParams?.page) || 1;
   const dateRange = searchParams?.range as string | undefined;
   const searchTerm = searchParams?.q as string | undefined;
