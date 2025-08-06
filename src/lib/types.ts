@@ -7,6 +7,10 @@ export type Client = {
   email: string;
   clientCode: string;
   mapUrl: string;
+  poolType?: string;
+  poolDimensions?: string;
+  poolVolume?: string;
+  filterType?: string;
 };
 
 export type Qualification = {

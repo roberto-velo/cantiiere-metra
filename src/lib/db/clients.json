@@ -1,30 +1,29 @@
-
 [
-    {
-        "id": "1",
-        "name": "ACME S.r.l.",
-        "address": "Via dei Pini, 123, 00100 Roma RM",
-        "phone": "06 12345678",
-        "email": "info@acme.it",
-        "clientCode": "ACM123",
-        "mapUrl": "https://maps.google.com/maps?q=Via%20dei%20Pini%2C%20123%2C%2000100%20Roma%20RM&output=embed"
-    },
-    {
-        "id": "2",
-        "name": "Rossi Costruzioni",
-        "address": "Corso Magenta, 45, 20123 Milano MI",
-        "phone": "02 98765432",
-        "email": "rossi@costruzioni.com",
-        "clientCode": "ROS456",
-        "mapUrl": "https://maps.google.com/maps?q=Corso%20Magenta%2C%2045%2C%2020123%20Milano%20MI&output=embed"
-    },
-    {
-        "id": "3",
-        "name": "Verdi Impianti",
-        "address": "Via San Felice, 1, 40122 Bologna BO",
-        "phone": "051 11223344",
-        "email": "amministrazione@verdiimpianti.it",
-        "clientCode": "VER789",
-        "mapUrl": "https://maps.google.com/maps?q=Via%20San%20Felice%2C%201%2C%2040122%20Bologna%20BO&output=embed"
-    }
+  {
+    "id": "2",
+    "name": "Rossi Costruzioni",
+    "address": "Corso Magenta, 45, 20123 Milano MI",
+    "phone": "02 98765432",
+    "email": "rossi@costruzioni.com",
+    "clientCode": "ROS456",
+    "mapUrl": "https://maps.google.com/maps?q=Corso%20Magenta%2C%2045%2C%2020123%20Milano%20MI&output=embed"
+  },
+  {
+    "id": "3",
+    "name": "Verdi Impianti",
+    "address": "Via San Felice, 1, 40122 Bologna BO",
+    "phone": "051 11223344",
+    "email": "amministrazione@verdiimpianti.it",
+    "clientCode": "VER789",
+    "mapUrl": "https://maps.google.com/maps?q=Via%20San%20Felice%2C%201%2C%2040122%20Bologna%20BO&output=embed"
+  },
+  {
+    "id": "1754456985711",
+    "name": "roberto",
+    "email": "roberto.velo14@gmail.com",
+    "phone": "3396187374",
+    "address": "via monte cavallo 16 cordenons",
+    "clientCode": "ROB638",
+    "mapUrl": "https://maps.google.com/maps?q=via%20monte%20cavallo%2016%20cordenons&output=embed"
+  }
 ]

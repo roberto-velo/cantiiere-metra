@@ -20,12 +20,17 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import type { Client } from "@/lib/types";
 import { updateClientAction } from "@/lib/actions";
+import { Droplet } from "lucide-react";
 
 const formSchema = z.object({
   name: z.string().min(2, "Il nome deve avere almeno 2 caratteri."),
   email: z.string().email("Inserisci un'email valida."),
   phone: z.string().min(5, "Il numero di telefono non sembra corretto."),
   address: z.string().min(5, "L'indirizzo deve avere almeno 5 caratteri."),
+  poolType: z.string().optional(),
+  poolDimensions: z.string().optional(),
+  poolVolume: z.string().optional(),
+  filterType: z.string().optional(),
 });
 
 interface EditClientFormProps {
@@ -43,6 +48,10 @@ export function EditClientForm({ client }: EditClientFormProps) {
       email: client.email,
       phone: client.phone,
       address: client.address,
+      poolType: client.poolType || "",
+      poolDimensions: client.poolDimensions || "",
+      poolVolume: client.poolVolume || "",
+      filterType: client.filterType || "",
     },
   });
 
@@ -51,10 +60,7 @@ export function EditClientForm({ client }: EditClientFormProps) {
       const mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(values.address)}&output=embed`;
       
       const updatedClient = {
-        name: values.name,
-        email: values.email,
-        phone: values.phone,
-        address: values.address,
+        ...values,
         mapUrl,
       };
 
@@ -66,6 +72,7 @@ export function EditClientForm({ client }: EditClientFormProps) {
           description: `Il cliente "${values.name}" è stato aggiornato con successo.`,
         });
         router.push(`/clienti/${client.id}`);
+        router.refresh();
       } else {
         throw new Error(result.message);
       }
@@ -143,6 +150,73 @@ export function EditClientForm({ client }: EditClientFormProps) {
               )}
             />
           </CardContent>
+        </Card>
+
+         <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Droplet className="h-5 w-5"/>
+                    Informazioni Piscina (Opzionale)
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <FormField
+                        control={form.control}
+                        name="poolType"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Tipo Piscina</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Es: Interrata, Fuori terra" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="poolDimensions"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Dimensioni</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Es: 8x4m" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <FormField
+                        control={form.control}
+                        name="poolVolume"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Volume</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Es: 50mc" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="filterType"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Tipo Filtro</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Es: A sabbia, a cartuccia" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+            </CardContent>
         </Card>
 
         <div className="flex justify-end gap-4">

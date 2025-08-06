@@ -1,7 +1,7 @@
 
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -17,7 +17,8 @@ import {
   Phone,
   FileText,
   ClipboardList,
-  Upload
+  Upload,
+  Droplet
 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -41,6 +42,14 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
     { icon: MapPin, label: "Indirizzo", value: client.address },
   ];
   
+  const poolInfo = [
+      { label: "Tipo Piscina", value: client.poolType },
+      { label: "Dimensioni", value: client.poolDimensions },
+      { label: "Volume", value: client.poolVolume },
+      { label: "Tipo Filtro", value: client.filterType },
+  ].filter(info => info.value);
+
+
   const allDocuments = clientTasks.flatMap(t => t.documents);
 
   return (
@@ -77,6 +86,29 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
               </ul>
             </CardContent>
           </Card>
+          
+          {poolInfo.length > 0 && (
+             <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Droplet className="h-5 w-5" />
+                        Informazioni Piscina
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {poolInfo.map((info) => (
+                            <li key={info.label} className="flex items-start gap-3">
+                                <div>
+                                    <p className="font-medium">{info.label}</p>
+                                    <p className="text-muted-foreground">{info.value}</p>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </CardContent>
+            </Card>
+          )}
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">

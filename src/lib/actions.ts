@@ -10,8 +10,16 @@ const dataDir = path.join(process.cwd(), 'src', 'lib', 'db');
 
 const readData = (fileName: string) => {
     const filePath = path.join(dataDir, fileName);
-    const fileContent = fs.readFileSync(filePath, 'utf-8');
-    return JSON.parse(fileContent);
+    try {
+        const fileContent = fs.readFileSync(filePath, 'utf-8');
+        return JSON.parse(fileContent);
+    } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+            console.log(`File not found: ${fileName}. Returning empty array.`);
+            return [];
+        }
+        throw error;
+    }
 }
 
 const writeData = (fileName: string, data: any) => {
