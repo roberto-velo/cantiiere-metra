@@ -7,7 +7,6 @@ import {
   HardHat,
   UsersRound,
   Menu,
-  Bell,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from "@/components/ui/sheet";
