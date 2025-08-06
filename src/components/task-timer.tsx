@@ -16,10 +16,10 @@ interface TaskTimerProps {
   onPause: () => void;
 }
 
-const statusColors: Record<TaskStatus, string> = {
-    Pianificato: "bg-muted",
-    "In corso": "bg-orange-500/20 text-orange-700",
-    Completato: "bg-green-500/20 text-green-700",
+const statusStyles: Record<TaskStatus, { bg: string, text: string, pulse: boolean }> = {
+    Pianificato: { bg: "bg-muted", text: "text-muted-foreground", pulse: false },
+    "In corso": { bg: "bg-orange-500/10", text: "text-orange-500", pulse: true },
+    Completato: { bg: "bg-green-500/10", text: "text-green-500", pulse: false },
 }
 
 
@@ -90,38 +90,45 @@ export function TaskTimer({ initialStatus, initialDuration = 0, onStatusChange, 
     )}:${String(secs).padStart(2, "0")}`;
   };
   
-  const timerBgColor = isRunning ? statusColors["In corso"] : statusColors[status];
+  const currentStyle = isRunning ? statusStyles["In corso"] : statusStyles[status];
   const canTerminate = status === 'In corso' && (isRunning || seconds > 0);
 
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <Card className="overflow-hidden">
+      <CardHeader className="flex-row items-center justify-between space-y-0">
+        <CardTitle className="flex items-center gap-2 text-base font-semibold">
           <Timer className="h-5 w-5" />
-          Cronometro Attività
+          Cronometro
         </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4 text-center">
-        <div className={cn(
-            "text-4xl font-bold font-mono rounded-md p-4 transition-colors duration-300", 
-            timerBgColor
-        )}>
-          {formatTime(seconds)}
+        <div className={cn("px-3 py-1 text-xs font-medium rounded-full transition-colors", currentStyle.bg, currentStyle.text)}>
+            {isRunning ? 'In Corso' : status}
         </div>
-        <div className="flex justify-center gap-2">
+      </CardHeader>
+      <CardContent className="p-6 pt-2 text-center">
+        <div className="relative">
+             <div className={cn(
+                "text-6xl font-bold font-mono rounded-md py-4 transition-colors duration-300", 
+                currentStyle.text
+            )}>
+              {formatTime(seconds)}
+            </div>
+            {isRunning && currentStyle.pulse && <div className="absolute inset-0 bg-orange-400/20 -z-10 rounded-full animate-pulse-slow"></div>}
+        </div>
+       
+        <div className="flex justify-center gap-4 mt-4">
           {!isRunning ? (
-            <Button onClick={handleStart} disabled={isCompleted}>
+            <Button onClick={handleStart} disabled={isCompleted} size="lg" className="flex-1">
               <Play className="mr-2" />
               {status === 'In corso' ? 'Riprendi' : 'Inizia'}
             </Button>
           ) : (
-            <Button onClick={handlePause} variant="outline">
+            <Button onClick={handlePause} variant="outline" size="lg" className="flex-1">
               <Pause className="mr-2" />
               Pausa
             </Button>
           )}
-          <Button onClick={handleComplete} variant="destructive" disabled={isCompleted || !canTerminate}>
+          <Button onClick={handleComplete} variant="destructive" disabled={isCompleted || !canTerminate} size="lg" className="flex-1">
             <Square className="mr-2" />
             Termina
           </Button>
