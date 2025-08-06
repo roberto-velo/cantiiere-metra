@@ -106,7 +106,7 @@ export function TaskTimer({ initialStatus, initialDuration = 0, onStatusChange, 
             {isRunning ? 'In Corso' : status}
         </div>
       </CardHeader>
-      <CardContent className="p-6 pt-2 text-center">
+      <CardContent className="p-6 pt-2 flex items-center justify-between">
         <div className="relative">
              <div className={cn(
                 "text-4xl font-bold font-sans tracking-tighter rounded-md py-1 transition-colors duration-300", 
@@ -117,19 +117,19 @@ export function TaskTimer({ initialStatus, initialDuration = 0, onStatusChange, 
             {isRunning && currentStyle.pulse && <div className="absolute inset-0 bg-orange-400/20 -z-10 rounded-full animate-pulse-slow"></div>}
         </div>
        
-        <div className="flex justify-center gap-4 mt-4">
+        <div className="flex justify-center gap-2">
           {!isRunning ? (
-            <Button onClick={handleStart} disabled={isCompleted} size="lg" className="flex-1">
+            <Button onClick={handleStart} disabled={isCompleted} size="sm">
               <Play className="mr-2" />
               {status === 'In corso' ? 'Riprendi' : 'Inizia'}
             </Button>
           ) : (
-            <Button onClick={handlePause} variant="outline" size="lg" className="flex-1">
+            <Button onClick={handlePause} variant="outline" size="sm">
               <Pause className="mr-2" />
               Pausa
             </Button>
           )}
-          <Button onClick={handleComplete} variant="destructive" disabled={isCompleted || !canTerminate} size="lg" className="flex-1">
+          <Button onClick={handleComplete} variant="destructive" disabled={isCompleted || !canTerminate} size="sm">
             <Square className="mr-2" />
             Termina
           </Button>
