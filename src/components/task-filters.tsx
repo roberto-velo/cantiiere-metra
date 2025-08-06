@@ -13,6 +13,7 @@ export function TaskFilters() {
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const params = new URLSearchParams(searchParams);
+    params.delete('page');
     if (e.target.value) {
       params.set("q", e.target.value);
     } else {
@@ -21,15 +22,23 @@ export function TaskFilters() {
     router.replace(`${pathname}?${params.toString()}`);
   };
 
-  const handleFilter = (key: string, value: string | null) => {
+  const handleFilter = (key: 'status' | 'range', value: string | null) => {
     const params = new URLSearchParams(searchParams);
+    params.delete('page');
+
     if (value) {
       params.set(key, value);
     } else {
       params.delete(key);
     }
-    // Reset page on filter change
+    router.replace(`${pathname}?${params.toString()}`);
+  };
+  
+  const resetFilters = () => {
+    const params = new URLSearchParams(searchParams);
     params.delete('page');
+    params.delete('status');
+    params.delete('range');
     router.replace(`${pathname}?${params.toString()}`);
   }
 
@@ -50,7 +59,7 @@ export function TaskFilters() {
       <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm font-medium mr-2">Filtra per:</span>
           
-          <Button variant={!currentStatus && !currentRange ? 'default' : 'outline'} size="sm" onClick={() => { handleFilter('status', null); handleFilter('range', null);}}>Tutte</Button>
+          <Button variant={!currentStatus && !currentRange ? 'default' : 'outline'} size="sm" onClick={resetFilters}>Tutte</Button>
           
           <Button variant={currentStatus === 'Pianificato' ? 'default' : 'outline'} size="sm" onClick={() => handleFilter('status', 'Pianificato')}>Pianificate</Button>
           <Button variant={currentStatus === 'In corso' ? 'default' : 'outline'} size="sm" onClick={() => handleFilter('status', 'In corso')}>In Corso</Button>
