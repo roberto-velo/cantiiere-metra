@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useSyncExternalStore } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { it } from "date-fns/locale";
 import { PlusCircle, Play, Pause, CheckCircle, LucideIcon, Bell } from 'lucide-react';
@@ -12,6 +12,7 @@ export interface Notification {
   id: string;
   text: string;
   time: string;
+  isoTime: string;
   type: NotificationType;
   color: string;
 }
@@ -32,79 +33,120 @@ const colorMap: Record<NotificationType, string> = {
     'task-completed': 'text-green-500'
 };
 
+// --- Store ---
+// This creates a shared state for all components using the hook.
 
-export function useNotifications() {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+type NotificationStore = {
+  notifications: Notification[];
+}
 
-  useEffect(() => {
+let store: NotificationStore = {
+  notifications: [],
+};
+
+const listeners = new Set<() => void>();
+
+const emitChange = () => {
+  for (const listener of listeners) {
+    listener();
+  }
+}
+
+const subscribe = (callback: () => void) => {
+  listeners.add(callback);
+  return () => listeners.delete(callback);
+}
+
+const getSnapshot = () => {
+  return store;
+}
+
+// --- Actions ---
+
+const updateNotifications = (newNotifications: Notification[]) => {
+    store = { notifications: newNotifications };
     try {
-      const storedNotifications = localStorage.getItem(NOTIFICATIONS_KEY);
-      if (storedNotifications) {
-        const parsed = JSON.parse(storedNotifications) as {id: string; text: string; isoTime: string, type: NotificationType}[];
-        const updated = parsed.map(n => ({
-            ...n,
-            time: formatDistanceToNow(new Date(n.isoTime), { addSuffix: true, locale: it }),
-            color: colorMap[n.type]
+        const storableNotifications = newNotifications.map(n => ({
+            id: n.id, 
+            text: n.text, 
+            isoTime: n.isoTime, 
+            type: n.type
         }));
-        setNotifications(updated);
-      }
+        localStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(storableNotifications));
     } catch (error) {
-        console.error("Failed to read notifications from localStorage", error);
+        console.error("Failed to save notifications to localStorage", error);
     }
-  }, []);
+    emitChange();
+}
 
-  const addNotification = useCallback((text: string, type: NotificationType) => {
-    const newNotification = {
+
+export const notificationsApi = {
+  add: (text: string, type: NotificationType) => {
+    const newNotificationRaw = {
       id: crypto.randomUUID(),
       text,
       isoTime: new Date().toISOString(),
       type,
     };
     
-    // Use functional update to ensure we have the latest state
-    setNotifications(prev => {
-      try {
-        const updatedNotifications = [newNotification, ...prev]
-          .slice(0, MAX_NOTIFICATIONS)
-          .map(n => ({
-            ...n,
-            time: formatDistanceToNow(new Date(n.isoTime), { addSuffix: true, locale: it }),
-            color: colorMap[n.type],
-          }));
-        
-        const storableNotifications = updatedNotifications.map(n => ({
-          id: n.id, 
-          text: n.text, 
-          isoTime: n.isoTime, 
-          type: n.type
-        }));
+    const currentNotifications = store.notifications;
+    const updatedNotifications = [newNotificationRaw, ...currentNotifications]
+      .slice(0, MAX_NOTIFICATIONS)
+      .map(n => ({
+        ...n,
+        time: formatDistanceToNow(new Date(n.isoTime), { addSuffix: true, locale: it }),
+        color: colorMap[n.type] || 'text-primary',
+      }));
 
-        localStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(storableNotifications));
-        
-        return updatedNotifications;
+    updateNotifications(updatedNotifications);
+  },
 
-      } catch (error) {
-        console.error("Failed to save notification to localStorage", error);
-        return prev;
-      }
-    });
-  }, []);
-
-
-  const clearNotifications = useCallback(() => {
+  clear: () => {
     try {
       localStorage.removeItem(NOTIFICATIONS_KEY);
-      setNotifications([]);
+      updateNotifications([]);
     } catch (error) {
         console.error("Failed to clear notifications from localStorage", error);
     }
-  }, []);
+  },
+
+  load: () => {
+     try {
+      const storedNotifications = localStorage.getItem(NOTIFICATIONS_KEY);
+      if (storedNotifications) {
+        const parsed = JSON.parse(storedNotifications) as {id: string; text: string; isoTime: string, type: NotificationType}[];
+        const loadedNotifications = parsed.map(n => ({
+            ...n,
+            time: formatDistanceToNow(new Date(n.isoTime), { addSuffix: true, locale: it }),
+            color: colorMap[n.type] || 'text-primary'
+        }));
+        store = { notifications: loadedNotifications };
+        emitChange();
+      }
+    } catch (error) {
+        console.error("Failed to read notifications from localStorage", error);
+    }
+  }
+}
+
+// --- Hook ---
+
+export function useNotifications() {
+  const store = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
   
+  // Load initial data only once on the client
+  useEffect(() => {
+    notificationsApi.load();
+  }, []);
+
   const getIcon = (type: NotificationType): LucideIcon => {
     return iconMap[type] || Bell;
   }
 
-  return { notifications, addNotification, clearNotifications, getIcon };
+  return { 
+    notifications: store.notifications, 
+    addNotification: notificationsApi.add,
+    clearNotifications: notificationsApi.clear,
+    getIcon 
+  };
 }
-
-    
