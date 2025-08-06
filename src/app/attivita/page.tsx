@@ -169,7 +169,8 @@ async function TasksList({
 export default async function AttivitaPage({ searchParams }: { searchParams?: { [key: string]: string | string[] | undefined } }) {
   const currentPage = Number(searchParams?.page) || 1;
   const searchTerm = typeof searchParams?.q === 'string' ? searchParams.q : undefined;
-  const status = typeof searchParams?.status === 'string' ? searchParams.status as TaskStatus : undefined;
+  const statusParam = typeof searchParams?.status === 'string' ? searchParams.status : undefined;
+  const validStatus = ['Pianificato', 'In corso', 'Completato'].includes(statusParam || '') ? statusParam as TaskStatus : undefined;
   const dateRange = typeof searchParams?.range === 'string' ? searchParams.range : undefined;
 
 
@@ -202,7 +203,7 @@ export default async function AttivitaPage({ searchParams }: { searchParams?: { 
                 <TasksList 
                   page={currentPage} 
                   searchTerm={searchTerm} 
-                  status={status}
+                  status={validStatus}
                   dateRange={dateRange}
                 />
               </Suspense>

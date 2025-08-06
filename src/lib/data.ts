@@ -1,7 +1,7 @@
 
 import type { Client, Technician, Task, TaskStatus } from './types';
 import path from 'path';
-import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, parseISO } from 'date-fns';
+import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, parseISO, isValid } from 'date-fns';
 
 
 // Using require for JSON files is one way to read them at build time on the server.
@@ -56,8 +56,9 @@ const localApi = {
 
         // 1. Filter by searchTerm
         if (searchTerm) {
+            const lowercasedTerm = searchTerm.toLowerCase();
             filteredTasks = filteredTasks.filter(task =>
-                task.description.toLowerCase().includes(searchTerm.toLowerCase())
+                task.description.toLowerCase().includes(lowercasedTerm)
             );
         }
 
@@ -79,20 +80,20 @@ const localApi = {
 
             if (interval) {
                  filteredTasks = filteredTasks.filter(task => {
-                    if (!task.date || isNaN(new Date(task.date).getTime())) {
-                        return false;
-                    }
-                    try {
-                        const taskDate = parseISO(task.date);
-                        return isWithinInterval(taskDate, interval!);
-                    } catch (e) {
-                        return false;
-                    }
+                    const taskDate = parseISO(task.date);
+                    return isValid(taskDate) && isWithinInterval(taskDate, interval!);
                 });
             }
         }
         
-        const sortedTasks = filteredTasks.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        const sortedTasks = filteredTasks.sort((a,b) => {
+            const dateA = new Date(a.date).getTime();
+            const dateB = new Date(b.date).getTime();
+            if (dateA === dateB) {
+                return a.time.localeCompare(b.time);
+            }
+            return dateB - dateA;
+        });
 
         const start = (page - 1) * limit;
         const end = page * limit;
@@ -114,7 +115,14 @@ const localApi = {
     
     // Dashboard
     getDashboardData: async () => {
-        const sortedTasks = [...tasks].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        const sortedTasks = [...tasks].sort((a,b) => {
+             const dateA = new Date(a.date).getTime();
+            const dateB = new Date(b.date).getTime();
+            if (dateA === dateB) {
+                return a.time.localeCompare(b.time);
+            }
+            return dateB - dateA;
+        });
         return {
             tasks: sortedTasks,
             technicians,
