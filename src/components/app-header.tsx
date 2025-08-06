@@ -32,7 +32,6 @@ export function AppHeader() {
             alt="Metra Logo" 
             width={250} 
             height={63}
-            style={{ width: '250px', height: 'auto' }}
             priority
           />
         </Link>
