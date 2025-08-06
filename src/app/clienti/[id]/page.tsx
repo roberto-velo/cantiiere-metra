@@ -19,7 +19,8 @@ import {
   ClipboardList,
   Upload,
   Droplet,
-  Map
+  Map,
+  ArrowLeft
 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -58,11 +59,19 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
     <div className="flex flex-col flex-1" id="client-detail-page">
       <header className="bg-muted/30 border-b p-4 sm:p-6">
         <div className="flex items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">{client.name}</h1>
-            <p className="text-primary">
-              Codice cliente: <span className="font-semibold">{client.clientCode}</span>
-            </p>
+          <div className="flex items-center gap-4">
+            <Button variant="outline" size="icon" asChild>
+                <Link href="/clienti">
+                    <ArrowLeft className="h-4 w-4" />
+                    <span className="sr-only">Torna indietro</span>
+                </Link>
+            </Button>
+            <div>
+                <h1 className="text-2xl font-bold tracking-tight">{client.name}</h1>
+                <p className="text-primary">
+                Codice cliente: <span className="font-semibold">{client.clientCode}</span>
+                </p>
+            </div>
           </div>
           <ClientActions client={client} />
         </div>
