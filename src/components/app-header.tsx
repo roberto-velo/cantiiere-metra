@@ -52,7 +52,7 @@ export function AppHeader() {
     <header className="bg-primary text-primary-foreground border-b p-4 sm:p-6 sticky top-0 z-50">
       <div className="flex items-center justify-between">
         <Link href="/">
-          <img src="/logo-metra.png" alt="Metra Logo" style={{ height: '40px', width: 'auto' }} />
+          <img src="/logo-metra.png" alt="Metra Logo" style={{ height: '40px' }} />
         </Link>
         <nav className="hidden md:flex items-center gap-4">
           {navLinks.map((link) => (
