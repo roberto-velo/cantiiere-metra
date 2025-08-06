@@ -26,7 +26,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ClientActions } from "@/components/client-actions";
 
-export default async function ClientDetailPage({ params }: { params: { id: string } }) {
+export default async function ClientDetailPage({ params, searchParams }: { params: { id: string }, searchParams: { from?: string } }) {
   
   const { id } = params;
   const client = await localApi.getClient(id);
@@ -34,6 +34,10 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
   if (!client) {
     notFound();
   }
+
+  // Determine the back path
+  const backPath = searchParams.from || '/clienti';
+
 
   // For now, we fetch all tasks. In a real-world scenario with many tasks,
   // this should be paginated.
@@ -61,7 +65,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <Button variant="outline" size="icon" asChild>
-                <Link href="/clienti">
+                <Link href={backPath}>
                     <ArrowLeft className="h-4 w-4" />
                     <span className="sr-only">Torna indietro</span>
                 </Link>

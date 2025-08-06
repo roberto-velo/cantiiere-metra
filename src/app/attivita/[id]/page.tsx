@@ -37,7 +37,7 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
   ]);
 
   const details = [
-    { icon: User, label: "Cliente", value: client?.name, href: `/clienti/${client?.id}` },
+    { icon: User, label: "Cliente", value: client?.name, href: `/clienti/${client?.id}?from=/attivita/${task.id}` },
     { icon: HardHat, label: "Tecnico Assegnato", value: `${technician?.firstName} ${technician?.lastName}`, href: `/tecnici/${technician?.id}` },
     { icon: Calendar, label: "Data e Ora", value: `${task.date} ore ${task.time}` },
     { icon: Info, label: "Stato", value: task.status },

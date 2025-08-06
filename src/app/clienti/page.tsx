@@ -48,7 +48,7 @@ async function ClientsList({ page, searchTerm }: { page: number, searchTerm?: st
                   <TableCell>{client.phone}</TableCell>
                   <TableCell className="text-right space-x-2">
                     <Button variant="outline" size="sm" asChild>
-                      <Link href={`/clienti/${client.id}`}>
+                      <Link href={`/clienti/${client.id}?from=/clienti`}>
                         Visualizza
                       </Link>
                     </Button>
