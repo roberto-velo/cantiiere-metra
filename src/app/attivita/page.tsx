@@ -79,14 +79,14 @@ async function TasksList({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Attività</TableHead>
-                <TableHead>Cliente</TableHead>
-                <TableHead>Tecnico</TableHead>
-                <TableHead>Stato</TableHead>
-                <TableHead>Priorità</TableHead>
-                <TableHead>Data e Ora</TableHead>
-                <TableHead>Durata</TableHead>
-                <TableHead className="text-right"></TableHead>
+                <TableHead className="text-primary">Attività</TableHead>
+                <TableHead className="text-primary">Cliente</TableHead>
+                <TableHead className="text-primary">Tecnico</TableHead>
+                <TableHead className="text-primary">Stato</TableHead>
+                <TableHead className="text-primary">Priorità</TableHead>
+                <TableHead className="text-primary">Data e Ora</TableHead>
+                <TableHead className="text-primary">Durata</TableHead>
+                <TableHead className="text-right text-primary"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
