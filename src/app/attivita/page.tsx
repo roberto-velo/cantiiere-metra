@@ -184,7 +184,7 @@ export default function AttivitaPage({ searchParams }: { searchParams?: { [key: 
             <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
               <ClipboardList className="h-6 w-6" /> Programmazione Attività
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-primary">
               Crea, visualizza e gestisci le attività dei tecnici.
             </p>
           </div>
