@@ -109,7 +109,7 @@ export default async function DashboardPage() {
                     {tasks.slice(0, 5).map((task) => (
                     <tr key={task.id} className="border-b last:border-b-0 hover:bg-muted/50 transition-colors">
                         <td className="p-4 font-medium text-foreground">{task.description}</td>
-                        <td className="p-4 text-muted-foreground">
+                        <td className="p-4 text-foreground">
                         {
                             clients.find(c => c.id === task.clientId)?.name 
                             ? clients.find(c => c.id === task.clientId)?.name 
