@@ -87,8 +87,8 @@ export default async function TechnicianDetailPage({ params }: { params: { id: s
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>Scadenza</TableHead>
+                    <TableHead className="text-primary">Nome</TableHead>
+                    <TableHead className="text-primary">Scadenza</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -125,10 +125,10 @@ export default async function TechnicianDetailPage({ params }: { params: { id: s
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Cliente</TableHead>
-                    <TableHead>Stato</TableHead>
-                    <TableHead></TableHead>
+                    <TableHead className="text-primary">Data</TableHead>
+                    <TableHead className="text-primary">Cliente</TableHead>
+                    <TableHead className="text-primary">Stato</TableHead>
+                    <TableHead className="text-primary"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
