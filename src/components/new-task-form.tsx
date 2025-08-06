@@ -80,6 +80,9 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
   const clientId = form.watch("clientId");
   const technicianIds = form.watch("technicianIds");
 
+  const selectedTechnicians = technicians.filter(tech => technicianIds.includes(tech.id));
+  const selectedTechniciansNames = selectedTechnicians.map(tech => `${tech.firstName} ${tech.lastName}`).join(', ');
+
   useEffect(() => {
     if (initialClientId) {
         const client = clients.find((c) => c.id === initialClientId);
@@ -107,6 +110,7 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
             // and get back URLs to save in Firestore.
             photos: [], 
             documents: [],
+            duration: 0,
         };
         
         const result = await addTaskAction(newActivity);
@@ -213,10 +217,10 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
                            <FormLabel>Tecnici Assegnati</FormLabel>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-start font-normal">
+                                    <Button variant="outline" className="w-full justify-start font-normal truncate">
                                         <Users className="mr-2 h-4 w-4" />
-                                        {technicianIds.length > 0
-                                        ? `${technicianIds.length} tecnici selezionati`
+                                        {selectedTechnicians.length > 0
+                                        ? selectedTechniciansNames
                                         : "Seleziona tecnici"}
                                     </Button>
                                 </DropdownMenuTrigger>
