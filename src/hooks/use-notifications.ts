@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useCallback, useSyncExternalStore } from "react";
+import { useSyncExternalStore, useEffect } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { it } from "date-fns/locale";
 import { PlusCircle, Play, Pause, CheckCircle, LucideIcon, Bell } from 'lucide-react';
@@ -18,7 +18,7 @@ export interface Notification {
 }
 
 const NOTIFICATIONS_KEY = "cantiereflow-notifications";
-const MAX_NOTIFICATIONS = 10;
+const MAX_NOTIFICATIONS = 20;
 
 const iconMap: Record<NotificationType, LucideIcon> = {
     'task-created': PlusCircle,
@@ -26,6 +26,7 @@ const iconMap: Record<NotificationType, LucideIcon> = {
     'task-paused': Pause,
     'task-completed': CheckCircle
 };
+
 const colorMap: Record<NotificationType, string> = {
     'task-created': 'text-primary',
     'task-started': 'text-blue-500',
@@ -33,9 +34,8 @@ const colorMap: Record<NotificationType, string> = {
     'task-completed': 'text-green-500'
 };
 
-// --- Store ---
-// This creates a shared state for all components using the hook.
 
+// --- Store ---
 type NotificationStore = {
   notifications: Notification[];
 }
@@ -89,7 +89,8 @@ export const notificationsApi = {
       type,
     };
     
-    const currentNotifications = store.notifications;
+    // Using a functional update to ensure we have the latest state
+    const currentNotifications = getSnapshot().notifications;
     const updatedNotifications = [newNotificationRaw, ...currentNotifications]
       .slice(0, MAX_NOTIFICATIONS)
       .map(n => ({
@@ -132,11 +133,13 @@ export const notificationsApi = {
 // --- Hook ---
 
 export function useNotifications() {
-  const store = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+  const storeSnapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
   
   // Load initial data only once on the client
   useEffect(() => {
-    notificationsApi.load();
+    if (typeof window !== "undefined") {
+      notificationsApi.load();
+    }
   }, []);
 
   const getIcon = (type: NotificationType): LucideIcon => {
@@ -144,7 +147,7 @@ export function useNotifications() {
   }
 
   return { 
-    notifications: store.notifications, 
+    notifications: storeSnapshot.notifications, 
     addNotification: notificationsApi.add,
     clearNotifications: notificationsApi.clear,
     getIcon 

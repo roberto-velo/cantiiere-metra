@@ -59,10 +59,9 @@ export function AppHeader() {
               <Button variant="outline" size="icon" className="relative">
                 <Bell className="h-5 w-5" />
                 {notifications.length > 0 && (
-                    <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
-                    </span>
+                  <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                    {notifications.length}
+                  </span>
                 )}
               </Button>
             </DropdownMenuTrigger>

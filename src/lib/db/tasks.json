@@ -30,5 +30,21 @@
     "documents": [],
     "status": "Completato",
     "duration": 11
+  },
+  {
+    "id": "1754476262159",
+    "clientId": "1754475851601",
+    "technicianIds": [
+      "1754475670329"
+    ],
+    "date": "2025-08-11",
+    "time": "12:30",
+    "description": "cccccccccccc",
+    "priority": "Media",
+    "notes": "",
+    "photos": [],
+    "documents": [],
+    "status": "Completato",
+    "duration": 3
   }
 ]
