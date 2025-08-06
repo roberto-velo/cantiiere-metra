@@ -27,7 +27,7 @@ export function AppHeader() {
     <header className="bg-primary text-primary-foreground border-b p-4 sm:p-6 sticky top-0 z-50">
       <div className="flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
-          <Image src="/metra-logo.png" alt="Metra Logo" width={100} height={40} className="h-10 w-auto" />
+          <Image src="/metra-logo.png" alt="Metra Logo" width={150} height={40} className="h-10 w-auto" />
         </Link>
         <div className="flex items-center gap-4">
             <nav className="hidden md:flex items-center gap-4">
@@ -60,7 +60,7 @@ export function AppHeader() {
                                  <Link href={link.href} className="flex items-center gap-3 p-2 rounded-md text-lg hover:bg-primary/80">
                                     <link.icon className="h-5 w-5" />
                                     {link.label}
-                                </Link>
+                                 </Link>
                                </SheetClose>
                             ))}
                         </nav>
