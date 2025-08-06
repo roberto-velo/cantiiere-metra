@@ -1,7 +1,7 @@
 
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -13,7 +13,7 @@ import {
 import localApi from "@/lib/data";
 import type { TaskPriority, TaskStatus, Technician } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { PlusCircle, ClipboardList, ArrowLeft, ArrowRight, Calendar, List } from "lucide-react";
+import { PlusCircle, ClipboardList, ArrowLeft, ArrowRight, Calendar, List, User, HardHat, Tag } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import { TaskFilters } from "@/components/task-filters";
@@ -78,101 +78,159 @@ async function TasksList({
 
 
   return (
-    <>
-      <CardContent className="p-0 sm:p-6">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-primary">Attività</TableHead>
-                <TableHead className="text-primary">Cliente</TableHead>
-                <TableHead className="text-primary">Tecnico</TableHead>
-                <TableHead className="text-primary">Stato</TableHead>
-                <TableHead className="text-primary">Priorità</TableHead>
-                <TableHead className="text-primary">Data e Ora</TableHead>
-                <TableHead className="text-primary">Durata</TableHead>
-                <TableHead className="text-right text-primary"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {tasks.map((task) => {
-                const client = clients.find(
-                  (c) => c.id === task.clientId
-                );
-                const assignedTechnicians = technicians.filter(
-                  (t) => task.technicianIds.includes(t.id)
-                );
-                return (
-                  <TableRow key={task.id}>
-                    <TableCell className="font-medium">
-                      {task.description}
-                    </TableCell>
-                    <TableCell>{client?.name}</TableCell>
-                    <TableCell>
-                      {assignedTechnicians.map(t => `${t.firstName} ${t.lastName}`).join(', ')}
-                    </TableCell>
-                    <TableCell>
-                      <span
-                        className={cn(
-                          "px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap",
-                          statusBadge[task.status]
-                        )}
-                      >
-                        {task.status}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <span
-                        className={cn(
-                          "px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap",
-                          priorityBadge[task.priority]
-                        )}
-                      >
-                        {task.priority}
-                      </span>
-                    </TableCell>
-                    <TableCell className="whitespace-nowrap">{task.date} {task.time}</TableCell>
-                    <TableCell>
-                      {task.status === "Completato" ? formatDuration(task.duration) : '-'}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="outline" size="sm" asChild>
-                        <Link href={`/attivita/${task.id}`}>
-                          Visualizza
-                        </Link>
-                      </Button>
+    <Card>
+       {/* Mobile View - Cards */}
+        <div className="grid gap-4 sm:hidden p-4">
+            {tasks.map((task) => {
+              const client = clients.find((c) => c.id === task.clientId);
+              const assignedTechnicians = technicians.filter((t) => task.technicianIds.includes(t.id));
+              return (
+                  <Card key={task.id} className="w-full">
+                      <CardHeader>
+                          <CardTitle className="text-lg">{task.description}</CardTitle>
+                          <CardDescription>{task.date} ore {task.time}</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                          <div className="flex items-center gap-2 text-sm">
+                              <User className="h-4 w-4 text-primary"/>
+                              <span>{client?.name ?? 'N/A'}</span>
+                          </div>
+                           <div className="flex items-center gap-2 text-sm">
+                              <HardHat className="h-4 w-4 text-primary"/>
+                              <span>{assignedTechnicians.map(t => `${t.firstName}`).join(', ') || 'N/A'}</span>
+                          </div>
+                           <div className="flex items-center gap-2">
+                                <span className={cn("px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap", statusBadge[task.status])}>
+                                    {task.status}
+                                </span>
+                                <span className={cn("px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap", priorityBadge[task.priority])}>
+                                    {task.priority}
+                                </span>
+                           </div>
+                      </CardContent>
+                      <CardFooter>
+                          <Button className="w-full" asChild>
+                             <Link href={`/attivita/${task.id}`}>Visualizza Dettagli</Link>
+                          </Button>
+                      </CardFooter>
+                  </Card>
+              )
+            })}
+             {tasks.length === 0 && (
+                <p className="text-center text-muted-foreground py-10">Nessuna attività trovata.</p>
+              )}
+        </div>
+
+      {/* Desktop View - Table */}
+      <div className="hidden sm:block">
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-primary">Attività</TableHead>
+                  <TableHead className="text-primary hidden md:table-cell">Cliente</TableHead>
+                  <TableHead className="text-primary hidden lg:table-cell">Tecnico</TableHead>
+                  <TableHead className="text-primary">Stato</TableHead>
+                  <TableHead className="text-primary hidden md:table-cell">Priorità</TableHead>
+                  <TableHead className="text-primary">Data e Ora</TableHead>
+                  <TableHead className="text-primary hidden lg:table-cell">Durata</TableHead>
+                  <TableHead className="text-right text-primary"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {tasks.map((task) => {
+                  const client = clients.find(
+                    (c) => c.id === task.clientId
+                  );
+                  const assignedTechnicians = technicians.filter(
+                    (t) => task.technicianIds.includes(t.id)
+                  );
+                  return (
+                    <TableRow key={task.id}>
+                      <TableCell className="font-medium">
+                        {task.description}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">{client?.name}</TableCell>
+                      <TableCell className="hidden lg:table-cell">
+                        {assignedTechnicians.map(t => `${t.firstName} ${t.lastName}`).join(', ')}
+                      </TableCell>
+                      <TableCell>
+                        <span
+                          className={cn(
+                            "px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap",
+                            statusBadge[task.status]
+                          )}
+                        >
+                          {task.status}
+                        </span>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <span
+                          className={cn(
+                            "px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap",
+                            priorityBadge[task.priority]
+                          )}
+                        >
+                          {task.priority}
+                        </span>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">{task.date} {task.time}</TableCell>
+                      <TableCell className="hidden lg:table-cell">
+                        {task.status === "Completato" ? formatDuration(task.duration) : '-'}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button variant="outline" size="sm" asChild>
+                          <Link href={`/attivita/${task.id}`}>
+                            Visualizza
+                          </Link>
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+                {tasks.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center h-24">
+                      Nessuna attività trovata.
                     </TableCell>
                   </TableRow>
-                );
-              })}
-              {tasks.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={8} className="text-center h-24">
-                    Nessuna attività trovata.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </CardContent>
-      <CardFooter>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </div>
+      <CardFooter className="p-4">
         <div className="flex w-full justify-between sm:justify-end gap-2">
-            <Button variant="outline" asChild disabled={page <= 1}>
+            <Button variant="outline" asChild disabled={page <= 1} size="icon" className="sm:hidden">
                 <Link href={prevPage}>
-                    <ArrowLeft className="mr-0 sm:mr-2 h-4 w-4" />
-                    <span className="hidden sm:inline">Precedente</span>
+                    <ArrowLeft className="h-4 w-4" />
                 </Link>
             </Button>
-            <Button variant="outline" asChild disabled={page >= totalPages}>
+            <Button variant="outline" asChild disabled={page <= 1} className="hidden sm:inline-flex">
+                <Link href={prevPage}>
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Precedente
+                </Link>
+            </Button>
+            
+            <span className="self-center text-sm text-muted-foreground">Pag. {page} di {totalPages}</span>
+
+             <Button variant="outline" asChild disabled={page >= totalPages} size="icon" className="sm:hidden">
+                 <Link href={nextPage}>
+                    <ArrowRight className="h-4 w-4" />
+                </Link>
+            </Button>
+            <Button variant="outline" asChild disabled={page >= totalPages} className="hidden sm:inline-flex">
                 <Link href={nextPage}>
-                     <span className="hidden sm:inline">Successivo</span>
-                    <ArrowRight className="ml-0 sm:ml-2 h-4 w-4" />
+                    Successivo
+                    <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
             </Button>
         </div>
       </CardFooter>
-    </>
+    </Card>
   );
 }
 
@@ -216,13 +274,13 @@ export default async function AttivitaPage({ searchParams }: { searchParams?: { 
             <Tabs defaultValue={defaultView} className="w-full">
               <div className="flex flex-col-reverse md:flex-row md:items-center justify-between gap-4">
                   <TaskFilters />
-                  <TabsList className="self-start md:self-auto">
+                  <TabsList className="self-start grid grid-cols-2 w-full md:w-auto">
                       <TabsTrigger value="list"><List className="mr-2"/>Lista</TabsTrigger>
                       <TabsTrigger value="calendar"><Calendar className="mr-2"/>Calendario</TabsTrigger>
                   </TabsList>
               </div>
                 <TabsContent value="list">
-                  <Card>
+                  
                     <Suspense fallback={<div className="text-center p-8">Caricamento...</div>}>
                         <TasksList 
                           page={currentPage} 
@@ -231,7 +289,7 @@ export default async function AttivitaPage({ searchParams }: { searchParams?: { 
                           date={date}
                         />
                     </Suspense>
-                  </Card>
+                 
                 </TabsContent>
                 <TabsContent value="calendar">
                    <Card>
