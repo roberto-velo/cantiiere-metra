@@ -50,6 +50,12 @@ export function TaskCalendar({ tasks, clients }: TaskCalendarProps) {
     params.set('date', dateStr);
     params.delete('range'); 
     params.delete('page');
+    // Switch to list view when a day is clicked
+    const currentTabs = document.querySelector('[data-radix-collection-item][data-state="active"]');
+    const listTrigger = document.querySelector('[role="tab"][value="list"]');
+    if (currentTabs?.getAttribute('data-value') === 'calendar' && listTrigger) {
+      (listTrigger as HTMLElement).click();
+    }
     router.push(`${pathname}?${params.toString()}`);
   };
 
@@ -114,9 +120,11 @@ export function TaskCalendar({ tasks, clients }: TaskCalendarProps) {
   
   const modifiers = {
       selected: selectedDate,
+      today: new Date(),
   };
   const modifiersClassNames = {
-      selected: 'bg-primary text-primary-foreground',
+      selected: 'bg-primary text-primary-foreground hover:bg-primary/90 focus:bg-primary/90',
+      today: 'bg-accent text-accent-foreground',
   };
 
 
@@ -126,6 +134,8 @@ export function TaskCalendar({ tasks, clients }: TaskCalendarProps) {
       mode="single"
       onDayClick={handleDayClick}
       selected={selectedDate}
+      modifiers={modifiers}
+      modifiersClassNames={modifiersClassNames}
       formatters={{ formatCaption }}
       components={{
         Day: DayContent
@@ -139,11 +149,10 @@ export function TaskCalendar({ tasks, clients }: TaskCalendarProps) {
         head_cell: "text-muted-foreground rounded-md w-full font-normal text-[0.8rem]",
         row: "flex w-full mt-2",
         cell: "h-24 w-full text-center text-sm p-0 relative focus-within:relative focus-within:z-20",
-        day_wrapper: "h-full w-full p-2 font-normal flex items-start justify-center hover:bg-accent rounded-md cursor-pointer",
-        day: "h-full w-full",
+        day: "h-full w-full p-2 font-normal flex items-center justify-center hover:bg-accent rounded-md transition-colors",
         day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
         day_today: "bg-accent text-accent-foreground",
-        day_outside: "text-muted-foreground opacity-50",
+        day_outside: "text-muted-foreground opacity-50 aria-selected:bg-accent/50",
         day_disabled: "text-muted-foreground opacity-50",
         day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
         day_hidden: "invisible",
@@ -151,4 +160,3 @@ export function TaskCalendar({ tasks, clients }: TaskCalendarProps) {
     />
   );
 }
-
