@@ -48,28 +48,64 @@ export function FileUpload({ taskId, uploadType }: FileUploadProps) {
   const isPhotoUpload = uploadType === "photo";
 
   useEffect(() => {
-    if (isPhotoUpload && open && hasCameraPermission === null) {
+    // We only ask for permission when the dialog for photo upload is opened
+    if (isPhotoUpload && open) {
       const getCameraPermission = async () => {
         try {
+          // If permission is already granted or denied, don't ask again
+          const result = await navigator.permissions.query({ name: 'camera' as PermissionName });
+          if (result.state === 'granted') {
+             setHasCameraPermission(true);
+             return;
+          }
+          if (result.state === 'denied') {
+             setHasCameraPermission(false);
+             return;
+          }
+          
           const stream = await navigator.mediaDevices.getUserMedia({ video: true });
           setHasCameraPermission(true);
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-          }
+          // We don't need to do anything with the stream here, just get permission.
+          // We will request the stream again when the user clicks the "Use Camera" button.
+          stream.getTracks().forEach(track => track.stop());
+
         } catch (error) {
           console.error("Error accessing camera:", error);
           setHasCameraPermission(false);
         }
       };
       getCameraPermission();
-    } else if (!open && videoRef.current?.srcObject) {
-      // Stop camera stream when dialog is closed
-      const stream = videoRef.current.srcObject as MediaStream;
-      stream.getTracks().forEach(track => track.stop());
-      videoRef.current.srcObject = null;
     }
-  }, [open, isPhotoUpload, hasCameraPermission]);
+  }, [open, isPhotoUpload]);
   
+  useEffect(() => {
+    let stream: MediaStream | null = null;
+    if (isCapturing && videoRef.current) {
+        const video = videoRef.current;
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(s => {
+                stream = s;
+                video.srcObject = s;
+            })
+            .catch(err => {
+                console.error("Error starting camera stream:", err);
+                toast({
+                    variant: "destructive",
+                    title: "Fotocamera non disponibile",
+                    description: "Impossibile accedere alla fotocamera. Controlla i permessi del browser.",
+                });
+                setIsCapturing(false);
+            });
+    }
+
+    return () => {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+    };
+}, [isCapturing, toast]);
+
+
   const handleCapturePhoto = () => {
     if (videoRef.current && canvasRef.current) {
         const video = videoRef.current;
@@ -165,7 +201,7 @@ export function FileUpload({ taskId, uploadType }: FileUploadProps) {
         <div className="grid gap-4 py-4">
         {isCapturing && (
             <div className="space-y-4">
-                <video ref={videoRef} className="w-full aspect-video rounded-md bg-muted" autoPlay muted />
+                <video ref={videoRef} className="w-full aspect-video rounded-md bg-muted" autoPlay muted playsInline />
                 <Button onClick={handleCapturePhoto} className="w-full">
                     <Camera className="mr-2"/> Scatta Foto
                 </Button>
@@ -190,6 +226,7 @@ export function FileUpload({ taskId, uploadType }: FileUploadProps) {
                     ref={fileInputRef} 
                     onChange={handleFileChange} 
                     accept={isPhotoUpload ? "image/*" : undefined}
+                    capture={isPhotoUpload ? "environment" : undefined}
                     className="hidden"
                 />
 
