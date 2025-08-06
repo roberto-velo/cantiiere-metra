@@ -47,32 +47,31 @@ export function AppHeader() {
               ))}
             </nav>
             
-             <div className="flex items-center gap-2">
-                <NotificationMenu />
-                <Sheet>
-                    <SheetTrigger asChild>
-                        <Button variant="ghost" size="icon" className="md:hidden">
-                            <Menu className="h-6 w-6 text-primary-foreground" />
-                            <span className="sr-only">Apri menu</span>
-                        </Button>
-                    </SheetTrigger>
-                    <SheetContent side="right" className="w-[250px] bg-primary text-primary-foreground">
-                        <SheetHeader>
-                            <SheetTitle>Menu Principale</SheetTitle>
-                        </SheetHeader>
-                         <nav className="flex flex-col gap-4 mt-8">
-                            {navLinks.map((link) => (
-                               <SheetClose asChild key={link.href}>
-                                 <Link href={link.href} className="flex items-center gap-3 p-2 rounded-md text-lg hover:bg-primary/80">
-                                    <link.icon className="h-5 w-5" />
-                                    {link.label}
-                                 </Link>
-                               </SheetClose>
-                            ))}
-                        </nav>
-                    </SheetContent>
-                </Sheet>
-            </div>
+            <NotificationMenu />
+
+            <Sheet>
+                <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon" className="md:hidden">
+                        <Menu className="h-6 w-6 text-primary-foreground" />
+                        <span className="sr-only">Apri menu</span>
+                    </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-[250px] bg-primary text-primary-foreground">
+                    <SheetHeader>
+                        <SheetTitle>Menu Principale</SheetTitle>
+                    </SheetHeader>
+                      <nav className="flex flex-col gap-4 mt-8">
+                        {navLinks.map((link) => (
+                            <SheetClose asChild key={link.href}>
+                              <Link href={link.href} className="flex items-center gap-3 p-2 rounded-md text-lg hover:bg-primary/80">
+                                <link.icon className="h-5 w-5" />
+                                {link.label}
+                              </Link>
+                            </SheetClose>
+                        ))}
+                    </nav>
+                </SheetContent>
+            </Sheet>
         </div>
       </div>
     </header>
