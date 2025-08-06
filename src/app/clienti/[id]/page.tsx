@@ -76,11 +76,11 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
             <CardContent>
               <ul className="space-y-4">
                 {clientInfo.map((info) => (
-                  <li key={info.label} className="flex items-start gap-4 text-primary">
-                    <info.icon className="h-5 w-5 mt-1" />
+                  <li key={info.label} className="flex items-start gap-4">
+                    <info.icon className="h-5 w-5 mt-1 text-muted-foreground" />
                     <div>
-                      <p className="font-medium">{info.label}</p>
-                      <p className="font-semibold">{info.value}</p>
+                      <p className="font-medium text-primary">{info.label}</p>
+                      <p className="font-semibold text-foreground">{info.value}</p>
                     </div>
                   </li>
                 ))}
