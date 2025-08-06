@@ -25,6 +25,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from "./ui/dialog";
 
 export function TechnicianActions({ technician }: { technician: Technician }) {
   const router = useRouter();
@@ -91,7 +92,8 @@ export function TechnicianActions({ technician }: { technician: Technician }) {
 
        {/* Mobile View */}
        <div className="sm:hidden">
-         <DropdownMenu>
+         <Dialog>
+          <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
                 <MoreVertical className="h-5 w-5" />
@@ -128,6 +130,7 @@ export function TechnicianActions({ technician }: { technician: Technician }) {
               </AlertDialog>
             </DropdownMenuContent>
           </DropdownMenu>
+         </Dialog>
       </div>
     </>
   );

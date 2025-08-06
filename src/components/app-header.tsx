@@ -21,7 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import Image from "next/image";
 
 
@@ -167,6 +167,9 @@ export function AppHeader() {
                     </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[250px] bg-primary text-primary-foreground">
+                    <SheetHeader>
+                        <SheetTitle className="sr-only">Menu Principale</SheetTitle>
+                    </SheetHeader>
                      <nav className="flex flex-col gap-4 mt-8">
                         {navLinks.map((link) => (
                            <SheetClose asChild key={link.href}>

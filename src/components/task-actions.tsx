@@ -23,6 +23,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 
 interface TaskActionsProps {
   taskId: string;
@@ -94,7 +95,8 @@ export function TaskActions({ taskId, description }: TaskActionsProps) {
       
       {/* Mobile View */}
        <div className="sm:hidden">
-         <DropdownMenu>
+         <Dialog>
+          <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
                 <MoreVertical className="h-5 w-5" />
@@ -106,6 +108,7 @@ export function TaskActions({ taskId, description }: TaskActionsProps) {
                 <Pencil className="mr-2 h-4 w-4" />
                 <span>Modifica</span>
               </DropdownMenuItem>
+              
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                    <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600 focus:text-red-600 focus:bg-red-50">
@@ -131,6 +134,7 @@ export function TaskActions({ taskId, description }: TaskActionsProps) {
               </AlertDialog>
             </DropdownMenuContent>
           </DropdownMenu>
+         </Dialog>
       </div>
     </>
   );

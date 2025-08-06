@@ -29,6 +29,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { MoreVertical } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
 
 
 export function ClientActions({ client }: { client: Client }) {
@@ -172,48 +173,50 @@ export function ClientActions({ client }: { client: Client }) {
 
       {/* Mobile View */}
        <div className="sm:hidden">
-         <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <MoreVertical className="h-5 w-5" />
-                <span className="sr-only">Altre azioni</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onSelect={() => router.push(`/clienti/${client.id}/modifica`)}>
-                <Pencil className="mr-2 h-4 w-4" />
-                <span>Modifica</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={handleDownloadPdf} disabled={isDownloading}>
-                 <Download className="mr-2 h-4 w-4" />
-                <span>{isDownloading ? 'Download...' : 'Scarica PDF'}</span>
-              </DropdownMenuItem>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                   <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600 focus:text-red-600 focus:bg-red-50">
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    <span>Elimina</span>
-                  </DropdownMenuItem>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Sei sicuro?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                     Questa azione non può essere annullata. L'eliminazione del cliente
-                      comporterà la rimozione di tutti i dati associati, incluse le
-                      attività passate.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Annulla</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteClient}>
-                      Continua
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </DropdownMenuContent>
-          </DropdownMenu>
+         <Dialog>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <MoreVertical className="h-5 w-5" />
+                  <span className="sr-only">Altre azioni</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onSelect={() => router.push(`/clienti/${client.id}/modifica`)}>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  <span>Modifica</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={handleDownloadPdf} disabled={isDownloading}>
+                  <Download className="mr-2 h-4 w-4" />
+                  <span>{isDownloading ? 'Download...' : 'Scarica PDF'}</span>
+                </DropdownMenuItem>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600 focus:text-red-600 focus:bg-red-50">
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      <span>Elimina</span>
+                    </DropdownMenuItem>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Sei sicuro?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                      Questa azione non può essere annullata. L'eliminazione del cliente
+                        comporterà la rimozione di tutti i dati associati, incluse le
+                        attività passate.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Annulla</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDeleteClient}>
+                        Continua
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </DropdownMenuContent>
+            </DropdownMenu>
+         </Dialog>
       </div>
     </>
   );
