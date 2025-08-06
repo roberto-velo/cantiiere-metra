@@ -41,7 +41,6 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
   const clientInfo = [
     { icon: Phone, label: "Telefono", value: client.phone },
     { icon: Mail, label: "Email", value: client.email },
-    { icon: MapPin, label: "Indirizzo", value: client.address },
   ];
   
   const poolInfo = [
@@ -70,7 +69,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
       </header>
 
       <main className="flex-1 p-4 sm:p-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-3 space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Dettagli Cliente</CardTitle>
@@ -86,6 +85,16 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                     </div>
                   </li>
                 ))}
+                 <li className="flex items-start gap-4">
+                    <MapPin className="h-5 w-5 mt-1 text-primary" />
+                    <div>
+                      <p className="font-medium text-primary">Indirizzo</p>
+                      <a href={client.mapUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-foreground hover:underline flex items-center gap-2">
+                        {client.address}
+                        <Navigation className="h-4 w-4 text-primary" />
+                      </a>
+                    </div>
+                  </li>
               </ul>
             </CardContent>
           </Card>
@@ -93,7 +102,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
           {poolInfo.length > 0 && (
              <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
+                    <CardTitle className="flex items-center gap-2 text-foreground">
                         <Droplet className="h-5 w-5" />
                         Informazioni Piscina
                     </CardTitle>
@@ -115,7 +124,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-foreground">
                 <ClipboardList className="h-5 w-5" />
                 Storico Lavorazioni
               </CardTitle>
@@ -187,25 +196,6 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                     Nessun documento allegato.
                 </p>
               )}
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="lg:col-span-1">
-          <Card className="h-full">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MapPin className="h-5 w-5" />
-                Mappa
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex items-center justify-center h-full">
-              <Button asChild className="w-full">
-                <a href={client.mapUrl} target="_blank" rel="noopener noreferrer">
-                  <Navigation className="mr-2 h-4 w-4" />
-                  Avvia Navigazione
-                </a>
-              </Button>
             </CardContent>
           </Card>
         </div>
