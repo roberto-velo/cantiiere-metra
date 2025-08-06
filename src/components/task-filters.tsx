@@ -22,19 +22,22 @@ export function TaskFilters() {
     router.replace(`${pathname}?${params.toString()}`);
   };
 
-  const handleFilter = (key: 'status' | 'range', value: string | null) => {
+  const handleFilter = (key: 'status' | 'range', value: string) => {
     const params = new URLSearchParams(searchParams);
     params.delete('page');
 
-    if (value) {
-      params.set(key, value);
-    } else {
+    // If the same value for the same key is clicked again, we toggle it off.
+    // Otherwise, we set the new value.
+    if (params.get(key) === value) {
       params.delete(key);
+    } else {
+      params.set(key, value);
     }
     router.replace(`${pathname}?${params.toString()}`);
   };
   
   const resetFilters = () => {
+    // Keep other search params like 'q' but remove filters
     const params = new URLSearchParams(searchParams);
     params.delete('page');
     params.delete('status');
@@ -44,6 +47,7 @@ export function TaskFilters() {
 
   const currentStatus = searchParams.get('status');
   const currentRange = searchParams.get('range');
+  const hasActiveFilters = !!currentStatus || !!currentRange;
 
   return (
     <div className="space-y-4">
@@ -59,7 +63,7 @@ export function TaskFilters() {
       <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm font-medium mr-2">Filtra per:</span>
           
-          <Button variant={!currentStatus && !currentRange ? 'default' : 'outline'} size="sm" onClick={resetFilters}>Tutte</Button>
+          <Button variant={!hasActiveFilters ? 'default' : 'outline'} size="sm" onClick={resetFilters}>Tutte</Button>
           
           <Button variant={currentStatus === 'Pianificato' ? 'default' : 'outline'} size="sm" onClick={() => handleFilter('status', 'Pianificato')}>Pianificate</Button>
           <Button variant={currentStatus === 'In corso' ? 'default' : 'outline'} size="sm" onClick={() => handleFilter('status', 'In corso')}>In Corso</Button>
