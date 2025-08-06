@@ -67,11 +67,11 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
               {details.map((detail, index) => (
                 <div key={index}>
                   <div className="flex items-center gap-4 text-sm">
-                    <detail.icon className="h-5 w-5 text-muted-foreground" />
+                    <detail.icon className="h-5 w-5 text-primary" />
                     <div className="flex-1">
-                      <p className="text-muted-foreground">{detail.label}</p>
+                      <p className="text-primary">{detail.label}</p>
                       {detail.href && detail.value ? (
-                        <Link href={detail.href} className="font-medium text-primary hover:underline">
+                        <Link href={detail.href} className="font-medium text-foreground hover:underline">
                           {detail.value}
                         </Link>
                       ) : (
