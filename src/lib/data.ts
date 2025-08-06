@@ -1,7 +1,7 @@
 
 import type { Client, Technician, Task, TaskStatus } from './types';
 import path from 'path';
-import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, parseISO, isValid, startOfYear, endOfYear, isEqual } from 'date-fns';
+import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, parseISO, isValid, startOfYear, endOfYear, startOfDay, endOfDay, isEqual } from 'date-fns';
 
 
 // Using require for JSON files is one way to read them at build time on the server.
@@ -56,19 +56,13 @@ const localApi = {
         const clients = await localApi.getAllClients();
         const technicians = await localApi.getAllTechnicians();
 
-        // 1. Filter by searchTerm (client, technician, or description)
+        // 1. Filter by searchTerm (client only)
         if (searchTerm) {
             const lowercasedTerm = searchTerm.toLowerCase();
             filteredTasks = filteredTasks.filter(task => {
                 const client = clients.find(c => c.id === task.clientId);
-                const technician = technicians.find(t => t.id === task.technicianId);
                 const clientName = client ? client.name.toLowerCase() : '';
-                const technicianName = technician ? `${technician.firstName.toLowerCase()} ${technician.lastName.toLowerCase()}` : '';
-                const description = task.description.toLowerCase();
-                
-                return clientName.includes(lowercasedTerm) || 
-                       technicianName.includes(lowercasedTerm) || 
-                       description.includes(lowercasedTerm);
+                return clientName.includes(lowercasedTerm);
             });
         }
 
@@ -79,12 +73,20 @@ const localApi = {
 
         // 3. Filter by dateRange or specific date
         if (date) {
-            const selectedDate = parseISO(date);
-            if (isValid(selectedDate)) {
-                 filteredTasks = filteredTasks.filter(task => {
-                    const taskDate = parseISO(task.date);
-                    return isValid(taskDate) && isEqual(taskDate, selectedDate);
-                });
+            try {
+                const selectedDate = parseISO(date);
+                 if (isValid(selectedDate)) {
+                    filteredTasks = filteredTasks.filter(task => {
+                        try {
+                            const taskDate = parseISO(task.date);
+                            return isValid(taskDate) && isEqual(startOfDay(taskDate), startOfDay(selectedDate));
+                        } catch {
+                            return false;
+                        }
+                    });
+                }
+            } catch {
+                // Ignore invalid date format
             }
         } else if (dateRange) {
             const now = new Date();
@@ -100,18 +102,20 @@ const localApi = {
 
             if (interval) {
                  filteredTasks = filteredTasks.filter(task => {
-                    const taskDate = parseISO(task.date);
-                    return isValid(taskDate) && isWithinInterval(taskDate, interval!);
+                    try {
+                        const taskDate = parseISO(task.date);
+                        return isValid(taskDate) && isWithinInterval(taskDate, interval!);
+                    } catch {
+                        return false;
+                    }
                 });
             }
         }
         
         const sortedTasks = filteredTasks.sort((a,b) => {
-            const dateA = new Date(a.date).getTime();
-            const dateB = new Date(b.date).getTime();
-            if (dateA === dateB) {
-                return a.time.localeCompare(b.time);
-            }
+            const dateA = new Date(`${a.date}T${a.time}`).getTime();
+            const dateB = new Date(`${b.date}T${b.time}`).getTime();
+            if (isNaN(dateA) || isNaN(dateB)) return 0;
             return dateB - dateA;
         });
 
@@ -136,11 +140,9 @@ const localApi = {
     // Dashboard
     getDashboardData: async () => {
         const sortedTasks = [...tasksData].sort((a,b) => {
-             const dateA = new Date(a.date).getTime();
-            const dateB = new Date(b.date).getTime();
-            if (dateA === dateB) {
-                return a.time.localeCompare(b.time);
-            }
+             const dateA = new Date(`${a.date}T${a.time}`).getTime();
+            const dateB = new Date(`${b.date}T${b.time}`).getTime();
+            if (isNaN(dateA) || isNaN(dateB)) return 0;
             return dateB - dateA;
         });
         return {

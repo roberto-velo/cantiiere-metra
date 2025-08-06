@@ -160,14 +160,14 @@ async function TasksList({
         <div className="flex w-full justify-end gap-2">
             <Button variant="outline" asChild disabled={page <= 1}>
                 <Link href={prevPage}>
-                    <ArrowLeft className="mr-2" />
+                    <ArrowLeft className="mr-2 h-4 w-4" />
                     Precedente
                 </Link>
             </Button>
             <Button variant="outline" asChild disabled={page >= totalPages}>
                 <Link href={nextPage}>
                     Successivo
-                    <ArrowRight className="ml-2" />
+                    <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
             </Button>
         </div>
@@ -181,6 +181,8 @@ export default async function AttivitaPage({ searchParams }: { searchParams?: { 
   const dateRange = searchParams?.range as string | undefined;
   const searchTerm = searchParams?.q as string | undefined;
   const date = searchParams?.date as string | undefined;
+  
+  // If a specific date is selected, default the view to the list.
   const defaultView = date ? 'list' : 'list';
 
   // Fetch all tasks for the calendar view, applying filters.
@@ -189,7 +191,7 @@ export default async function AttivitaPage({ searchParams }: { searchParams?: { 
     limit: 1000, // A large limit to get all tasks for the calendar
     dateRange,
     searchTerm,
-    date,
+    // Do not pass date here, calendar should show all tasks for the month/week
   });
 
   return (
@@ -225,10 +227,10 @@ export default async function AttivitaPage({ searchParams }: { searchParams?: { 
                   <Card>
                     <Suspense fallback={<div className="text-center p-8">Caricamento...</div>}>
                         <TasksList 
-                        page={currentPage} 
-                        dateRange={dateRange}
-                        searchTerm={searchTerm}
-                        date={date}
+                          page={currentPage} 
+                          dateRange={dateRange}
+                          searchTerm={searchTerm}
+                          date={date}
                         />
                     </Suspense>
                   </Card>
@@ -247,3 +249,4 @@ export default async function AttivitaPage({ searchParams }: { searchParams?: { 
     </div>
   );
 }
+
