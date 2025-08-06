@@ -54,7 +54,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
   const allDocuments = clientTasks.flatMap(t => t.documents);
 
   return (
-    <div className="flex flex-col flex-1">
+    <div className="flex flex-col flex-1" id="client-detail-page">
       <header className="bg-muted/30 border-b p-4 sm:p-6">
         <div className="flex items-center justify-between gap-4">
           <div>
