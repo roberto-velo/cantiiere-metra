@@ -124,7 +124,8 @@ export const notificationsApi = {
 export function useNotifications() {
   const storeSnapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
   
-  // Load initial data only once on the client
+  // Load initial data only once on the client, inside useEffect.
+  // This is the key to fixing the hydration error.
   useEffect(() => {
     if (typeof window !== "undefined") {
       notificationsApi.load();
