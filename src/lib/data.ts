@@ -13,6 +13,8 @@ const tasksPath = path.join(dataDir, 'tasks.json');
 
 // Helper function to read data from a JSON file
 const readData = <T>(filePath: string): T[] => {
+    // This is a temporary solution to make fs work on the server-side only
+    // In a real application, you would use an API route or server action to handle data mutations.
     const fs = require('fs');
     try {
         const jsonData = fs.readFileSync(filePath, 'utf-8');
@@ -25,10 +27,12 @@ const readData = <T>(filePath: string): T[] => {
 
 // Helper function to write data to a JSON file
 const writeData = (filePath: string, data: any): void => {
+    // This is a temporary solution to make fs work on the server-side only
     const fs = require('fs');
     try {
         fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
-    } catch (error) {
+    } catch (error)
+        {
         console.error(`Error writing data to ${filePath}:`, error);
     }
 };
@@ -73,8 +77,8 @@ const localApi = {
         return null;
     },
     deleteClient: async (id: string) => {
-        let clients = readData<Client>(clientsPath);
-        let tasks = readData<Task>(tasksPath);
+        const clients = readData<Client>(clientsPath);
+        const tasks = readData<Task>(tasksPath);
         const initialLength = clients.length;
         
         const updatedClients = clients.filter(c => c.id !== id);
