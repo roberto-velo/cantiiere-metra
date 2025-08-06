@@ -256,7 +256,7 @@ export default async function AttivitaPage({ searchParams }: { searchParams?: { 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="space-y-1">
             <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-              <ClipboardList className="h-6 w-6" /> Programmazione Attività
+              <ClipboardList className="h-6 w-6" /> Attività
             </h1>
             <p className="text-primary">
               Crea, visualizza e gestisci le attività dei tecnici.
