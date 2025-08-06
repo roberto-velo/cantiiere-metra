@@ -17,7 +17,6 @@ import { cn } from "@/lib/utils";
 import { PlusCircle, Search, ClipboardList, Calendar, ArrowLeft, ArrowRight, Timer, Filter } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
-import { TaskFilters } from "@/components/task-filters";
 
 const priorityBadge: Record<TaskPriority, string> = {
   Alta: "bg-red-500/20 text-red-700 border border-red-500/30",
@@ -44,28 +43,18 @@ const formatDuration = (totalSeconds: number = 0) => {
 
 
 async function TasksList({ 
-  page, 
-  searchTerm, 
-  status, 
-  dateRange 
+  page,
 }: { 
-  page: number; 
-  searchTerm?: string; 
-  status?: TaskStatus; 
-  dateRange?: string;
+  page: number;
 }) {
-    const { tasks, totalPages } = await localApi.getTasks({ page, searchTerm, status, dateRange });
+    const { tasks, totalPages } = await localApi.getTasks({ page });
     const [clients, technicians] = await Promise.all([
         localApi.getAllClients(),
         localApi.getAllTechnicians()
     ]);
 
-    // Build the query string for pagination links, preserving filters
-    const queryParams = new URLSearchParams();
-    if (searchTerm) queryParams.set('q', searchTerm);
-    if (status) queryParams.set('status', status);
-    if (dateRange) queryParams.set('range', dateRange);
-    const queryString = queryParams.toString();
+    // Build the query string for pagination links
+    const queryString = `page=${page}`;
 
   return (
     <>
@@ -138,7 +127,7 @@ async function TasksList({
               {tasks.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={8} className="text-center h-24">
-                    Nessuna attività trovata. Prova a cambiare i filtri.
+                    Nessuna attività trovata.
                   </TableCell>
                 </TableRow>
               )}
@@ -149,13 +138,13 @@ async function TasksList({
       <CardFooter>
         <div className="flex w-full justify-end gap-2">
             <Button variant="outline" asChild disabled={page <= 1}>
-                <Link href={`/attivita?page=${page - 1}&${queryString}`}>
+                <Link href={`/attivita?page=${page - 1}`}>
                     <ArrowLeft className="mr-2" />
                     Precedente
                 </Link>
             </Button>
             <Button variant="outline" asChild disabled={page >= totalPages}>
-                <Link href={`/attivita?page=${page + 1}&${queryString}`}>
+                <Link href={`/attivita?page=${page + 1}`}>
                     Successivo
                     <ArrowRight className="ml-2" />
                 </Link>
@@ -168,12 +157,7 @@ async function TasksList({
 
 export default async function AttivitaPage({ searchParams }: { searchParams?: { [key: string]: string | string[] | undefined } }) {
   const currentPage = Number(searchParams?.page) || 1;
-  const searchTerm = typeof searchParams?.q === 'string' ? searchParams.q : undefined;
-  const statusParam = typeof searchParams?.status === 'string' ? searchParams.status : undefined;
-  const validStatus = ['Pianificato', 'In corso', 'Completato'].includes(statusParam || '') ? statusParam as TaskStatus : undefined;
-  const dateRange = typeof searchParams?.range === 'string' ? searchParams.range : undefined;
-
-
+  
   return (
     <div className="flex flex-col flex-1">
       <header className="bg-muted/30 border-b p-4 sm:p-6">
@@ -196,15 +180,9 @@ export default async function AttivitaPage({ searchParams }: { searchParams?: { 
       </header>
       <main className="flex-1 p-4 sm:p-6 space-y-6">
             <Card>
-              <CardHeader>
-                <TaskFilters />
-              </CardHeader>
               <Suspense fallback={<div className="text-center p-8">Caricamento...</div>}>
                 <TasksList 
                   page={currentPage} 
-                  searchTerm={searchTerm} 
-                  status={validStatus}
-                  dateRange={dateRange}
                 />
               </Suspense>
             </Card>
