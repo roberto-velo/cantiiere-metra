@@ -54,15 +54,21 @@ const localApi = {
     ) => {
         let filteredTasks: Task[] = JSON.parse(JSON.stringify(tasksData));
         const clients = await localApi.getAllClients();
+        const technicians = await localApi.getAllTechnicians();
 
-        // 1. Filter by searchTerm (only client name)
+        // 1. Filter by searchTerm (client, technician, or description)
         if (searchTerm) {
             const lowercasedTerm = searchTerm.toLowerCase();
             filteredTasks = filteredTasks.filter(task => {
                 const client = clients.find(c => c.id === task.clientId);
+                const technician = technicians.find(t => t.id === task.technicianId);
                 const clientName = client ? client.name.toLowerCase() : '';
+                const technicianName = technician ? `${technician.firstName.toLowerCase()} ${technician.lastName.toLowerCase()}` : '';
+                const description = task.description.toLowerCase();
                 
-                return clientName.includes(lowercasedTerm);
+                return clientName.includes(lowercasedTerm) || 
+                       technicianName.includes(lowercasedTerm) || 
+                       description.includes(lowercasedTerm);
             });
         }
 

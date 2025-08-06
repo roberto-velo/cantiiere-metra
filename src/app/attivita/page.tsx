@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -14,10 +13,13 @@ import {
 import localApi from "@/lib/data";
 import type { TaskPriority, TaskStatus } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { PlusCircle, Search, ClipboardList, Calendar, ArrowLeft, ArrowRight, Timer, Filter } from "lucide-react";
+import { PlusCircle, ClipboardList, ArrowLeft, ArrowRight, Calendar, List } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import { TaskFilters } from "@/components/task-filters";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TaskCalendar } from "@/components/task-calendar";
+
 
 const priorityBadge: Record<TaskPriority, string> = {
   Alta: "bg-red-500/20 text-red-700 border border-red-500/30",
@@ -174,11 +176,19 @@ async function TasksList({
   );
 }
 
-export default function AttivitaPage({ searchParams }: { searchParams?: { [key: string]: string | string[] | undefined } }) {
+export default async function AttivitaPage({ searchParams }: { searchParams?: { [key: string]: string | string[] | undefined } }) {
   const currentPage = Number(searchParams?.page) || 1;
   const dateRange = searchParams?.range as string | undefined;
   const searchTerm = searchParams?.q as string | undefined;
   const date = searchParams?.date as string | undefined;
+
+  // Fetch all tasks for the calendar view, applying filters
+  const { tasks: allTasks } = await localApi.getTasks({
+    limit: 1000, // A large number to get all tasks
+    dateRange,
+    searchTerm,
+    date
+  });
   
   return (
     <div className="flex flex-col flex-1">
@@ -201,19 +211,36 @@ export default function AttivitaPage({ searchParams }: { searchParams?: { [key: 
         </div>
       </header>
       <main className="flex-1 p-4 sm:p-6 space-y-6">
-            <Card>
-                <CardHeader>
-                    <TaskFilters />
-                </CardHeader>
-              <Suspense fallback={<div className="text-center p-8">Caricamento...</div>}>
-                <TasksList 
-                  page={currentPage} 
-                  dateRange={dateRange}
-                  searchTerm={searchTerm}
-                  date={date}
-                />
-              </Suspense>
-            </Card>
+            <Tabs defaultValue="list" className="w-full">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <TaskFilters />
+                  <TabsList>
+                      <TabsTrigger value="list"><List className="mr-2"/>Lista</TabsTrigger>
+                      <TabsTrigger value="calendar"><Calendar className="mr-2"/>Calendario</TabsTrigger>
+                  </TabsList>
+              </div>
+                <TabsContent value="list">
+                  <Card>
+                    <Suspense fallback={<div className="text-center p-8">Caricamento...</div>}>
+                        <TasksList 
+                        page={currentPage} 
+                        dateRange={dateRange}
+                        searchTerm={searchTerm}
+                        date={date}
+                        />
+                    </Suspense>
+                  </Card>
+                </TabsContent>
+                <TabsContent value="calendar">
+                   <Card>
+                    <CardContent className="p-2 md:p-4">
+                         <Suspense fallback={<div className="text-center p-8">Caricamento...</div>}>
+                            <TaskCalendar tasks={allTasks} />
+                         </Suspense>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+            </Tabs>
       </main>
     </div>
   );
