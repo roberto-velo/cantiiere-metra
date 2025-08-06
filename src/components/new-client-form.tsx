@@ -131,7 +131,7 @@ export function NewClientForm() {
               <CardHeader>
                 <CardTitle>Anagrafica Cliente</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-8">
+              <CardContent className="space-y-6">
                 <FormField
                   control={form.control}
                   name="name"
@@ -145,7 +145,7 @@ export function NewClientForm() {
                     </FormItem>
                   )}
                 />
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
                     control={form.control}
                     name="email"
@@ -196,8 +196,8 @@ export function NewClientForm() {
                         Informazioni Piscina (Opzionale)
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <CardContent className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <FormField
                             control={form.control}
                             name="poolType"
@@ -233,7 +233,7 @@ export function NewClientForm() {
                             )}
                         />
                     </div>
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <FormField
                             control={form.control}
                             name="poolVolume"

@@ -35,12 +35,8 @@ export default async function ClientDetailPage({ params, searchParams }: { param
     notFound();
   }
 
-  // Determine the back path
   const backPath = searchParams.from || '/clienti';
 
-
-  // For now, we fetch all tasks. In a real-world scenario with many tasks,
-  // this should be paginated.
   const clientTasks = await localApi.getTasksByClientId(client.id);
 
   const clientInfo = [
@@ -62,7 +58,7 @@ export default async function ClientDetailPage({ params, searchParams }: { param
   return (
     <div className="flex flex-col flex-1" id="client-detail-page">
       <header className="bg-muted/30 border-b p-4 sm:p-6">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-4">
             <Button variant="outline" size="icon" asChild>
                 <Link href={backPath}>
@@ -70,14 +66,16 @@ export default async function ClientDetailPage({ params, searchParams }: { param
                     <span className="sr-only">Torna indietro</span>
                 </Link>
             </Button>
-            <div>
-                <h1 className="text-2xl font-bold tracking-tight">{client.name}</h1>
+            <div className="flex-1">
+                <h1 className="text-xl sm:text-2xl font-bold tracking-tight">{client.name}</h1>
                 <p className="text-primary">
                 Codice cliente: <span className="font-semibold">{client.clientCode}</span>
                 </p>
             </div>
           </div>
-          <ClientActions client={client} />
+          <div id="client-actions-wrapper" className="self-end sm:self-auto">
+            <ClientActions client={client} />
+          </div>
         </div>
       </header>
 
@@ -94,7 +92,7 @@ export default async function ClientDetailPage({ params, searchParams }: { param
                     <info.icon className="h-5 w-5 mt-1 text-primary" />
                     <div>
                       <p className="font-medium text-primary">{info.label}</p>
-                      <a href={info.href} className="font-semibold text-foreground hover:underline">
+                      <a href={info.href} className="font-semibold text-foreground hover:underline break-all">
                         {info.value}
                       </a>
                     </div>
@@ -123,7 +121,7 @@ export default async function ClientDetailPage({ params, searchParams }: { param
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
                         {poolInfo.map((info) => (
                             <li key={info.label} className="flex items-start gap-3">
                                 <div>
@@ -144,42 +142,44 @@ export default async function ClientDetailPage({ params, searchParams }: { param
                 Storico Lavorazioni
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-primary">Data</TableHead>
-                    <TableHead className="text-primary">Descrizione</TableHead>
-                    <TableHead className="text-primary">Stato</TableHead>
-                    <TableHead className="text-right"></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {clientTasks.length > 0 ? (
-                    clientTasks.map((task) => (
-                      <TableRow key={task.id}>
-                        <TableCell>{task.date}</TableCell>
-                        <TableCell>{task.description}</TableCell>
-                        <TableCell>{task.status}</TableCell>
-                        <TableCell className="text-right">
-                          <Button asChild variant="ghost" size="sm">
-                            <Link href={`/attivita/${task.id}`}>Dettagli</Link>
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
+            <CardContent className="p-0 sm:p-6">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
                     <TableRow>
-                      <TableCell colSpan={4} className="text-center h-24">Nessuna attività trovata.</TableCell>
+                      <TableHead className="text-primary">Data</TableHead>
+                      <TableHead className="text-primary">Descrizione</TableHead>
+                      <TableHead className="text-primary">Stato</TableHead>
+                      <TableHead className="text-right"></TableHead>
                     </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {clientTasks.length > 0 ? (
+                      clientTasks.map((task) => (
+                        <TableRow key={task.id}>
+                          <TableCell className="whitespace-nowrap">{task.date}</TableCell>
+                          <TableCell>{task.description}</TableCell>
+                          <TableCell>{task.status}</TableCell>
+                          <TableCell className="text-right">
+                            <Button asChild variant="ghost" size="sm">
+                              <Link href={`/attivita/${task.id}`}>Dettagli</Link>
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={4} className="text-center h-24">Nessuna attività trovata.</TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5" />
                 Documenti Allegati
@@ -190,27 +190,29 @@ export default async function ClientDetailPage({ params, searchParams }: { param
               </Button>
             </CardHeader>
             <CardContent>
-              {allDocuments.length > 0 ? (
-                 <ul className="space-y-2">
-                    {allDocuments.map((doc) => (
-                      <li
-                        key={doc.id}
-                        className="flex items-center justify-between rounded-md border p-3"
-                      >
-                        <span className="font-medium">{doc.name}</span>
-                        <Button variant="ghost" size="sm" asChild>
-                          <a href={doc.url} download>
-                            Scarica
-                          </a>
-                        </Button>
-                      </li>
-                    ))}
-                  </ul>
-              ) : (
-                 <p className="text-sm text-center text-muted-foreground py-4">
-                    Nessun documento allegato.
-                </p>
-              )}
+               <div className="overflow-x-auto">
+                {allDocuments.length > 0 ? (
+                  <ul className="space-y-2">
+                      {allDocuments.map((doc) => (
+                        <li
+                          key={doc.id}
+                          className="flex items-center justify-between rounded-md border p-3 min-w-[300px]"
+                        >
+                          <span className="font-medium truncate pr-4">{doc.name}</span>
+                          <Button variant="ghost" size="sm" asChild>
+                            <a href={doc.url} download>
+                              Scarica
+                            </a>
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                ) : (
+                  <p className="text-sm text-center text-muted-foreground py-4">
+                      Nessun documento allegato.
+                  </p>
+                )}
+               </div>
             </CardContent>
           </Card>
         </div>

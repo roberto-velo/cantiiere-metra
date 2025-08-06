@@ -34,14 +34,14 @@ async function ClientsList({ page, searchTerm }: { page: number, searchTerm?: st
 
   return (
     <>
-      <CardContent>
+      <CardContent className="p-0 sm:p-6">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead className="text-primary">Nome</TableHead>
-                <TableHead className="text-primary">Email</TableHead>
-                <TableHead className="text-primary">Telefono</TableHead>
+                <TableHead className="text-primary hidden sm:table-cell">Email</TableHead>
+                <TableHead className="text-primary hidden md:table-cell">Telefono</TableHead>
                 <TableHead className="text-right text-primary">Azioni</TableHead>
               </TableRow>
             </TableHeader>
@@ -51,9 +51,9 @@ async function ClientsList({ page, searchTerm }: { page: number, searchTerm?: st
                   <TableCell className="font-medium">
                     {client.name}
                   </TableCell>
-                  <TableCell>{client.email}</TableCell>
-                  <TableCell>{client.phone}</TableCell>
-                  <TableCell className="text-right space-x-2">
+                  <TableCell className="hidden sm:table-cell">{client.email}</TableCell>
+                  <TableCell className="hidden md:table-cell">{client.phone}</TableCell>
+                  <TableCell className="text-right space-x-2 whitespace-nowrap">
                     <Button variant="outline" size="sm" asChild>
                       <Link href={`/clienti/${client.id}?from=/clienti`}>
                         Visualizza
@@ -63,7 +63,8 @@ async function ClientsList({ page, searchTerm }: { page: number, searchTerm?: st
                       <Link
                         href={`/attivita/nuova?clientId=${client.id}`}
                       >
-                        Nuova Attività
+                        <span className="hidden sm:inline">Nuova Attività</span>
+                        <PlusCircle className="sm:hidden" />
                       </Link>
                     </Button>
                   </TableCell>
@@ -81,15 +82,17 @@ async function ClientsList({ page, searchTerm }: { page: number, searchTerm?: st
         </div>
       </CardContent>
       <CardFooter>
-        <div className="flex w-full justify-end gap-2">
+        <div className="flex w-full justify-between sm:justify-end gap-2">
             <Button variant="outline" asChild disabled={page <= 1}>
                 <Link href={prevPage}>
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Precedente
+                    <ArrowLeft className="mr-0 sm:mr-2 h-4 w-4" />
+                    <span className="hidden sm:inline">Precedente</span>
                 </Link>
             </Button>
             <Button variant="outline" asChild disabled={page >= totalPages}>
                 <Link href={nextPage}>
-                    Successivo <ArrowRight className="ml-2 h-4 w-4" />
+                    <span className="hidden sm:inline">Successivo</span>
+                    <ArrowRight className="ml-0 sm:ml-2 h-4 w-4" />
                 </Link>
             </Button>
         </div>
@@ -106,7 +109,7 @@ export default function ClientiPage({ searchParams }: { searchParams?: { page?: 
   return (
     <div className="flex flex-col flex-1">
       <header className="bg-muted/30 border-b p-4 sm:p-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="space-y-1">
             <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
               <UsersRound className="h-6 w-6" /> Clienti

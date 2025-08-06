@@ -22,6 +22,14 @@ import type { Client } from "@/lib/types";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { MoreVertical } from "lucide-react";
+
 
 export function ClientActions({ client }: { client: Client }) {
   const router = useRouter();
@@ -55,6 +63,7 @@ export function ClientActions({ client }: { client: Client }) {
   
   const handleDownloadPdf = async () => {
     const mainContent = document.getElementById('client-detail-page');
+    const actionsWrapper = document.getElementById('client-actions-wrapper');
     if (!mainContent) {
         toast({
             title: "Errore",
@@ -66,17 +75,13 @@ export function ClientActions({ client }: { client: Client }) {
     
     setIsDownloading(true);
 
+    // Hide actions before capturing
+    if (actionsWrapper) actionsWrapper.style.display = 'none';
+
     try {
         const canvas = await html2canvas(mainContent, {
-            scale: 2, // Higher scale for better quality
-            useCORS: true, // Important for external images
-            onclone: (document) => {
-              // Hide action buttons in the cloned document for the PDF
-              const actions = document.getElementById('client-actions');
-              if (actions) {
-                actions.style.display = 'none';
-              }
-            }
+            scale: 2, 
+            useCORS: true, 
         });
 
         const imgData = canvas.toDataURL('image/png');
@@ -87,23 +92,17 @@ export function ClientActions({ client }: { client: Client }) {
         });
 
         const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
         const imgWidth = canvas.width;
         const imgHeight = canvas.height;
         const ratio = imgWidth / imgHeight;
         const widthInPdf = pdfWidth;
         const heightInPdf = widthInPdf / ratio;
         
-        let position = 0;
-        let remainingHeight = imgHeight * (widthInPdf / imgWidth);
+        const totalPdfPages = Math.ceil(heightInPdf / pdf.internal.pageSize.getHeight());
 
-        while (remainingHeight > 0) {
-            pdf.addImage(imgData, 'PNG', 0, position, widthInPdf, heightInPdf);
-            remainingHeight -= pdfHeight;
-            if (remainingHeight > 0) {
-                pdf.addPage();
-                position = -pdfHeight;
-            }
+        for (let i = 0; i < totalPdfPages; i++) {
+          if (i > 0) pdf.addPage();
+          pdf.addImage(imgData, 'PNG', 0, -i * pdf.internal.pageSize.getHeight(), widthInPdf, heightInPdf);
         }
         
         pdf.save(`scheda-cliente-${client.name.replace(/\s/g, '_')}.pdf`);
@@ -116,56 +115,106 @@ export function ClientActions({ client }: { client: Client }) {
         });
         console.error("Error generating PDF: ", error);
     } finally {
+        // Show actions again
+        if (actionsWrapper) actionsWrapper.style.display = 'flex';
         setIsDownloading(false);
     }
   };
 
-
   return (
-    <div className="flex items-center gap-2" id="client-actions">
-       <Button variant="outline" onClick={handleDownloadPdf} disabled={isDownloading}>
-        {isDownloading ? (
-          <>
-            <Download className="mr-2 h-4 w-4 animate-pulse" />
-            Download...
-          </>
-        ) : (
-          <>
-            <Download className="mr-2 h-4 w-4" />
-            Scarica PDF
-          </>
-        )}
-      </Button>
-      <Button variant="outline" asChild>
-        <Link href={`/clienti/${client.id}/modifica`}>
-          <Pencil className="mr-2 h-4 w-4" />
-          Modifica
-        </Link>
-      </Button>
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button variant="destructive">
-            <Trash2 className="mr-2 h-4 w-4" />
-            Elimina
-          </Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Sei sicuro?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Questa azione non può essere annullata. L'eliminazione del cliente
-              comporterà la rimozione di tutti i dati associati, incluse le
-              attività passate.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Annulla</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteClient}>
-              Continua
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+    <>
+      {/* Desktop View */}
+      <div className="hidden sm:flex items-center gap-2">
+        <Button variant="outline" onClick={handleDownloadPdf} disabled={isDownloading}>
+          {isDownloading ? (
+            <>
+              <Download className="mr-2 h-4 w-4 animate-pulse" />
+              Download...
+            </>
+          ) : (
+            <>
+              <Download className="mr-2 h-4 w-4" />
+              PDF
+            </>
+          )}
+        </Button>
+        <Button variant="outline" asChild>
+          <Link href={`/clienti/${client.id}/modifica`}>
+            <Pencil className="mr-2 h-4 w-4" />
+            Modifica
+          </Link>
+        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="destructive">
+              <Trash2 className="mr-2 h-4 w-4" />
+              Elimina
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Sei sicuro?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Questa azione non può essere annullata. L'eliminazione del cliente
+                comporterà la rimozione di tutti i dati associati, incluse le
+                attività passate.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Annulla</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDeleteClient}>
+                Continua
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+
+      {/* Mobile View */}
+       <div className="sm:hidden">
+         <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <MoreVertical className="h-5 w-5" />
+                <span className="sr-only">Altre azioni</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onSelect={() => router.push(`/clienti/${client.id}/modifica`)}>
+                <Pencil className="mr-2 h-4 w-4" />
+                <span>Modifica</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={handleDownloadPdf} disabled={isDownloading}>
+                 <Download className="mr-2 h-4 w-4" />
+                <span>{isDownloading ? 'Download...' : 'Scarica PDF'}</span>
+              </DropdownMenuItem>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                   <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600 focus:text-red-600 focus:bg-red-50">
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    <span>Elimina</span>
+                  </DropdownMenuItem>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Sei sicuro?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                     Questa azione non può essere annullata. L'eliminazione del cliente
+                      comporterà la rimozione di tutti i dati associati, incluse le
+                      attività passate.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Annulla</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteClient}>
+                      Continua
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </DropdownMenuContent>
+          </DropdownMenu>
+      </div>
+    </>
   );
 }

@@ -98,9 +98,9 @@ export default async function DashboardPage() {
                   <thead className="bg-muted/50">
                     <tr className="border-b">
                       <th className="text-left font-semibold p-4 text-primary">Descrizione</th>
-                      <th className="text-left font-semibold p-4 text-primary">Cliente</th>
-                      <th className="text-left font-semibold p-4 text-primary">Data</th>
-                      <th className="text-left font-semibold p-4 text-primary">Tempo Impiegato</th>
+                      <th className="text-left font-semibold p-4 text-primary hidden sm:table-cell">Cliente</th>
+                      <th className="text-left font-semibold p-4 text-primary hidden md:table-cell">Data</th>
+                      <th className="text-left font-semibold p-4 text-primary hidden lg:table-cell">Tempo Impiegato</th>
                       <th className="text-left font-semibold p-4 text-primary">Stato</th>
                       <th className="text-left font-semibold p-4 text-primary"></th>
                     </tr>
@@ -109,15 +109,15 @@ export default async function DashboardPage() {
                     {tasks.slice(0, 5).map((task) => (
                     <tr key={task.id} className="border-b last:border-b-0 hover:bg-muted/50 transition-colors">
                         <td className="p-4 font-medium text-foreground">{task.description}</td>
-                        <td className="p-4 text-foreground">
+                        <td className="p-4 text-foreground hidden sm:table-cell">
                         {
                             clients.find(c => c.id === task.clientId)?.name 
                             ? clients.find(c => c.id === task.clientId)?.name 
                             : 'N/A'
                         }
                         </td>
-                         <td className="p-4 text-foreground">{task.date}</td>
-                        <td className="p-4 text-foreground">
+                         <td className="p-4 text-foreground hidden md:table-cell">{task.date}</td>
+                        <td className="p-4 text-foreground hidden lg:table-cell">
                             {task.status === "Completato" ? formatDuration(task.duration) : '-'}
                         </td>
                         <td className="p-4 text-muted-foreground">

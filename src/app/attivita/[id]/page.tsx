@@ -50,7 +50,7 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
   return (
     <div className="flex flex-col flex-1">
       <header className="bg-muted/30 border-b p-4 sm:p-6">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-4">
              <Button variant="outline" size="icon" asChild>
                 <Link href="/attivita">
@@ -58,14 +58,16 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
                     <span className="sr-only">Torna indietro</span>
                 </Link>
             </Button>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">
+            <div className="flex-1">
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
                 Dettaglio Attività
               </h1>
-              <p className="text-primary">{task.description}</p>
+              <p className="text-primary truncate">{task.description}</p>
             </div>
           </div>
-          <TaskActions taskId={task.id} description={task.description} />
+          <div className="self-end sm:self-auto">
+            <TaskActions taskId={task.id} description={task.description} />
+          </div>
         </div>
       </header>
 
@@ -98,7 +100,7 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <CardTitle className="flex items-center gap-2">
                 <Camera className="h-5 w-5" />
                 Foto
@@ -124,7 +126,7 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5" />
                 File Allegati
@@ -132,17 +134,19 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
               <FileUpload taskId={task.id} uploadType="document" />
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2">
-                {task.documents.map((doc) => (
-                    <li key={doc.id} className="flex items-center justify-between rounded-md border p-3">
-                        <span className="font-medium">{doc.name}</span>
-                        <Button variant="ghost" size="sm" asChild>
-                            <a href={doc.url} download>Scarica</a>
-                        </Button>
-                    </li>
-                ))}
-                {task.documents.length === 0 && <p className="text-muted-foreground">Nessun documento allegato.</p>}
-              </ul>
+               <div className="overflow-x-auto">
+                <ul className="space-y-2">
+                    {task.documents.map((doc) => (
+                        <li key={doc.id} className="flex items-center justify-between rounded-md border p-3 min-w-[300px]">
+                            <span className="font-medium truncate pr-4">{doc.name}</span>
+                            <Button variant="ghost" size="sm" asChild>
+                                <a href={doc.url} download>Scarica</a>
+                            </Button>
+                        </li>
+                    ))}
+                    {task.documents.length === 0 && <p className="text-muted-foreground text-center py-4">Nessun documento allegato.</p>}
+                </ul>
+              </div>
             </CardContent>
           </Card>
         </div>

@@ -65,17 +65,17 @@ export function TaskFilters() {
         <div className="relative flex-1 min-w-48">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-                placeholder="ricerca solo per cliente"
+                placeholder="Cerca per cliente..."
                 className="pl-10"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
             />
         </div>
         <div className="flex flex-wrap items-center gap-2">
-            <Button variant={!currentRange ? 'default' : 'outline'} size="sm" onClick={() => handleFilterChange('range', null)} disabled={isPending}>Tutte le date</Button>
-            <Button variant={currentRange === 'week' ? 'default' : 'outline'} size="sm" onClick={() => handleFilterChange('range', 'week')} disabled={isPending}>Questa Settimana</Button>
-            <Button variant={currentRange === 'month' ? 'default' : 'outline'} size="sm" onClick={() => handleFilterChange('range', 'month')} disabled={isPending}>Questo Mese</Button>
-            <Button variant={currentRange === 'year' ? 'default' : 'outline'} size="sm" onClick={() => handleFilterChange('range', 'year')} disabled={isPending}>Questo Anno</Button>
+            <Button variant={!currentRange ? 'default' : 'outline'} size="sm" onClick={() => handleFilterChange('range', null)} disabled={isPending}>Tutte</Button>
+            <Button variant={currentRange === 'week' ? 'default' : 'outline'} size="sm" onClick={() => handleFilterChange('range', 'week')} disabled={isPending}>Settimana</Button>
+            <Button variant={currentRange === 'month' ? 'default' : 'outline'} size="sm" onClick={() => handleFilterChange('range', 'month')} disabled={isPending}>Mese</Button>
+            <Button variant={currentRange === 'year' ? 'default' : 'outline'} size="sm" onClick={() => handleFilterChange('range', 'year')} disabled={isPending}>Anno</Button>
         </div>
     </div>
   );

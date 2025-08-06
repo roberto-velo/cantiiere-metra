@@ -79,7 +79,7 @@ async function TasksList({
 
   return (
     <>
-      <CardContent>
+      <CardContent className="p-0 sm:p-6">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -114,7 +114,7 @@ async function TasksList({
                     <TableCell>
                       <span
                         className={cn(
-                          "px-2 py-1 rounded-full text-xs font-medium",
+                          "px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap",
                           statusBadge[task.status]
                         )}
                       >
@@ -124,14 +124,14 @@ async function TasksList({
                     <TableCell>
                       <span
                         className={cn(
-                          "px-2 py-1 rounded-full text-xs font-medium",
+                          "px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap",
                           priorityBadge[task.priority]
                         )}
                       >
                         {task.priority}
                       </span>
                     </TableCell>
-                    <TableCell>{task.date} {task.time}</TableCell>
+                    <TableCell className="whitespace-nowrap">{task.date} {task.time}</TableCell>
                     <TableCell>
                       {task.status === "Completato" ? formatDuration(task.duration) : '-'}
                     </TableCell>
@@ -157,17 +157,17 @@ async function TasksList({
         </div>
       </CardContent>
       <CardFooter>
-        <div className="flex w-full justify-end gap-2">
+        <div className="flex w-full justify-between sm:justify-end gap-2">
             <Button variant="outline" asChild disabled={page <= 1}>
                 <Link href={prevPage}>
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Precedente
+                    <ArrowLeft className="mr-0 sm:mr-2 h-4 w-4" />
+                    <span className="hidden sm:inline">Precedente</span>
                 </Link>
             </Button>
             <Button variant="outline" asChild disabled={page >= totalPages}>
                 <Link href={nextPage}>
-                    Successivo
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                     <span className="hidden sm:inline">Successivo</span>
+                    <ArrowRight className="ml-0 sm:ml-2 h-4 w-4" />
                 </Link>
             </Button>
         </div>
@@ -195,7 +195,7 @@ export default async function AttivitaPage({ searchParams }: { searchParams?: { 
   return (
     <div className="flex flex-col flex-1">
       <header className="bg-muted/30 border-b p-4 sm:p-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="space-y-1">
             <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
               <ClipboardList className="h-6 w-6" /> Programmazione Attività
@@ -214,9 +214,9 @@ export default async function AttivitaPage({ searchParams }: { searchParams?: { 
       </header>
       <main className="flex-1 p-4 sm:p-6 space-y-6">
             <Tabs defaultValue={defaultView} className="w-full">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex flex-col-reverse md:flex-row md:items-center justify-between gap-4">
                   <TaskFilters />
-                  <TabsList>
+                  <TabsList className="self-start md:self-auto">
                       <TabsTrigger value="list"><List className="mr-2"/>Lista</TabsTrigger>
                       <TabsTrigger value="calendar"><Calendar className="mr-2"/>Calendario</TabsTrigger>
                   </TabsList>
@@ -235,7 +235,7 @@ export default async function AttivitaPage({ searchParams }: { searchParams?: { 
                 </TabsContent>
                 <TabsContent value="calendar">
                    <Card>
-                    <CardContent className="p-2 md:p-4">
+                    <CardContent className="p-0 sm:p-2 md:p-4">
                          <Suspense fallback={<div className="text-center p-8">Caricamento...</div>}>
                             <TaskCalendar tasks={allTasks} clients={clients} />
                          </Suspense>
