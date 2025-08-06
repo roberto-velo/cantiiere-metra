@@ -126,7 +126,7 @@ export default async function DashboardPage() {
                         </span>
                         </td>
                         <td className="p-4 text-right">
-                        <Button asChild variant="ghost" size="sm">
+                        <Button asChild variant="outline" size="sm">
                             <Link href={`/attivita/${task.id}`}>Dettagli</Link>
                         </Button>
                         </td>
