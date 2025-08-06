@@ -6,7 +6,7 @@ import { Input } from "./ui/input";
 import { Search } from "lucide-react";
 import { Button } from "./ui/button";
 import { useCallback } from "react";
-import { cn } from "@/lib/utils";
+import type { TaskStatus } from "@/lib/types";
 
 export function TaskFilters() {
   const router = useRouter();
@@ -14,47 +14,53 @@ export function TaskFilters() {
   const searchParams = useSearchParams();
   
   const searchTerm = searchParams.get("q") || "";
-  const currentStatus = searchParams.get('status');
+  const currentStatus = searchParams.get('status') as TaskStatus | null;
   const currentRange = searchParams.get('range');
 
   const createQueryString = useCallback(
-    (name: string, value: string) => {
+    (updates: { name: string; value: string | null }[]) => {
       const params = new URLSearchParams(searchParams.toString());
-      if (params.get(name) === value) {
-        params.delete(name);
-      } else {
-        params.set(name, value);
-      }
       params.delete('page');
+      
+      updates.forEach(({ name, value }) => {
+        if (value === null) {
+          params.delete(name);
+        } else {
+          params.set(name, value);
+        }
+      });
+      
       return params.toString();
     },
     [searchParams]
   );
   
-  const handleFilterClick = (name: 'status' | 'range', value: string) => {
-    router.replace(`${pathname}?${createQueryString(name, value)}`);
+  const handleStatusClick = (value: TaskStatus) => {
+    const newQueryString = createQueryString([{ 
+        name: 'status', 
+        value: currentStatus === value ? null : value 
+    }]);
+    router.replace(`${pathname}?${newQueryString}`);
+  };
+
+  const handleRangeClick = (value: string) => {
+     const newQueryString = createQueryString([{ 
+        name: 'range', 
+        value: currentRange === value ? null : value 
+    }]);
+    router.replace(`${pathname}?${newQueryString}`);
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete('page');
-    if (e.target.value) {
-      params.set("q", e.target.value);
-    } else {
-      params.delete("q");
-    }
-    router.replace(`${pathname}?${params.toString()}`);
+    const newQueryString = createQueryString([{ name: 'q', value: e.target.value || null }]);
+    router.replace(`${pathname}?${newQueryString}`);
   };
 
   const resetFilters = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete('status');
-    params.delete('range');
-    params.delete('page');
-    router.replace(`${pathname}?${params.toString()}`);
+    router.replace(pathname);
   };
   
-  const hasActiveFilters = !!currentStatus || !!currentRange;
+  const hasActiveFilters = !!currentStatus || !!currentRange || !!searchTerm;
 
   return (
     <div className="space-y-4">
@@ -74,14 +80,14 @@ export function TaskFilters() {
           
           <div className="border-l h-6 mx-2"></div>
 
-          <Button variant={currentStatus === 'Pianificato' ? 'default' : 'outline'} size="sm" onClick={() => handleFilterClick('status', 'Pianificato')}>Pianificate</Button>
-          <Button variant={currentStatus === 'In corso' ? 'default' : 'outline'} size="sm" onClick={() => handleFilterClick('status', 'In corso')}>In Corso</Button>
-          <Button variant={currentStatus === 'Completato' ? 'default' : 'outline'} size="sm" onClick={() => handleFilterClick('status', 'Completato')}>Completate</Button>
+          <Button variant={currentStatus === 'Pianificato' ? 'default' : 'outline'} size="sm" onClick={() => handleStatusClick('Pianificato')}>Pianificate</Button>
+          <Button variant={currentStatus === 'In corso' ? 'default' : 'outline'} size="sm" onClick={() => handleStatusClick('In corso')}>In Corso</Button>
+          <Button variant={currentStatus === 'Completato' ? 'default' : 'outline'} size="sm" onClick={() => handleStatusClick('Completato')}>Completate</Button>
           
           <div className="border-l h-6 mx-2"></div>
           
-          <Button variant={currentRange === 'week' ? 'default' : 'outline'} size="sm" onClick={() => handleFilterClick('range', 'week')}>Questa Settimana</Button>
-          <Button variant={currentRange === 'month' ? 'default' : 'outline'} size="sm" onClick={() => handleFilterClick('range', 'month')}>Questo Mese</Button>
+          <Button variant={currentRange === 'week' ? 'default' : 'outline'} size="sm" onClick={() => handleRangeClick('week')}>Questa Settimana</Button>
+          <Button variant={currentRange === 'month' ? 'default' : 'outline'} size="sm" onClick={() => handleRangeClick('month')}>Questo Mese</Button>
       </div>
     </div>
   );
