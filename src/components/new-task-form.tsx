@@ -124,7 +124,6 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
   const clientInfo = selectedClient ? [
     { icon: Phone, label: "Telefono", value: selectedClient.phone },
     { icon: Mail, label: "Email", value: selectedClient.email },
-    { icon: MapPin, label: "Indirizzo", value: selectedClient.address },
   ] : [];
 
   return (
@@ -319,13 +318,17 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
                                     </div>
                                 </li>
                                 ))}
+                                <li className="flex items-start gap-4">
+                                  <MapPin className="h-5 w-5 text-primary mt-1" />
+                                  <div>
+                                    <p className="font-medium text-primary">Indirizzo</p>
+                                     <a href={selectedClient.mapUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-foreground hover:underline flex items-center gap-2">
+                                        {selectedClient.address}
+                                        <Navigation className="h-4 w-4 text-primary" />
+                                      </a>
+                                  </div>
+                                </li>
                             </ul>
-                            <Button asChild className="w-full mt-4">
-                                <a href={selectedClient.mapUrl} target="_blank" rel="noopener noreferrer">
-                                <Navigation className="mr-2 h-4 w-4" />
-                                Avvia Navigazione
-                                </a>
-                            </Button>
                         </CardContent>
                     </Card>
                     <Card>

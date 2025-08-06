@@ -123,7 +123,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
           )}
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader>
               <CardTitle className="flex items-center gap-2 text-foreground">
                 <ClipboardList className="h-5 w-5" />
                 Storico Lavorazioni
