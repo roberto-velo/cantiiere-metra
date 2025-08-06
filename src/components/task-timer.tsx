@@ -106,10 +106,10 @@ export function TaskTimer({ initialStatus, initialDuration = 0, onStatusChange, 
             {isRunning ? 'In Corso' : status}
         </div>
       </CardHeader>
-      <CardContent className="p-6 pt-2 flex items-center justify-between">
-        <div className="relative">
+      <CardContent className="p-6 pt-2 flex flex-col items-center justify-center gap-4">
+        <div className="relative text-center">
              <div className={cn(
-                "text-4xl font-bold font-sans tracking-tighter rounded-md py-1 transition-colors duration-300", 
+                "text-5xl font-bold font-sans tracking-tighter rounded-md py-1 transition-colors duration-300", 
                 currentStyle.text
             )}>
               {formatTime(seconds)}
@@ -119,17 +119,17 @@ export function TaskTimer({ initialStatus, initialDuration = 0, onStatusChange, 
        
         <div className="flex justify-center gap-2">
           {!isRunning ? (
-            <Button onClick={handleStart} disabled={isCompleted} size="sm">
+             <Button onClick={handleStart} disabled={isCompleted}>
               <Play className="mr-2" />
               {status === 'In corso' ? 'Riprendi' : 'Inizia'}
             </Button>
           ) : (
-            <Button onClick={handlePause} variant="outline" size="sm">
+            <Button onClick={handlePause} variant="outline">
               <Pause className="mr-2" />
               Pausa
             </Button>
           )}
-          <Button onClick={handleComplete} variant="destructive" disabled={isCompleted || !canTerminate} size="sm">
+          <Button onClick={handleComplete} variant="destructive" disabled={isCompleted || !canTerminate}>
             <Square className="mr-2" />
             Termina
           </Button>

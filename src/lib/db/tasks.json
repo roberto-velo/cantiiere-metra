@@ -1,18 +1,18 @@
 [
   {
-    "id": "1754486962261",
+    "id": "1754487177751",
     "clientId": "1754475851601",
     "technicianIds": [
       "1754475670329"
     ],
     "date": "2025-08-07",
-    "time": "15:29",
-    "description": "aaaaaaaa",
+    "time": "15:32",
+    "description": "aaaaaaaaa",
     "priority": "Media",
     "notes": "",
     "photos": [],
     "documents": [],
-    "status": "Pianificato",
-    "duration": 0
+    "status": "Completato",
+    "duration": 3
   }
 ]
