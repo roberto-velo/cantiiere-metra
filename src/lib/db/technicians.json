@@ -1,24 +1,10 @@
-
 [
-    {
-        "id": "1",
-        "firstName": "Mario",
-        "lastName": "Rossi",
-        "phone": "333 1234567",
-        "role": "Idraulico Specializzato",
-        "qualifications": [
-            { "id": "q1", "name": "Certificazione Gas", "expiryDate": "2025-12-31" },
-            { "id": "q2", "name": "Abilitazione Climatizzatori", "expiryDate": "2026-06-30" }
-        ]
-    },
-    {
-        "id": "2",
-        "firstName": "Luigi",
-        "lastName": "Verdi",
-        "phone": "347 7654321",
-        "role": "Elettricista",
-        "qualifications": [
-            { "id": "q3", "name": "PES/PAV", "expiryDate": "2024-10-20" }
-        ]
-    }
+  {
+    "id": "1754475670329",
+    "firstName": "Giorgio",
+    "lastName": "Avoledo",
+    "phone": "3479569334",
+    "role": "idraulico",
+    "qualifications": []
+  }
 ]

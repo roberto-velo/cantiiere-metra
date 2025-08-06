@@ -1,35 +1,16 @@
-
 [
   {
-    "id": "2",
-    "name": "Rossi Costruzioni",
-    "address": "Corso Magenta, 45, 20123 Milano MI",
-    "phone": "02 98765432",
-    "email": "rossi@costruzioni.com",
-    "clientCode": "ROS456",
-    "mapUrl": "https://www.google.com/maps/dir/?api=1&destination=Corso%20Magenta%2C%2045%2C%2020123%20Milano%20MI&travelmode=driving"
-  },
-  {
-    "id": "3",
-    "name": "Verdi Impianti",
-    "address": "Via San Felice, 1, 40122 Bologna BO",
-    "phone": "051 11223344",
-    "email": "amministrazione@verdiimpianti.it",
-    "clientCode": "VER789",
-    "mapUrl": "https://www.google.com/maps/dir/?api=1&destination=Via%20San%20Felice%2C%201%2C%2040122%20Bologna%20BO&travelmode=driving"
-  },
-  {
-    "id": "1754456985711",
+    "id": "1754475851601",
     "name": "roberto",
     "email": "roberto.velo14@gmail.com",
     "phone": "3396187374",
     "address": "via monte cavallo 16 cordenons",
-    "clientCode": "ROB638",
+    "clientCode": "ROB453",
     "mapUrl": "https://www.google.com/maps/dir/?api=1&destination=via%20monte%20cavallo%2016%20cordenons&travelmode=driving",
     "poolType": "Interrata",
     "poolDimensions": "8x4x1.5",
     "poolVolume": "50",
-    "filterType": "A sabbia",
-    "treatmentType": "Centralina sale/PH"
+    "filterType": "Eco Summer",
+    "treatmentType": "Centralina sale"
   }
 ]

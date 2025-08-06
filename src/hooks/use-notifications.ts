@@ -4,7 +4,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { it } from "date-fns/locale";
-import { PlusCircle, Play, Pause, CheckCircle, LucideIcon } from 'lucide-react';
+import { PlusCircle, Play, Pause, CheckCircle, LucideIcon, Bell } from 'lucide-react';
 
 export type NotificationType = 'task-created' | 'task-started' | 'task-paused' | 'task-completed';
 
@@ -56,31 +56,45 @@ export function useNotifications() {
   }, []);
 
   const addNotification = useCallback((text: string, type: NotificationType) => {
-    // This function can be called from client components
-    try {
-      const newNotification = {
-        id: crypto.randomUUID(),
-        text,
-        isoTime: new Date().toISOString(),
-        type,
-      };
+    setNotifications((prev) => {
+      try {
+        const newNotification = {
+          id: crypto.randomUUID(),
+          text,
+          isoTime: new Date().toISOString(),
+          type,
+        };
 
-      setNotifications((prev) => {
         const updatedNotifications = [newNotification, ...prev]
-            .slice(0, MAX_NOTIFICATIONS)
-            .map(n => ({
-                ...n,
-                time: formatDistanceToNow(new Date(n.isoTime), { addSuffix: true, locale: it }),
-                color: colorMap[n.type]
-            }));
+          .slice(0, MAX_NOTIFICATIONS)
+          .map(n => ({
+            ...n,
+            id: n.id,
+            text: n.text,
+            time: formatDistanceToNow(new Date(n.isoTime), { addSuffix: true, locale: it }),
+            type: n.type,
+            color: colorMap[n.type],
+          }));
+        
+        // Save only the essential data to localStorage
+        const storableNotifications = updatedNotifications.map(n => ({
+          id: n.id, 
+          text: n.text, 
+          isoTime: n.isoTime, 
+          type: n.type
+        }));
 
-        localStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(updatedNotifications.map(n => ({id: n.id, text: n.text, isoTime: n.isoTime, type: n.type}))));
+        localStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(storableNotifications));
+        
         return updatedNotifications;
-      });
-    } catch (error) {
+
+      } catch (error) {
         console.error("Failed to save notification to localStorage", error);
-    }
+        return prev; // Return previous state in case of error
+      }
+    });
   }, []);
+
 
   const clearNotifications = useCallback(() => {
     try {
