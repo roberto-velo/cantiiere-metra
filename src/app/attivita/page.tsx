@@ -181,16 +181,16 @@ export default async function AttivitaPage({ searchParams }: { searchParams?: { 
   const dateRange = searchParams?.range as string | undefined;
   const searchTerm = searchParams?.q as string | undefined;
   const date = searchParams?.date as string | undefined;
+  const defaultView = date ? 'list' : 'list';
 
-  const [{ tasks: allTasks }, clients] = await Promise.all([
-    localApi.getTasks({
-      limit: 1000, 
-      dateRange,
-      searchTerm,
-      date,
-    }),
-    localApi.getAllClients(),
-  ]);
+  // Fetch all tasks for the calendar view, applying filters.
+  // The calendar needs all tasks for the given period, not just a paginated subset.
+  const { tasks: allTasks } = await localApi.getTasks({
+    limit: 1000, // A large limit to get all tasks for the calendar
+    dateRange,
+    searchTerm,
+    date,
+  });
 
   return (
     <div className="flex flex-col flex-1">
@@ -213,7 +213,7 @@ export default async function AttivitaPage({ searchParams }: { searchParams?: { 
         </div>
       </header>
       <main className="flex-1 p-4 sm:p-6 space-y-6">
-            <Tabs defaultValue="list" className="w-full">
+            <Tabs defaultValue={defaultView} className="w-full">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <TaskFilters />
                   <TabsList>
@@ -237,7 +237,7 @@ export default async function AttivitaPage({ searchParams }: { searchParams?: { 
                    <Card>
                     <CardContent className="p-2 md:p-4">
                          <Suspense fallback={<div className="text-center p-8">Caricamento...</div>}>
-                            <TaskCalendar tasks={allTasks} clients={clients} />
+                            <TaskCalendar tasks={allTasks} />
                          </Suspense>
                     </CardContent>
                   </Card>
