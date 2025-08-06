@@ -39,6 +39,7 @@ import { useState, useEffect } from "react";
 import type { Client, Technician } from "@/lib/types";
 import { addTaskAction } from "@/lib/actions";
 import { useNotifications } from "@/hooks/use-notifications";
+import { format } from 'date-fns';
 
 const formSchema = z.object({
   clientId: z.string({ required_error: "Il cliente è obbligatorio." }),
@@ -70,7 +71,7 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
     defaultValues: {
       clientId: initialClientId || "",
       technicianIds: [],
-      date: "",
+      date: format(new Date(), 'yyyy-MM-dd'),
       time: "",
       description: "",
       priority: "Media",
@@ -452,5 +453,3 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
     </div>
   );
 }
-
-    
