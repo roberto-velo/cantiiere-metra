@@ -79,7 +79,7 @@ export default async function DashboardPage() {
               </CardHeader>
               <CardContent>
                   <div className="text-3xl font-bold text-foreground">{card.value}</div>
-                  <p className="text-xs text-muted-foreground pt-1">
+                  <p className="text-xs text-foreground pt-1">
                   {card.note}
                   </p>
               </CardContent>
