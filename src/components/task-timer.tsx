@@ -66,15 +66,15 @@ export function TaskTimer({ initialStatus, initialDuration = 0, onStatusChange, 
   }, [status, onStatusChange, isCompleted]);
 
   const handlePause = useCallback(() => {
-    if (isCompleted) return;
+    if (isCompleted || !isRunning) return;
     setIsRunning(false);
     onPause();
-  }, [onPause, isCompleted]);
+  }, [onPause, isCompleted, isRunning]);
 
   const handleComplete = useCallback(() => {
     if(isCompleted) return;
     setIsRunning(false);
-    const newStatus = 'Completato';
+    const newStatus: TaskStatus = 'Completato';
     setStatus(newStatus);
     onComplete(seconds);
   }, [onComplete, seconds, isCompleted]);
@@ -91,6 +91,7 @@ export function TaskTimer({ initialStatus, initialDuration = 0, onStatusChange, 
   };
   
   const timerBgColor = isRunning ? statusColors["In corso"] : statusColors[status];
+  const canTerminate = status === 'In corso' && (isRunning || seconds > 0);
 
 
   return (
@@ -120,7 +121,7 @@ export function TaskTimer({ initialStatus, initialDuration = 0, onStatusChange, 
               Pausa
             </Button>
           )}
-          <Button onClick={handleComplete} variant="destructive" disabled={isCompleted || (!seconds && status !== 'In corso')}>
+          <Button onClick={handleComplete} variant="destructive" disabled={isCompleted || !canTerminate}>
             <Square className="mr-2" />
             Termina
           </Button>

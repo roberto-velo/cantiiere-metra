@@ -25,7 +25,8 @@ export function TaskTimerWrapper({ taskId, initialStatus, initialDuration }: { t
   }
 
   const handleComplete = async (duration: number) => {
-    setStatus('Completato');
+    const newStatus: TaskStatus = 'Completato';
+    setStatus(newStatus);
     await updateTaskDurationAction(taskId, duration);
     addNotification(`Attività #${taskId.slice(-4)} completata`, 'task-completed');
   };
