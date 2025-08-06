@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import localApi from "@/lib/data";
 import type { TaskPriority, TaskStatus } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { PlusCircle, Search, ClipboardList, Calendar, ArrowLeft, ArrowRight } from "lucide-react";
+import { PlusCircle, Search, ClipboardList, Calendar, ArrowLeft, ArrowRight, Timer } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 
@@ -29,6 +29,17 @@ const statusBadge: Record<TaskStatus, string> = {
   Pianificato: "bg-blue-500/20 text-blue-700 border border-blue-500/30",
   "In corso": "bg-orange-500/20 text-orange-700 border border-orange-500/30",
   Completato: "bg-green-500/20 text-green-700 border border-green-500/30",
+};
+
+const formatDuration = (totalSeconds: number = 0) => {
+    if (!totalSeconds) return 'N/A';
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const secs = totalSeconds % 60;
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+      2,
+      "0"
+    )}:${String(secs).padStart(2, "0")}`;
 };
 
 
@@ -52,6 +63,7 @@ async function TasksList({ page }: { page: number }) {
                 <TableHead>Stato</TableHead>
                 <TableHead>Priorità</TableHead>
                 <TableHead>Data</TableHead>
+                <TableHead>Durata</TableHead>
                 <TableHead className="text-right"></TableHead>
               </TableRow>
             </TableHeader>
@@ -93,6 +105,9 @@ async function TasksList({ page }: { page: number }) {
                       </span>
                     </TableCell>
                     <TableCell>{task.date}</TableCell>
+                    <TableCell>
+                      {task.status === "Completato" ? formatDuration(task.duration) : '-'}
+                    </TableCell>
                     <TableCell className="text-right">
                       <Button variant="outline" size="sm" asChild>
                         <Link href={`/attivita/${task.id}`}>
@@ -105,7 +120,7 @@ async function TasksList({ page }: { page: number }) {
               })}
               {tasks.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center h-24">
+                  <TableCell colSpan={8} className="text-center h-24">
                     Nessuna attività trovata.
                   </TableCell>
                 </TableRow>

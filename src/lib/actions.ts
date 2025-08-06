@@ -108,6 +108,7 @@ export async function addTaskAction(taskData: Omit<Task, 'id' | 'photos' | 'docu
             ...taskData,
             photos: [],
             documents: [],
+            duration: 0,
         };
         const updatedTasks = [...tasks, newTask];
         writeData('tasks.json', updatedTasks);
@@ -134,6 +135,25 @@ export async function updateTaskStatusAction(taskId: string, status: TaskStatus)
     } catch (error) {
         console.error('Error updating task status:', error);
         return { success: false, message: 'Failed to update task status.' };
+    }
+}
+
+export async function updateTaskDurationAction(taskId: string, duration: number) {
+     try {
+        const tasks = readData('tasks.json');
+        const taskIndex = tasks.findIndex((t: Task) => t.id === taskId);
+        if (taskIndex === -1) {
+            return { success: false, message: 'Task not found.' };
+        }
+        tasks[taskIndex].duration = duration;
+        tasks[taskIndex].status = 'Completato';
+        writeData('tasks.json', tasks);
+        revalidatePath('/attivita');
+        revalidatePath(`/attivita/${taskId}`);
+        return { success: true, task: tasks[taskIndex] };
+    } catch (error) {
+        console.error('Error updating task duration:', error);
+        return { success: false, message: 'Failed to update task duration.' };
     }
 }
 

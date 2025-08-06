@@ -8,13 +8,20 @@ import type { TaskStatus } from "@/lib/types";
 
 interface TaskTimerProps {
   initialStatus: TaskStatus;
+  initialDuration?: number;
   onStatusChange: (newStatus: TaskStatus) => void;
+  onComplete: (duration: number) => void;
 }
 
-export function TaskTimer({ initialStatus, onStatusChange }: TaskTimerProps) {
-  const [seconds, setSeconds] = useState(0);
+export function TaskTimer({ initialStatus, initialDuration = 0, onStatusChange, onComplete }: TaskTimerProps) {
+  const [seconds, setSeconds] = useState(initialDuration);
   const [isRunning, setIsRunning] = useState(false);
   const [status, setStatus] = useState<TaskStatus>(initialStatus);
+
+  useEffect(() => {
+    setStatus(initialStatus);
+    setSeconds(initialDuration);
+  }, [initialStatus, initialDuration]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -47,8 +54,8 @@ export function TaskTimer({ initialStatus, onStatusChange }: TaskTimerProps) {
     setIsRunning(false);
     const newStatus = 'Completato';
     setStatus(newStatus);
-    onStatusChange(newStatus);
-  }, [onStatusChange]);
+    onComplete(seconds);
+  }, [onComplete, seconds]);
 
   const formatTime = (totalSeconds: number) => {
     const hours = Math.floor(totalSeconds / 3600);
@@ -78,7 +85,7 @@ export function TaskTimer({ initialStatus, onStatusChange }: TaskTimerProps) {
           {!isRunning ? (
             <Button onClick={handleStart} disabled={isCompleted}>
               <Play className="mr-2" />
-              Inizia
+              {status === 'In corso' ? 'Riprendi' : 'Inizia'}
             </Button>
           ) : (
             <Button onClick={handlePause} variant="outline">
@@ -86,7 +93,7 @@ export function TaskTimer({ initialStatus, onStatusChange }: TaskTimerProps) {
               Pausa
             </Button>
           )}
-          <Button onClick={handleComplete} variant="destructive" disabled={isCompleted}>
+          <Button onClick={handleComplete} variant="destructive" disabled={isCompleted || !seconds}>
             <Square className="mr-2" />
             Termina
           </Button>

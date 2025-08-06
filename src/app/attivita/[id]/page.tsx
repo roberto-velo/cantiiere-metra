@@ -146,7 +146,7 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
         </div>
 
         <div className="lg:col-span-1 space-y-6">
-            <TaskTimerWrapper taskId={task.id} initialStatus={task.status} />
+            <TaskTimerWrapper taskId={task.id} initialStatus={task.status} initialDuration={task.duration} />
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">

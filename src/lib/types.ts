@@ -56,4 +56,5 @@ export type Task = {
   photos: Photo[];
   documents: Document[];
   notes: string;
+  duration?: number; // Duration in seconds
 };
