@@ -23,7 +23,8 @@ import { notFound } from "next/navigation";
 
 export default async function TechnicianDetailPage({ params }: { params: { id: string } }) {
   
-  const technician = await localApi.getTechnician(params.id);
+  const { id } = params;
+  const technician = await localApi.getTechnician(id);
 
   if (!technician) {
     notFound();
@@ -32,7 +33,7 @@ export default async function TechnicianDetailPage({ params }: { params: { id: s
   // For now, we fetch all tasks and clients. In a real-world scenario,
   // this should be optimized or paginated.
   const [technicianTasks, clients] = await Promise.all([
-      localApi.getTasksByTechnicianId(params.id as string),
+      localApi.getTasksByTechnicianId(id),
       localApi.getAllClients() // This could be slow if there are many clients.
   ]);
 

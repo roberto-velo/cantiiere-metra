@@ -26,7 +26,8 @@ import { ClientActions } from "@/components/client-actions";
 
 export default async function ClientDetailPage({ params }: { params: { id: string } }) {
   
-  const client = await localApi.getClient(params.id);
+  const { id } = params;
+  const client = await localApi.getClient(id);
   
   if (!client) {
     notFound();

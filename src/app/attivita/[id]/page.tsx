@@ -23,7 +23,8 @@ import { TaskActions } from "@/components/task-actions";
 
 export default async function TaskDetailPage({ params }: { params: { id: string } }) {
   
-  const task = await localApi.getTask(params.id);
+  const { id } = params;
+  const task = await localApi.getTask(id);
   
   if (!task) {
     notFound();
