@@ -9,7 +9,7 @@ import {
   UsersRound,
   Trash2,
 } from "lucide-react";
-import { useNotifications } from "@/hooks/use-notifications";
+import { useNotifications, type NotificationType } from "@/hooks/use-notifications";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -19,6 +19,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
+
+
+const notificationColorClasses: Record<NotificationType, string> = {
+  'task-created': 'text-blue-500',
+  'task-started': 'text-orange-500',
+  'task-paused': 'text-yellow-500',
+  'task-completed': 'text-green-500',
+};
+
 
 export function AppHeader() {
   const { notifications, clearNotifications, getIcon } = useNotifications();
@@ -71,9 +81,10 @@ export function AppHeader() {
               {notifications.length > 0 ? (
                 notifications.map((notification) => {
                     const Icon = getIcon(notification.type);
+                    const colorClass = notificationColorClasses[notification.type] || 'text-primary';
                     return (
                         <DropdownMenuItem key={notification.id} className="flex items-start gap-3">
-                           <Icon className={`h-5 w-5 mt-1 shrink-0 ${notification.color}`} />
+                           <Icon className={cn("h-5 w-5 mt-1 shrink-0", colorClass)} />
                             <div className="flex-1">
                                 <p className="text-sm font-medium whitespace-normal">
                                 {notification.text}

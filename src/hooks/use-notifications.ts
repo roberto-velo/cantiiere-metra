@@ -14,7 +14,6 @@ export interface Notification {
   time: string;
   isoTime: string;
   type: NotificationType;
-  color: string;
 }
 
 const NOTIFICATIONS_KEY = "cantiereflow-notifications";
@@ -26,14 +25,6 @@ const iconMap: Record<NotificationType, LucideIcon> = {
     'task-paused': Pause,
     'task-completed': CheckCircle
 };
-
-const colorMap: Record<NotificationType, string> = {
-    'task-created': 'notification-color-blue',
-    'task-started': 'notification-color-orange',
-    'task-paused': 'notification-color-yellow',
-    'task-completed': 'notification-color-green'
-};
-
 
 // --- Store ---
 type NotificationStore = {
@@ -96,7 +87,6 @@ export const notificationsApi = {
       .map(n => ({
         ...n,
         time: formatDistanceToNow(new Date(n.isoTime), { addSuffix: true, locale: it }),
-        color: colorMap[n.type] || 'text-primary',
       }));
 
     updateNotifications(updatedNotifications);
@@ -119,7 +109,6 @@ export const notificationsApi = {
         const loadedNotifications = parsed.map(n => ({
             ...n,
             time: formatDistanceToNow(new Date(n.isoTime), { addSuffix: true, locale: it }),
-            color: colorMap[n.type] || 'text-primary'
         }));
         store = { notifications: loadedNotifications };
         emitChange();
