@@ -38,6 +38,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import type { Client, Technician } from "@/lib/types";
 import { addTaskAction } from "@/lib/actions";
+import { useNotifications } from "@/hooks/use-notifications";
 
 const formSchema = z.object({
   clientId: z.string({ required_error: "Il cliente è obbligatorio." }),
@@ -60,6 +61,7 @@ interface NewTaskFormProps {
 export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFormProps) {
   const { toast } = useToast();
   const router = useRouter();
+  const { addNotification } = useNotifications();
   
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
@@ -117,6 +119,7 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
               title: "Attività Creata!",
               description: `L'attività "${values.description}" è stata creata con successo.`,
             });
+            addNotification(`Nuova attività creata: ${values.description}`, 'task-created');
             router.push('/attivita');
         } else {
             throw new Error(result.message);
