@@ -19,7 +19,7 @@ import {
   ClipboardList,
   Upload,
   Droplet,
-  Navigation
+  Map
 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -91,7 +91,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                       <p className="font-medium text-primary">Indirizzo</p>
                       <a href={client.mapUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-foreground hover:underline flex items-center gap-2">
                         {client.address}
-                        <Navigation className="h-4 w-4 text-primary" />
+                        <Map className="h-4 w-4 text-primary" />
                       </a>
                     </div>
                   </li>

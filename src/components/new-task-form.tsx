@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ClipboardList, Mail, MapPin, Phone, Upload, Camera, FileText, Navigation } from "lucide-react";
+import { ArrowLeft, ClipboardList, Mail, MapPin, Phone, Upload, Camera, FileText, Map } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
@@ -324,7 +324,7 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
                                     <p className="font-medium text-primary">Indirizzo</p>
                                      <a href={selectedClient.mapUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-foreground hover:underline flex items-center gap-2">
                                         {selectedClient.address}
-                                        <Navigation className="h-4 w-4 text-primary" />
+                                        <Map className="h-4 w-4 text-primary" />
                                       </a>
                                   </div>
                                 </li>
