@@ -80,7 +80,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                     <info.icon className="h-5 w-5 text-muted-foreground mt-1" />
                     <div>
                       <p className="font-medium text-muted-foreground">{info.label}</p>
-                      <p className="font-semibold text-primary">{info.value}</p>
+                      <p className="font-semibold text-foreground">{info.value}</p>
                     </div>
                   </li>
                 ))}
