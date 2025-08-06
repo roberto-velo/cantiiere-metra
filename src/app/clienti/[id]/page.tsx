@@ -39,8 +39,8 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
   const clientTasks = await localApi.getTasksByClientId(client.id);
 
   const clientInfo = [
-    { icon: Phone, label: "Telefono", value: client.phone },
-    { icon: Mail, label: "Email", value: client.email },
+    { icon: Phone, label: "Telefono", value: client.phone, href: `tel:${client.phone}` },
+    { icon: Mail, label: "Email", value: client.email, href: `mailto:${client.email}` },
   ];
   
   const poolInfo = [
@@ -81,7 +81,9 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                     <info.icon className="h-5 w-5 mt-1 text-primary" />
                     <div>
                       <p className="font-medium text-primary">{info.label}</p>
-                      <p className="font-semibold text-foreground">{info.value}</p>
+                      <a href={info.href} className="font-semibold text-foreground hover:underline">
+                        {info.value}
+                      </a>
                     </div>
                   </li>
                 ))}
