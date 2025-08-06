@@ -20,6 +20,10 @@ export function TaskTimerWrapper({ taskId, initialStatus, initialDuration }: { t
     }
   };
 
+  const handlePause = () => {
+      addNotification(`Attività #${taskId.slice(-4)} in pausa`, 'task-paused');
+  }
+
   const handleComplete = async (duration: number) => {
     setStatus('Completato');
     await updateTaskDurationAction(taskId, duration);
@@ -30,7 +34,8 @@ export function TaskTimerWrapper({ taskId, initialStatus, initialDuration }: { t
             initialStatus={status} 
             initialDuration={initialDuration}
             onStatusChange={handleStatusChange}
-            onComplete={handleComplete} 
+            onComplete={handleComplete}
+            onPause={handlePause}
           />;
 }
 
