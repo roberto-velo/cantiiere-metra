@@ -4,7 +4,7 @@
 import fs from 'fs';
 import path from 'path';
 import { revalidatePath } from 'next/cache';
-import type { Client, Task, TaskStatus, Technician } from './types';
+import type { Client, Task, TaskStatus, Technician, Photo, Document } from './types';
 
 const dataDir = path.join(process.cwd(), 'src', 'lib', 'db');
 
@@ -151,5 +151,37 @@ export async function deleteTaskAction(id: string) {
     } catch (error) {
         console.error('Error deleting task:', error);
         return { success: false, message: 'Failed to delete task.' };
+    }
+}
+
+
+export async function addAttachmentToTaskAction(
+    { taskId, attachment, type }: { taskId: string; attachment: Omit<Photo, 'id'> | Omit<Document, 'id'>; type: 'photo' | 'document' }
+) {
+    try {
+        const tasks = readData('tasks.json');
+        const taskIndex = tasks.findIndex((t: Task) => t.id === taskId);
+        if (taskIndex === -1) {
+            return { success: false, message: 'Task not found.' };
+        }
+        
+        const newAttachment = {
+            id: String(Date.now()),
+            ...attachment
+        };
+
+        if (type === 'photo') {
+            tasks[taskIndex].photos.push(newAttachment as Photo);
+        } else {
+            tasks[taskIndex].documents.push(newAttachment as Document);
+        }
+
+        writeData('tasks.json', tasks);
+        revalidatePath(`/attivita/${taskId}`);
+        return { success: true, attachment: newAttachment };
+
+    } catch (error) {
+        console.error(`Error adding ${type}:`, error);
+        return { success: false, message: `Failed to add ${type}.` };
     }
 }

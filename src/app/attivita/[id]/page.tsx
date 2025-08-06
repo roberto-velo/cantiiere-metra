@@ -14,12 +14,14 @@ import {
   Camera,
   FileText,
   MessageSquare,
+  Upload,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { TaskTimerWrapper } from "@/components/task-timer-wrapper";
 import { TaskActions } from "@/components/task-actions";
+import { FileUpload } from "@/components/file-upload";
 
 export default async function TaskDetailPage({ params }: { params: { id: string } }) {
   
@@ -86,11 +88,12 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
           </Card>
 
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <Camera className="h-5 w-5" />
                 Foto
               </CardTitle>
+              <FileUpload taskId={task.id} uploadType="photo" />
             </CardHeader>
             <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {task.photos.map((photo) => (
@@ -111,11 +114,12 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
           </Card>
 
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5" />
                 File Allegati
               </CardTitle>
+              <FileUpload taskId={task.id} uploadType="document" />
             </CardHeader>
             <CardContent>
               <ul className="space-y-2">
