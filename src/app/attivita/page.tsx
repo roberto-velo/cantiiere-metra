@@ -46,11 +46,13 @@ const formatDuration = (totalSeconds: number = 0) => {
 async function TasksList({ 
   page,
   dateRange,
+  searchTerm
 }: { 
   page: number;
   dateRange?: string;
+  searchTerm?: string;
 }) {
-    const { tasks, totalPages } = await localApi.getTasks({ page, dateRange });
+    const { tasks, totalPages } = await localApi.getTasks({ page, dateRange, searchTerm });
     const [clients, technicians] = await Promise.all([
         localApi.getAllClients(),
         localApi.getAllTechnicians()
@@ -58,9 +60,16 @@ async function TasksList({
 
     const params = new URLSearchParams();
     if(dateRange) params.set('range', dateRange);
+    if(searchTerm) params.set('q', searchTerm);
 
-    const prevPage = page > 1 ? `?${params.toString()}&page=${page - 1}` : `?${params.toString()}`;
-    const nextPage = page < totalPages ? `?${params.toString()}&page=${page + 1}` : `?${params.toString()}`;
+
+    const prevPageParams = new URLSearchParams(params);
+    if (page > 1) prevPageParams.set('page', String(page - 1));
+    const prevPage = `/attivita?${prevPageParams.toString()}`;
+
+    const nextPageParams = new URLSearchParams(params);
+    if (page < totalPages) nextPageParams.set('page', String(page + 1));
+    const nextPage = `/attivita?${nextPageParams.toString()}`;
 
 
   return (
@@ -145,13 +154,13 @@ async function TasksList({
       <CardFooter>
         <div className="flex w-full justify-end gap-2">
             <Button variant="outline" asChild disabled={page <= 1}>
-                <Link href={`/attivita${prevPage}`}>
+                <Link href={prevPage}>
                     <ArrowLeft className="mr-2" />
                     Precedente
                 </Link>
             </Button>
             <Button variant="outline" asChild disabled={page >= totalPages}>
-                <Link href={`/attivita${nextPage}`}>
+                <Link href={nextPage}>
                     Successivo
                     <ArrowRight className="ml-2" />
                 </Link>
@@ -165,6 +174,7 @@ async function TasksList({
 export default async function AttivitaPage({ searchParams }: { searchParams?: { [key: string]: string | string[] | undefined } }) {
   const currentPage = Number(searchParams?.page) || 1;
   const dateRange = searchParams?.range as string | undefined;
+  const searchTerm = searchParams?.q as string | undefined;
   
   return (
     <div className="flex flex-col flex-1">
@@ -195,6 +205,7 @@ export default async function AttivitaPage({ searchParams }: { searchParams?: { 
                 <TasksList 
                   page={currentPage} 
                   dateRange={dateRange}
+                  searchTerm={searchTerm}
                 />
               </Suspense>
             </Card>

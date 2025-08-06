@@ -6,9 +6,9 @@ import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, par
 
 // Using require for JSON files is one way to read them at build time on the server.
 // This avoids using the 'fs' module in code that might be bundled for the client.
-import clients from './db/clients.json';
-import technicians from './db/technicians.json';
-import tasks from './db/tasks.json';
+import clientsData from './db/clients.json';
+import techniciansData from './db/technicians.json';
+import tasksData from './db/tasks.json';
 
 // --- API Simulation using in-memory data ---
 // This file is now ONLY for READING data. All mutation (write) logic
@@ -20,15 +20,15 @@ const localApi = {
         const start = (page - 1) * limit;
         const end = page * limit;
         return {
-            clients: clients.slice(start, end),
-            totalPages: Math.ceil(clients.length / limit)
+            clients: clientsData.slice(start, end),
+            totalPages: Math.ceil(clientsData.length / limit)
         };
     },
     getAllClients: async (): Promise<Client[]> => {
-        return JSON.parse(JSON.stringify(clients));
+        return JSON.parse(JSON.stringify(clientsData));
     },
     getClient: async (id: string) => {
-        return clients.find(c => c.id === id) || null;
+        return clientsData.find(c => c.id === id) || null;
     },
     
     // Technicians
@@ -36,15 +36,15 @@ const localApi = {
         const start = (page - 1) * limit;
         const end = page * limit;
         return {
-            technicians: technicians.slice(start, end),
-            totalPages: Math.ceil(technicians.length / limit)
+            technicians: techniciansData.slice(start, end),
+            totalPages: Math.ceil(techniciansData.length / limit)
         };
     },
     getAllTechnicians: async (): Promise<Technician[]> => {
-        return JSON.parse(JSON.stringify(technicians));
+        return JSON.parse(JSON.stringify(techniciansData));
     },
     getTechnician: async (id: string) => {
-        return technicians.find(t => t.id === id) || null;
+        return techniciansData.find(t => t.id === id) || null;
     },
 
     // Tasks
@@ -52,14 +52,25 @@ const localApi = {
         { page = 1, limit = 10, searchTerm, status, dateRange }: 
         { page?: number; limit?: number; searchTerm?: string; status?: TaskStatus; dateRange?: string }
     ) => {
-        let filteredTasks: Task[] = JSON.parse(JSON.stringify(tasks));
+        let filteredTasks: Task[] = JSON.parse(JSON.stringify(tasksData));
+        const clients = await localApi.getAllClients();
+        const technicians = await localApi.getAllTechnicians();
 
         // 1. Filter by searchTerm
         if (searchTerm) {
             const lowercasedTerm = searchTerm.toLowerCase();
-            filteredTasks = filteredTasks.filter(task =>
-                task.description.toLowerCase().includes(lowercasedTerm)
-            );
+            filteredTasks = filteredTasks.filter(task => {
+                const client = clients.find(c => c.id === task.clientId);
+                const technician = technicians.find(t => t.id === task.technicianId);
+                const clientName = client ? client.name.toLowerCase() : '';
+                const technicianName = technician ? `${technician.firstName.toLowerCase()} ${technician.lastName.toLowerCase()}` : '';
+
+                return (
+                    task.description.toLowerCase().includes(lowercasedTerm) ||
+                    clientName.includes(lowercasedTerm) ||
+                    technicianName.includes(lowercasedTerm)
+                );
+            });
         }
 
         // 2. Filter by status
@@ -106,18 +117,18 @@ const localApi = {
         };
     },
     getTask: async (id: string) => {
-        return tasks.find(t => t.id === id) || null;
+        return tasksData.find(t => t.id === id) || null;
     },
     getTasksByClientId: async (clientId: string) => {
-        return tasks.filter(t => t.clientId === clientId);
+        return tasksData.filter(t => t.clientId === clientId);
     },
     getTasksByTechnicianId: async (technicianId: string) => {
-        return tasks.filter(t => t.technicianId === technicianId);
+        return tasksData.filter(t => t.technicianId === technicianId);
     },
     
     // Dashboard
     getDashboardData: async () => {
-        const sortedTasks = [...tasks].sort((a,b) => {
+        const sortedTasks = [...tasksData].sort((a,b) => {
              const dateA = new Date(a.date).getTime();
             const dateB = new Date(b.date).getTime();
             if (dateA === dateB) {
@@ -127,8 +138,8 @@ const localApi = {
         });
         return {
             tasks: sortedTasks,
-            technicians,
-            clients
+            technicians: techniciansData,
+            clients: clientsData
         }
     }
 };
