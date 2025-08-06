@@ -43,12 +43,29 @@ const formatDuration = (totalSeconds: number = 0) => {
 };
 
 
-async function TasksList({ page, searchTerm, status, dateRange }: { page: number, searchTerm?: string, status?: TaskStatus, dateRange?: string }) {
+async function TasksList({ 
+  page, 
+  searchTerm, 
+  status, 
+  dateRange 
+}: { 
+  page: number; 
+  searchTerm?: string; 
+  status?: TaskStatus; 
+  dateRange?: string;
+}) {
     const { tasks, totalPages } = await localApi.getTasks({ page, searchTerm, status, dateRange });
     const [clients, technicians] = await Promise.all([
         localApi.getAllClients(),
         localApi.getAllTechnicians()
     ]);
+
+    // Build the query string for pagination links, preserving filters
+    const queryParams = new URLSearchParams();
+    if (searchTerm) queryParams.set('q', searchTerm);
+    if (status) queryParams.set('status', status);
+    if (dateRange) queryParams.set('range', dateRange);
+    const queryString = queryParams.toString();
 
   return (
     <>
@@ -132,13 +149,13 @@ async function TasksList({ page, searchTerm, status, dateRange }: { page: number
       <CardFooter>
         <div className="flex w-full justify-end gap-2">
             <Button variant="outline" asChild disabled={page <= 1}>
-                <Link href={`/attivita?page=${page - 1}`}>
+                <Link href={`/attivita?page=${page - 1}&${queryString}`}>
                     <ArrowLeft className="mr-2" />
                     Precedente
                 </Link>
             </Button>
             <Button variant="outline" asChild disabled={page >= totalPages}>
-                <Link href={`/attivita?page=${page + 1}`}>
+                <Link href={`/attivita?page=${page + 1}&${queryString}`}>
                     Successivo
                     <ArrowRight className="ml-2" />
                 </Link>
@@ -149,11 +166,11 @@ async function TasksList({ page, searchTerm, status, dateRange }: { page: number
   );
 }
 
-export default async function AttivitaPage({ searchParams }: { searchParams?: { page?: string, q?: string, status?: string, range?: string } }) {
+export default async function AttivitaPage({ searchParams }: { searchParams?: { [key: string]: string | string[] | undefined } }) {
   const currentPage = Number(searchParams?.page) || 1;
-  const searchTerm = searchParams?.q;
-  const status = searchParams?.status as TaskStatus | undefined;
-  const dateRange = searchParams?.range;
+  const searchTerm = typeof searchParams?.q === 'string' ? searchParams.q : undefined;
+  const status = typeof searchParams?.status === 'string' ? searchParams.status as TaskStatus : undefined;
+  const dateRange = typeof searchParams?.range === 'string' ? searchParams.range : undefined;
 
 
   return (

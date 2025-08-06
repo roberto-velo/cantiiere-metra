@@ -1,7 +1,7 @@
 
 import type { Client, Technician, Task, TaskStatus } from './types';
 import path from 'path';
-import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
+import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, parseISO } from 'date-fns';
 
 
 // Using require for JSON files is one way to read them at build time on the server.
@@ -12,7 +12,7 @@ import tasks from './db/tasks.json';
 
 // --- API Simulation using in-memory data ---
 // This file is now ONLY for READING data. All mutation (write) logic
-// has been moved to server actions in /lib/actions/*.ts to fix the 'fs' module error.
+// has been moved to server actions in /lib/actions.ts to fix the 'fs' module error.
 
 const localApi = {
     // Clients
@@ -69,14 +69,18 @@ const localApi = {
             let interval: { start: Date, end: Date };
 
             if (dateRange === 'week') {
-                interval = { start: startOfWeek(now), end: endOfWeek(now) };
+                interval = { start: startOfWeek(now, { weekStartsOn: 1 }), end: endOfWeek(now, { weekStartsOn: 1 }) };
             } else if (dateRange === 'month') {
                 interval = { start: startOfMonth(now), end: endOfMonth(now) };
             }
 
             if (interval) {
                  filteredTasks = filteredTasks.filter(task => {
-                    const taskDate = new Date(task.date);
+                    // Ensure date is valid before parsing
+                    if (!task.date || isNaN(new Date(task.date).getTime())) {
+                        return false;
+                    }
+                    const taskDate = parseISO(task.date);
                     return isWithinInterval(taskDate, interval);
                 });
             }
