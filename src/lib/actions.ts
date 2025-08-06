@@ -7,6 +7,7 @@ import { revalidatePath } from 'next/cache';
 import type { Client, Task, TaskStatus, Technician, Photo, Document } from './types';
 
 const dataDir = path.join(process.cwd(), 'src', 'lib', 'db');
+const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
 
 const readData = (fileName: string) => {
     const filePath = path.join(dataDir, fileName);
@@ -219,10 +220,34 @@ export async function addAttachmentToTaskAction(
         if (taskIndex === -1) {
             return { success: false, message: 'Task not found.' };
         }
+
+        // Ensure uploads directory exists
+        if (!fs.existsSync(uploadsDir)) {
+            fs.mkdirSync(uploadsDir, { recursive: true });
+        }
+
+        // Handle file saving
+        const dataUrl = attachment.url;
+        const matches = dataUrl.match(/^data:(.+);base64,(.+)$/);
+        if (!matches) {
+            return { success: false, message: 'Invalid file format.' };
+        }
         
+        const [, mimeType, base64Data] = matches;
+        const fileExtension = mimeType.split('/')[1];
+        const fileName = `${Date.now()}.${fileExtension}`;
+        const filePath = path.join(uploadsDir, fileName);
+        
+        const fileBuffer = Buffer.from(base64Data, 'base64');
+        fs.writeFileSync(filePath, fileBuffer);
+        
+        const publicUrl = `/uploads/${fileName}`;
+
         const newAttachment = {
             id: String(Date.now()),
-            ...attachment
+            name: type === 'document' ? (attachment as Document).name : fileName,
+            description: type === 'photo' ? (attachment as Photo).description : '',
+            url: publicUrl,
         };
 
         if (type === 'photo') {
