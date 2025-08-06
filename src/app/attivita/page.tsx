@@ -182,17 +182,15 @@ export default async function AttivitaPage({ searchParams }: { searchParams?: { 
   const searchTerm = searchParams?.q as string | undefined;
   const date = searchParams?.date as string | undefined;
   
-  // If a specific date is selected, default the view to the list.
   const defaultView = date ? 'list' : 'list';
 
-  // Fetch all tasks for the calendar view, applying filters.
-  // The calendar needs all tasks for the given period, not just a paginated subset.
   const { tasks: allTasks } = await localApi.getTasks({
-    limit: 1000, // A large limit to get all tasks for the calendar
+    limit: 1000, 
     dateRange,
     searchTerm,
-    // Do not pass date here, calendar should show all tasks for the month/week
   });
+
+  const clients = await localApi.getAllClients();
 
   return (
     <div className="flex flex-col flex-1">
@@ -239,7 +237,7 @@ export default async function AttivitaPage({ searchParams }: { searchParams?: { 
                    <Card>
                     <CardContent className="p-2 md:p-4">
                          <Suspense fallback={<div className="text-center p-8">Caricamento...</div>}>
-                            <TaskCalendar tasks={allTasks} />
+                            <TaskCalendar tasks={allTasks} clients={clients} />
                          </Suspense>
                     </CardContent>
                   </Card>
@@ -249,4 +247,3 @@ export default async function AttivitaPage({ searchParams }: { searchParams?: { 
     </div>
   );
 }
-

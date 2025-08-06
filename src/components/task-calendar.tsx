@@ -2,14 +2,17 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { DayPicker, type DateFormatter } from "react-day-picker";
+import { DayPicker, type DateFormatter, type DayProps } from "react-day-picker";
 import { it } from 'date-fns/locale';
-import { parseISO, format } from 'date-fns';
+import { parseISO, format, isSameDay } from 'date-fns';
 import { cn } from "@/lib/utils";
-import { type Task, type TaskStatus } from "@/lib/types";
+import { type Task, type TaskStatus, type Client } from "@/lib/types";
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Badge } from './ui/badge';
 
 interface TaskCalendarProps {
   tasks: Task[];
+  clients: Client[];
 }
 
 const statusBadgeColors: Record<TaskStatus, string> = {
@@ -18,14 +21,15 @@ const statusBadgeColors: Record<TaskStatus, string> = {
   Completato: "bg-green-500",
 };
 
-export function TaskCalendar({ tasks }: TaskCalendarProps) {
+export function TaskCalendar({ tasks, clients }: TaskCalendarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const tasksByDate = tasks.reduce((acc, task) => {
     try {
-        const taskDateStr = format(parseISO(task.date), 'yyyy-MM-dd');
+        const taskDate = parseISO(task.date);
+        const taskDateStr = format(taskDate, 'yyyy-MM-dd');
         if (!acc[taskDateStr]) {
         acc[taskDateStr] = [];
         }
@@ -44,36 +48,87 @@ export function TaskCalendar({ tasks }: TaskCalendarProps) {
     const dateStr = format(day, 'yyyy-MM-dd');
     const params = new URLSearchParams(searchParams.toString());
     params.set('date', dateStr);
-    params.delete('range'); // Remove range filter when a specific date is selected
+    params.delete('range'); 
+    params.delete('page');
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  const DayContent = (props: { date: Date }) => {
+  const DayContent = (props: DayProps) => {
     const dateStr = format(props.date, 'yyyy-MM-dd');
     const tasksForDay = tasksByDate[dateStr] || [];
 
+    const dayNumber = format(props.date, 'd');
+    
+    if (tasksForDay.length > 0) {
+      return (
+        <Popover>
+          <PopoverTrigger asChild>
+            <div className="relative w-full h-full flex items-center justify-center cursor-pointer">
+              <span>{dayNumber}</span>
+              <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-0.5">
+                  {tasksForDay.slice(0, 4).map(task => (
+                      <div key={task.id} className={cn("h-1.5 w-1.5 rounded-full", statusBadgeColors[task.status])}></div>
+                  ))}
+              </div>
+            </div>
+          </PopoverTrigger>
+          <PopoverContent className="w-80">
+            <div className="grid gap-4">
+              <div className="space-y-2">
+                <h4 className="font-medium leading-none">Attività del {format(props.date, 'dd/MM/yyyy')}</h4>
+                <p className="text-sm text-muted-foreground">
+                  {tasksForDay.length} attività pianificate.
+                </p>
+              </div>
+              <div className="grid gap-2">
+                 {tasksForDay.map(task => {
+                    const client = clients.find(c => c.id === task.clientId);
+                    return (
+                        <div key={task.id} className="grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0">
+                             <span className={cn("flex h-2 w-2 translate-y-1 rounded-full", statusBadgeColors[task.status])} />
+                             <div className="grid gap-1">
+                                <p className="text-sm font-medium leading-none">{task.description}</p>
+                                <p className="text-sm text-muted-foreground">
+                                    {client?.name || 'Cliente non trovato'} - {task.time}
+                                </p>
+                            </div>
+                        </div>
+                    )
+                })}
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+      );
+    }
+    
     return (
       <div className="relative w-full h-full flex items-center justify-center">
-        <span>{format(props.date, 'd')}</span>
-        {tasksForDay.length > 0 && (
-           <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-0.5">
-                {tasksForDay.slice(0, 4).map(task => (
-                    <div key={task.id} className={cn("h-1.5 w-1.5 rounded-full", statusBadgeColors[task.status])}></div>
-                ))}
-            </div>
-        )}
+        <span>{dayNumber}</span>
       </div>
     );
   };
+  
+  const selectedDateParam = searchParams.get('date');
+  const selectedDate = selectedDateParam ? parseISO(selectedDateParam) : undefined;
+  
+  const modifiers = {
+      selected: selectedDate,
+  };
+  const modifiersClassNames = {
+      selected: 'bg-primary text-primary-foreground',
+  };
+
 
   return (
     <DayPicker
       locale={it}
       mode="single"
       onDayClick={handleDayClick}
+      selected={selectedDate}
       formatters={{ formatCaption }}
       components={{
-        DayContent: DayContent
+        Day: DayContent
       }}
       className="w-full"
       classNames={{
@@ -83,10 +138,9 @@ export function TaskCalendar({ tasks }: TaskCalendarProps) {
         head_row: "flex",
         head_cell: "text-muted-foreground rounded-md w-full font-normal text-[0.8rem]",
         row: "flex w-full mt-2",
-        cell: "h-24 w-full text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-        day: cn(
-          "h-full w-full p-2 font-normal aria-selected:opacity-100 flex items-start justify-center hover:bg-accent rounded-md cursor-pointer"
-        ),
+        cell: "h-24 w-full text-center text-sm p-0 relative focus-within:relative focus-within:z-20",
+        day_wrapper: "h-full w-full p-2 font-normal flex items-start justify-center hover:bg-accent rounded-md cursor-pointer",
+        day: "h-full w-full",
         day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
         day_today: "bg-accent text-accent-foreground",
         day_outside: "text-muted-foreground opacity-50",
@@ -97,3 +151,4 @@ export function TaskCalendar({ tasks }: TaskCalendarProps) {
     />
   );
 }
+
