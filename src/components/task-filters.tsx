@@ -25,19 +25,17 @@ export function TaskFilters() {
   const handleFilter = (key: 'status' | 'range', value: string) => {
     const params = new URLSearchParams(searchParams);
     params.delete('page');
-
-    // If the same value for the same key is clicked again, we toggle it off.
-    // Otherwise, we set the new value.
+    
     if (params.get(key) === value) {
       params.delete(key);
     } else {
       params.set(key, value);
     }
+    
     router.replace(`${pathname}?${params.toString()}`);
   };
   
   const resetFilters = () => {
-    // Keep other search params like 'q' but remove filters
     const params = new URLSearchParams(searchParams);
     params.delete('page');
     params.delete('status');
