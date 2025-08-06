@@ -122,9 +122,9 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Descrizione</TableHead>
-                    <TableHead>Stato</TableHead>
+                    <TableHead className="text-primary">Data</TableHead>
+                    <TableHead className="text-primary">Descrizione</TableHead>
+                    <TableHead className="text-primary">Stato</TableHead>
                     <TableHead className="text-right"></TableHead>
                   </TableRow>
                 </TableHeader>
