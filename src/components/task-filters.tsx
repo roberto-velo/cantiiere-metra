@@ -73,13 +73,13 @@ export function TaskFilters() {
         <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm font-medium mr-2">Filtra per:</span>
             
-            <Button variant={!currentRange ? 'secondary' : 'outline'} size="sm" onClick={() => handleDateFilterChange(null)} disabled={isPending}>Tutte le date</Button>
+            <Button variant={!currentRange ? 'default' : 'outline'} size="sm" onClick={() => handleDateFilterChange(null)} disabled={isPending}>Tutte le date</Button>
             
             <div className="border-l h-6 mx-2"></div>
             
-            <Button variant={currentRange === 'week' ? 'secondary' : 'outline'} size="sm" onClick={() => handleDateFilterChange('week')} disabled={isPending}>Questa Settimana</Button>
-            <Button variant={currentRange === 'month' ? 'secondary' : 'outline'} size="sm" onClick={() => handleDateFilterChange('month')} disabled={isPending}>Questo Mese</Button>
-            <Button variant={currentRange === 'year' ? 'secondary' : 'outline'} size="sm" onClick={() => handleDateFilterChange('year')} disabled={isPending}>Questo Anno</Button>
+            <Button variant={currentRange === 'week' ? 'default' : 'outline'} size="sm" onClick={() => handleDateFilterChange('week')} disabled={isPending}>Questa Settimana</Button>
+            <Button variant={currentRange === 'month' ? 'default' : 'outline'} size="sm" onClick={() => handleDateFilterChange('month')} disabled={isPending}>Questo Mese</Button>
+            <Button variant={currentRange === 'year' ? 'default' : 'outline'} size="sm" onClick={() => handleDateFilterChange('year')} disabled={isPending}>Questo Anno</Button>
         </div>
     </div>
   );
