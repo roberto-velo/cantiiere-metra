@@ -62,7 +62,7 @@ export default async function DashboardPage() {
     <div className="flex flex-col flex-1">
       <header className="bg-muted/30 border-b p-4 sm:p-6">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h1>
-        <p className="text-muted-foreground">
+        <p className="text-primary">
           Riepilogo giornaliero e settimanale delle tue attività.
         </p>
       </header>
