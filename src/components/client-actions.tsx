@@ -29,7 +29,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { MoreVertical } from "lucide-react";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
+import { DialogTitle } from "./ui/dialog";
 
 
 export function ClientActions({ client }: { client: Client }) {
@@ -153,7 +153,7 @@ export function ClientActions({ client }: { client: Client }) {
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
-            <AlertDialogHeader>
+             <AlertDialogHeader>
               <AlertDialogTitle>Sei sicuro?</AlertDialogTitle>
               <AlertDialogDescription>
                 Questa azione non può essere annullata. L'eliminazione del cliente
@@ -173,7 +173,6 @@ export function ClientActions({ client }: { client: Client }) {
 
       {/* Mobile View */}
        <div className="sm:hidden">
-         <Dialog>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
@@ -216,7 +215,6 @@ export function ClientActions({ client }: { client: Client }) {
                 </AlertDialog>
               </DropdownMenuContent>
             </DropdownMenu>
-         </Dialog>
       </div>
     </>
   );

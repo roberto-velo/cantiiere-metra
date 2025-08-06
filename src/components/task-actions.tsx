@@ -23,7 +23,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
+import { SheetHeader, SheetTitle } from "./ui/sheet";
 
 interface TaskActionsProps {
   taskId: string;
@@ -95,7 +95,6 @@ export function TaskActions({ taskId, description }: TaskActionsProps) {
       
       {/* Mobile View */}
        <div className="sm:hidden">
-         <Dialog>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -104,6 +103,9 @@ export function TaskActions({ taskId, description }: TaskActionsProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+            <SheetHeader>
+                <SheetTitle className="sr-only">Azioni Attività</SheetTitle>
+              </SheetHeader>
               <DropdownMenuItem disabled>
                 <Pencil className="mr-2 h-4 w-4" />
                 <span>Modifica</span>
@@ -134,7 +136,6 @@ export function TaskActions({ taskId, description }: TaskActionsProps) {
               </AlertDialog>
             </DropdownMenuContent>
           </DropdownMenu>
-         </Dialog>
       </div>
     </>
   );

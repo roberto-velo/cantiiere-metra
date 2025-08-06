@@ -25,7 +25,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from "./ui/dialog";
+import { SheetHeader, SheetTitle } from "./ui/sheet";
 
 export function TechnicianActions({ technician }: { technician: Technician }) {
   const router = useRouter();
@@ -92,7 +92,6 @@ export function TechnicianActions({ technician }: { technician: Technician }) {
 
        {/* Mobile View */}
        <div className="sm:hidden">
-         <Dialog>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -101,6 +100,9 @@ export function TechnicianActions({ technician }: { technician: Technician }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <SheetHeader>
+                <SheetTitle className="sr-only">Azioni Tecnico</SheetTitle>
+              </SheetHeader>
               <DropdownMenuItem onSelect={() => router.push(`/tecnici/${technician.id}/modifica`)}>
                 <Pencil className="mr-2 h-4 w-4" />
                 <span>Modifica</span>
@@ -130,7 +132,6 @@ export function TechnicianActions({ technician }: { technician: Technician }) {
               </AlertDialog>
             </DropdownMenuContent>
           </DropdownMenu>
-         </Dialog>
       </div>
     </>
   );
