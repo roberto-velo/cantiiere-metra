@@ -16,19 +16,14 @@ export function TaskTimerWrapper({ taskId, initialStatus, initialDuration }: { t
     await updateTaskStatusAction(taskId, newStatus);
     
     if (newStatus === 'In corso') {
-        addNotification(`Attività ${taskId} avviata`, 'task-started');
-    } else if (newStatus === 'Completato') {
-        // This is handled by onComplete to include duration
-    } else {
-        // Potentially handle 'Paused' status if it exists.
-        addNotification(`Attività ${taskId} in pausa`, 'task-paused');
+        addNotification(`Attività #${taskId.slice(-4)} avviata`, 'task-started');
     }
   };
 
   const handleComplete = async (duration: number) => {
     setStatus('Completato');
     await updateTaskDurationAction(taskId, duration);
-    addNotification(`Attività ${taskId} completata`, 'task-completed');
+    addNotification(`Attività #${taskId.slice(-4)} completata`, 'task-completed');
   };
 
   return <TaskTimer 
@@ -38,3 +33,5 @@ export function TaskTimerWrapper({ taskId, initialStatus, initialDuration }: { t
             onComplete={handleComplete} 
           />;
 }
+
+    

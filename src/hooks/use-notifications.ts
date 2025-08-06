@@ -37,11 +37,9 @@ export function useNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   useEffect(() => {
-    // This effect runs only on the client side
     try {
       const storedNotifications = localStorage.getItem(NOTIFICATIONS_KEY);
       if (storedNotifications) {
-        // Recalculate relative time on load
         const parsed = JSON.parse(storedNotifications) as {id: string; text: string; isoTime: string, type: NotificationType}[];
         const updated = parsed.map(n => ({
             ...n,
@@ -56,27 +54,24 @@ export function useNotifications() {
   }, []);
 
   const addNotification = useCallback((text: string, type: NotificationType) => {
-    setNotifications((prev) => {
+    const newNotification = {
+      id: crypto.randomUUID(),
+      text,
+      isoTime: new Date().toISOString(),
+      type,
+    };
+    
+    // Use functional update to ensure we have the latest state
+    setNotifications(prev => {
       try {
-        const newNotification = {
-          id: crypto.randomUUID(),
-          text,
-          isoTime: new Date().toISOString(),
-          type,
-        };
-
         const updatedNotifications = [newNotification, ...prev]
           .slice(0, MAX_NOTIFICATIONS)
           .map(n => ({
             ...n,
-            id: n.id,
-            text: n.text,
             time: formatDistanceToNow(new Date(n.isoTime), { addSuffix: true, locale: it }),
-            type: n.type,
             color: colorMap[n.type],
           }));
         
-        // Save only the essential data to localStorage
         const storableNotifications = updatedNotifications.map(n => ({
           id: n.id, 
           text: n.text, 
@@ -90,7 +85,7 @@ export function useNotifications() {
 
       } catch (error) {
         console.error("Failed to save notification to localStorage", error);
-        return prev; // Return previous state in case of error
+        return prev;
       }
     });
   }, []);
@@ -111,3 +106,5 @@ export function useNotifications() {
 
   return { notifications, addNotification, clearNotifications, getIcon };
 }
+
+    

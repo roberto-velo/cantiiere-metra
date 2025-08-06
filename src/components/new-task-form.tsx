@@ -119,7 +119,7 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
               title: "Attività Creata!",
               description: `L'attività "${values.description}" è stata creata con successo.`,
             });
-            addNotification(`Nuova attività creata: ${values.description}`, 'task-created');
+            addNotification(`Nuova attività: ${values.description}`, 'task-created');
             router.push('/attivita');
         } else {
             throw new Error(result.message);
@@ -452,3 +452,5 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
     </div>
   );
 }
+
+    
