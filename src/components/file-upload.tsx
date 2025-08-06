@@ -63,7 +63,7 @@ export function FileUpload({ taskId, uploadType }: FileUploadProps) {
              return;
           }
           
-          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+          const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
           setHasCameraPermission(true);
           // We don't need to do anything with the stream here, just get permission.
           // We will request the stream again when the user clicks the "Use Camera" button.
@@ -82,7 +82,7 @@ export function FileUpload({ taskId, uploadType }: FileUploadProps) {
     let stream: MediaStream | null = null;
     if (isCapturing && videoRef.current) {
         const video = videoRef.current;
-        navigator.mediaDevices.getUserMedia({ video: true })
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
             .then(s => {
                 stream = s;
                 video.srcObject = s;
