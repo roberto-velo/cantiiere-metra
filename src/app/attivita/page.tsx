@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import localApi from "@/lib/data";
-import type { TaskPriority, TaskStatus } from "@/lib/types";
+import type { TaskPriority, TaskStatus, Technician } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { PlusCircle, ClipboardList, ArrowLeft, ArrowRight, Calendar, List } from "lucide-react";
 import Link from "next/link";
@@ -99,8 +99,8 @@ async function TasksList({
                 const client = clients.find(
                   (c) => c.id === task.clientId
                 );
-                const technician = technicians.find(
-                  (t) => t.id === task.technicianId
+                const assignedTechnicians = technicians.filter(
+                  (t) => task.technicianIds.includes(t.id)
                 );
                 return (
                   <TableRow key={task.id}>
@@ -109,7 +109,7 @@ async function TasksList({
                     </TableCell>
                     <TableCell>{client?.name}</TableCell>
                     <TableCell>
-                      {technician?.firstName} {technician?.lastName}
+                      {assignedTechnicians.map(t => `${t.firstName} ${t.lastName}`).join(', ')}
                     </TableCell>
                     <TableCell>
                       <span

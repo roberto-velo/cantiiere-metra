@@ -47,7 +47,7 @@ export type Document = {
 export type Task = {
   id: string;
   clientId: string;
-  technicianId: string;
+  technicianIds: string[];
   date: string;
   time: string;
   description: string;

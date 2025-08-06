@@ -32,14 +32,16 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
     notFound();
   }
 
-  const [client, technician] = await Promise.all([
+  const [client, technicians] = await Promise.all([
       localApi.getClient(task.clientId),
-      localApi.getTechnician(task.technicianId)
+      localApi.getTechniciansByIds(task.technicianIds)
   ]);
+
+  const techniciansNames = technicians.map(t => `${t.firstName} ${t.lastName}`).join(', ');
 
   const details = [
     { icon: User, label: "Cliente", value: client?.name, href: `/clienti/${client?.id}?from=/attivita/${task.id}` },
-    { icon: HardHat, label: "Tecnico Assegnato", value: `${technician?.firstName} ${technician?.lastName}`, href: `/tecnici/${technician?.id}` },
+    { icon: HardHat, label: "Tecnici Assegnati", value: techniciansNames },
     { icon: Calendar, label: "Data e Ora", value: `${task.date} ore ${task.time}` },
     { icon: Info, label: "Stato", value: task.status },
     { icon: Tag, label: "Priorità", value: task.priority },

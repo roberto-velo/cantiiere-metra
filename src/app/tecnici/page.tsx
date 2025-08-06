@@ -54,12 +54,8 @@ async function TechniciansList({ page, searchTerm }: { page: number, searchTerm?
                                     Visualizza
                                     </Link>
                                 </Button>
-                                <Button size="sm" asChild>
-                                    <Link
-                                    href={`/attivita/nuova?technicianId=${technician.id}`}
-                                    >
+                                <Button size="sm" disabled>
                                     Nuova Attività
-                                    </Link>
                                 </Button>
                                 </TableCell>
                             </TableRow>

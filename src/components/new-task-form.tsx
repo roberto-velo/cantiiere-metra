@@ -21,9 +21,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator
+} from "@/components/ui/dropdown-menu";
+import { Checkbox } from "@/components/ui/checkbox";
+
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ClipboardList, Mail, MapPin, Phone, Upload, Camera, FileText, Map, Droplet } from "lucide-react";
+import { ArrowLeft, ClipboardList, Mail, MapPin, Phone, Upload, Camera, FileText, Map, Droplet, Users } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
@@ -33,7 +42,7 @@ import { addTaskAction } from "@/lib/actions";
 
 const formSchema = z.object({
   clientId: z.string({ required_error: "Il cliente è obbligatorio." }),
-  technicianId: z.string({ required_error: "Il tecnico è obbligatorio." }),
+  technicianIds: z.array(z.string()).min(1, { message: "Seleziona almeno un tecnico." }),
   date: z.string().min(1, "La data è obbligatoria."),
   time: z.string().min(1, "L'ora è obbligatoria."),
   description: z.string().min(5, "La descrizione deve avere almeno 5 caratteri."),
@@ -59,7 +68,7 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
     resolver: zodResolver(formSchema),
     defaultValues: {
       clientId: initialClientId || "",
-      technicianId: "",
+      technicianIds: [],
       date: "",
       time: "",
       description: "",
@@ -69,6 +78,7 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
   });
 
   const clientId = form.watch("clientId");
+  const technicianIds = form.watch("technicianIds");
 
   useEffect(() => {
     if (initialClientId) {
@@ -195,33 +205,41 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
                       </FormItem>
                     )}
                   />
-                  <FormField
+                    <FormField
                     control={form.control}
-                    name="technicianId"
+                    name="technicianIds"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Tecnico Assegnato</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Seleziona un tecnico" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {technicians.map((tech) => (
-                              <SelectItem key={tech.id} value={tech.id}>
-                                {tech.firstName} {tech.lastName}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
+                        <FormItem className="flex flex-col">
+                           <FormLabel>Tecnici Assegnati</FormLabel>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" className="w-full justify-start font-normal">
+                                        <Users className="mr-2 h-4 w-4" />
+                                        {technicianIds.length > 0
+                                        ? `${technicianIds.length} tecnici selezionati`
+                                        : "Seleziona tecnici"}
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-full">
+                                    {technicians.map((tech) => (
+                                         <DropdownMenuItem key={tech.id} onSelect={(e) => e.preventDefault()}>
+                                            <Checkbox
+                                                checked={field.value.includes(tech.id)}
+                                                onCheckedChange={(checked) => {
+                                                    return checked
+                                                    ? field.onChange([...field.value, tech.id])
+                                                    : field.onChange(field.value.filter((id) => id !== tech.id))
+                                                }}
+                                            />
+                                            <span className="ml-2">{tech.firstName} {tech.lastName}</span>
+                                        </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                           <FormMessage />
+                        </FormItem>
                     )}
-                  />
+                    />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <FormField

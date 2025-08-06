@@ -1,8 +1,9 @@
+
 [
   {
     "id": "1",
     "clientId": "1",
-    "technicianId": "1",
+    "technicianIds": ["1", "2"],
     "date": "2024-08-10",
     "time": "09:00",
     "description": "Sostituzione caldaia condominiale",
@@ -26,7 +27,7 @@
   {
     "id": "2",
     "clientId": "2",
-    "technicianId": "2",
+    "technicianIds": ["2"],
     "date": "2024-08-12",
     "time": "14:30",
     "description": "Riparazione quadro elettrico principale",
@@ -50,7 +51,7 @@
   {
     "id": "3",
     "clientId": "3",
-    "technicianId": "1",
+    "technicianIds": ["1"],
     "date": "2024-08-05",
     "time": "11:00",
     "description": "Manutenzione ordinaria impianto idraulico",
@@ -69,7 +70,7 @@
   {
     "id": "1754466914452",
     "clientId": "1754456985711",
-    "technicianId": "1",
+    "technicianIds": ["1"],
     "date": "2025-08-07",
     "time": "09:54",
     "description": "ssssssssss",

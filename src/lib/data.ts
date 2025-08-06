@@ -56,6 +56,9 @@ const localApi = {
     getTechnician: async (id: string) => {
         return techniciansData.find(t => t.id === id) || null;
     },
+    getTechniciansByIds: async (ids: string[]) => {
+        return techniciansData.filter(t => ids.includes(t.id));
+    },
 
     // Tasks
     getTasks: async (
@@ -145,7 +148,7 @@ const localApi = {
         return tasksData.filter(t => t.clientId === clientId);
     },
     getTasksByTechnicianId: async (technicianId: string) => {
-        return tasksData.filter(t => t.technicianId === technicianId);
+        return tasksData.filter(t => t.technicianIds.includes(technicianId));
     },
     
     // Dashboard
