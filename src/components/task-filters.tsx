@@ -19,35 +19,43 @@ export function TaskFilters() {
   const currentRange = searchParams.get('range');
 
   const createQueryString = useCallback(
-    (name: string, value: string | null) => {
+    (name: string, value: string) => {
       const params = new URLSearchParams(searchParams.toString());
+      params.set(name, value);
       params.delete('page');
-
-      if (value === null) {
-        params.delete(name);
-      } else {
-        params.set(name, value);
-      }
-      
       return params.toString();
     },
     [searchParams]
   );
   
-  const handleFilterChange = (name: 'status' | 'range' | 'q', value: string | null) => {
-    let currentValue: string | null = null;
-    if (name === 'status') currentValue = currentStatus;
-    if (name === 'range') currentValue = currentRange;
-    if (name === 'q') currentValue = searchTerm;
+  const handleFilterChange = (name: 'status' | 'range', value: string | null) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('page');
 
-    const newQueryString = createQueryString(name, currentValue === value ? null : value);
+    if (value === null || params.get(name) === value) {
+      // If the value is null or the same as the current one, remove the filter
+      params.delete(name);
+    } else {
+      // Otherwise, set the new filter value
+      params.set(name, value);
+    }
+    
+    const newQueryString = params.toString();
     startTransition(() => {
         router.replace(`${pathname}?${newQueryString}`);
     });
   };
-
+  
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-     const newQueryString = createQueryString('q', e.target.value || null);
+     const params = new URLSearchParams(searchParams.toString());
+     if(e.target.value) {
+        params.set('q', e.target.value);
+     } else {
+        params.delete('q');
+     }
+     params.delete('page');
+
+     const newQueryString = params.toString();
       startTransition(() => {
         router.replace(`${pathname}?${newQueryString}`);
     });
