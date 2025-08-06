@@ -31,13 +31,12 @@ export function TaskTimer({ initialStatus, initialDuration = 0, onStatusChange, 
   
   const isCompleted = status === 'Completato';
   
-  // Sync state with props
   useEffect(() => {
     setStatus(initialStatus);
     setSeconds(initialDuration);
-    // If the task is loaded as "In corso" it means it was running and is now paused.
-    // The timer should not start automatically.
-    setIsRunning(false); 
+    if (initialStatus !== "In corso") {
+        setIsRunning(false);
+    }
   }, [initialStatus, initialDuration]);
 
   // Timer interval logic
@@ -57,12 +56,14 @@ export function TaskTimer({ initialStatus, initialDuration = 0, onStatusChange, 
   const handleStart = useCallback(() => {
     if (isCompleted) return;
 
+    // Set running state immediately
+    setIsRunning(true);
+
     if (status === 'Pianificato') {
       const newStatus = 'In corso';
       setStatus(newStatus);
       onStatusChange(newStatus);
     }
-    setIsRunning(true);
   }, [status, onStatusChange, isCompleted]);
 
   const handlePause = useCallback(() => {
@@ -120,7 +121,7 @@ export function TaskTimer({ initialStatus, initialDuration = 0, onStatusChange, 
           {!isRunning ? (
              <Button onClick={handleStart} disabled={isCompleted}>
               <Play className="mr-2" />
-              {status === 'In corso' && !isRunning ? 'Riprendi' : 'Inizia'}
+              {status === 'In corso' ? 'Riprendi' : 'Inizia'}
             </Button>
           ) : (
             <Button onClick={handlePause} variant="outline">
@@ -137,3 +138,4 @@ export function TaskTimer({ initialStatus, initialDuration = 0, onStatusChange, 
     </Card>
   );
 }
+
