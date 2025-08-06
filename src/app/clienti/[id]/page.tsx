@@ -59,8 +59,8 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
         <div className="flex items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">{client.name}</h1>
-            <p className="text-muted-foreground">
-              Codice cliente: <span className="font-semibold text-primary">{client.clientCode}</span>
+            <p className="text-muted-foreground text-primary">
+              Codice cliente: <span className="font-semibold">{client.clientCode}</span>
             </p>
           </div>
           <ClientActions client={client} />
