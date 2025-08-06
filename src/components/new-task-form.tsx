@@ -107,7 +107,6 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
             description: `L'attività "${values.description}" è stata creata con successo.`,
             });
             router.push('/attivita');
-            router.refresh(); // This will refresh the data on the tasks page
         } else {
             throw new Error(result.message);
         }
