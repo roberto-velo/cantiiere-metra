@@ -1,4 +1,5 @@
 
+
 import type { Client, Technician, Task, TaskStatus } from './types';
 import path from 'path';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, parseISO, isValid, startOfYear, endOfYear, startOfDay, endOfDay } from 'date-fns';
@@ -16,12 +17,21 @@ import tasksData from './db/tasks.json';
 
 const localApi = {
     // Clients
-    getClients: async (page = 1, limit = 10) => {
+    getClients: async ({ page = 1, limit = 10, searchTerm }: { page?: number; limit?: number, searchTerm?: string }) => {
+        let filteredClients: Client[] = JSON.parse(JSON.stringify(clientsData));
+
+        if (searchTerm) {
+            const lowercasedTerm = searchTerm.toLowerCase();
+            filteredClients = filteredClients.filter(client => 
+                client.name.toLowerCase().includes(lowercasedTerm)
+            );
+        }
+
         const start = (page - 1) * limit;
         const end = page * limit;
         return {
-            clients: clientsData.slice(start, end),
-            totalPages: Math.ceil(clientsData.length / limit)
+            clients: filteredClients.slice(start, end),
+            totalPages: Math.ceil(filteredClients.length / limit)
         };
     },
     getAllClients: async (): Promise<Client[]> => {

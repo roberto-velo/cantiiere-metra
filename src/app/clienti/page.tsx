@@ -15,15 +15,22 @@ import localApi from "@/lib/data";
 import { PlusCircle, Search, UsersRound, ArrowRight, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
+import { ClientSearch } from "@/components/client-search";
 
 async function ClientsList({ page, searchTerm }: { page: number, searchTerm?: string }) {
-  const { clients, totalPages } = await localApi.getClients(page);
+  const { clients, totalPages } = await localApi.getClients({ page, searchTerm });
   
-  const filteredClients = searchTerm
-    ? clients.filter((client) =>
-        client.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : clients;
+  const params = new URLSearchParams();
+  if(searchTerm) params.set('q', searchTerm);
+  
+  const prevPageParams = new URLSearchParams(params);
+  if (page > 1) prevPageParams.set('page', String(page - 1));
+  const prevPage = `/clienti?${prevPageParams.toString()}`;
+
+  const nextPageParams = new URLSearchParams(params);
+  if (page < totalPages) nextPageParams.set('page', String(page + 1));
+  const nextPage = `/clienti?${nextPageParams.toString()}`;
+
 
   return (
     <>
@@ -39,7 +46,7 @@ async function ClientsList({ page, searchTerm }: { page: number, searchTerm?: st
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredClients.map((client) => (
+              {clients.map((client) => (
                 <TableRow key={client.id}>
                   <TableCell className="font-medium">
                     {client.name}
@@ -62,7 +69,7 @@ async function ClientsList({ page, searchTerm }: { page: number, searchTerm?: st
                   </TableCell>
                 </TableRow>
               ))}
-               {!filteredClients.length && (
+               {!clients.length && (
                   <TableRow>
                     <TableCell colSpan={4} className="text-center h-24">
                       Nessun cliente trovato.
@@ -76,12 +83,12 @@ async function ClientsList({ page, searchTerm }: { page: number, searchTerm?: st
       <CardFooter>
         <div className="flex w-full justify-end gap-2">
             <Button variant="outline" asChild disabled={page <= 1}>
-                <Link href={`/clienti?page=${page - 1}`}>
+                <Link href={prevPage}>
                     <ArrowLeft className="mr-2 h-4 w-4" /> Precedente
                 </Link>
             </Button>
             <Button variant="outline" asChild disabled={page >= totalPages}>
-                <Link href={`/clienti?page=${page + 1}`}>
+                <Link href={nextPage}>
                     Successivo <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
             </Button>
@@ -119,15 +126,7 @@ export default function ClientiPage({ searchParams }: { searchParams?: { page?: 
       <main className="flex-1 p-4 sm:p-6 space-y-6">
         <Card>
           <CardHeader>
-            <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                    placeholder="Cerca cliente per nome..."
-                    className="pl-10"
-                    defaultValue={searchTerm}
-                    disabled // Search to be implemented
-                />
-            </div>
+            <ClientSearch initialQuery={searchTerm} />
           </CardHeader>
           <Suspense fallback={<div className="text-center p-8">Caricamento...</div>}>
             <ClientsList page={currentPage} searchTerm={searchTerm} />
