@@ -51,8 +51,8 @@ export function AppHeader() {
   return (
     <header className="bg-primary text-primary-foreground border-b p-4 sm:p-6 sticky top-0 z-50">
       <div className="flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 text-xl font-bold">
-          <Image src="/logo.png" alt="Detra Composite Materials Logo" width={180} height={40} className="h-10 w-auto" />
+        <Link href="/">
+          <Image src="/logo.png" alt="Detra Composite Materials Logo" width={180} height={40} />
         </Link>
         <nav className="hidden md:flex items-center gap-4">
           {navLinks.map((link) => (
