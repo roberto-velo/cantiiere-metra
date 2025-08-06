@@ -1,7 +1,7 @@
 
 import type { Client, Technician, Task, TaskStatus } from './types';
 import path from 'path';
-import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, parseISO, isValid, startOfYear, endOfYear, startOfDay, endOfDay, isEqual } from 'date-fns';
+import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, parseISO, isValid, startOfYear, endOfYear, startOfDay, endOfDay } from 'date-fns';
 
 
 // Using require for JSON files is one way to read them at build time on the server.
@@ -76,10 +76,11 @@ const localApi = {
             try {
                 const selectedDate = parseISO(date);
                  if (isValid(selectedDate)) {
+                    const dayInterval = { start: startOfDay(selectedDate), end: endOfDay(selectedDate) };
                     filteredTasks = filteredTasks.filter(task => {
                         try {
                             const taskDate = parseISO(task.date);
-                            return isValid(taskDate) && isEqual(startOfDay(taskDate), startOfDay(selectedDate));
+                            return isValid(taskDate) && isWithinInterval(taskDate, dayInterval);
                         } catch {
                             return false;
                         }
