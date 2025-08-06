@@ -41,9 +41,7 @@ export function AppHeader() {
             </nav>
             
              <div className="flex items-center gap-2">
-                <div className="md:hidden">
-                    <NotificationMenu />
-                </div>
+                <NotificationMenu />
                 <Sheet>
                     <SheetTrigger asChild>
                         <Button variant="ghost" size="icon" className="md:hidden">
