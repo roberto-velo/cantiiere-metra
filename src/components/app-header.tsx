@@ -10,8 +10,19 @@ import {
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { NotificationMenu } from "./notification-menu";
 import Image from "next/image";
+import dynamic from 'next/dynamic';
+
+// Dynamically import the NotificationMenu with SSR turned off
+const NotificationMenu = dynamic(() => import('./notification-menu').then(mod => mod.NotificationMenu), {
+  ssr: false,
+  loading: () => (
+    <Button variant="ghost" size="icon" className="relative">
+      <div className="h-5 w-5 animate-pulse rounded-full bg-primary/50" />
+      <span className="sr-only">Notifiche</span>
+    </Button>
+  ),
+});
 
 
 export function AppHeader() {
@@ -32,7 +43,6 @@ export function AppHeader() {
             alt="Metra Logo" 
             width={250} 
             height={63}
-            priority
           />
         </Link>
         <div className="flex items-center gap-4">
