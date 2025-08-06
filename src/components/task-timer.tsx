@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -108,7 +109,7 @@ export function TaskTimer({ initialStatus, initialDuration = 0, onStatusChange, 
       <CardContent className="p-6 pt-2 text-center">
         <div className="relative">
              <div className={cn(
-                "text-6xl font-bold font-mono rounded-md py-4 transition-colors duration-300", 
+                "text-5xl font-bold font-mono rounded-md py-2 transition-colors duration-300", 
                 currentStyle.text
             )}>
               {formatTime(seconds)}
