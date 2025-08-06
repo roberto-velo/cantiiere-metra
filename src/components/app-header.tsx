@@ -46,7 +46,7 @@ export function AppHeader() {
   };
 
   return (
-    <header className="bg-card border-b p-4 sm:p-6 sticky top-0 z-50">
+    <header className="bg-primary text-primary-foreground border-b p-4 sm:p-6 sticky top-0 z-50">
       <div className="flex items-center justify-between">
         <Link href="/">
           <img
@@ -58,7 +58,7 @@ export function AppHeader() {
         <nav className="hidden md:flex items-center gap-4">
           {navLinks.map((link) => (
             <Button variant="ghost" asChild key={link.href}>
-              <Link href={link.href} className="flex items-center gap-2">
+              <Link href={link.href} className="flex items-center gap-2 text-primary-foreground hover:bg-primary/80 hover:text-primary-foreground">
                 <link.icon className="h-4 w-4" />
                 {link.label}
               </Link>
@@ -66,7 +66,7 @@ export function AppHeader() {
           ))}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon" className="relative">
+              <Button variant="outline" size="icon" className="relative text-primary">
                 <Bell className="h-5 w-5" />
                 {notifications.length > 0 && (
                   <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
