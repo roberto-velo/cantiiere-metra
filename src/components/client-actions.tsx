@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { MoreVertical } from "lucide-react";
 import { DialogTitle } from "./ui/dialog";
+import { SheetHeader, SheetTitle } from "./ui/sheet";
 
 
 export function ClientActions({ client }: { client: Client }) {
@@ -181,10 +182,9 @@ export function ClientActions({ client }: { client: Client }) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onSelect={() => router.push(`/clienti/${client.id}/modifica`)}>
-                  <Pencil className="mr-2 h-4 w-4" />
-                  <span>Modifica</span>
-                </DropdownMenuItem>
+                <SheetHeader>
+                   <SheetTitle className="sr-only">Azioni Cliente</SheetTitle>
+                </SheetHeader>
                 <DropdownMenuItem onSelect={handleDownloadPdf} disabled={isDownloading}>
                   <Download className="mr-2 h-4 w-4" />
                   <span>{isDownloading ? 'Download...' : 'Scarica PDF'}</span>

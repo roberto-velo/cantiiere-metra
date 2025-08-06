@@ -103,10 +103,6 @@ export function TechnicianActions({ technician }: { technician: Technician }) {
               <SheetHeader>
                 <SheetTitle className="sr-only">Azioni Tecnico</SheetTitle>
               </SheetHeader>
-              <DropdownMenuItem onSelect={() => router.push(`/tecnici/${technician.id}/modifica`)}>
-                <Pencil className="mr-2 h-4 w-4" />
-                <span>Modifica</span>
-              </DropdownMenuItem>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                    <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600 focus:text-red-600 focus:bg-red-50">
