@@ -26,6 +26,17 @@ const statusBadge: Record<TaskStatus, string> = {
   Completato: "bg-green-500/20 text-green-700 border border-green-500/30",
 };
 
+const formatDuration = (totalSeconds: number = 0) => {
+    if (!totalSeconds) return 'N/A';
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const secs = totalSeconds % 60;
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+      2,
+      "0"
+    )}:${String(secs).padStart(2, "0")}`;
+};
+
 
 export default async function DashboardPage() {
   
@@ -88,6 +99,8 @@ export default async function DashboardPage() {
                     <tr className="border-b">
                       <th className="text-left font-semibold p-4 text-muted-foreground">Descrizione</th>
                       <th className="text-left font-semibold p-4 text-muted-foreground">Cliente</th>
+                      <th className="text-left font-semibold p-4 text-muted-foreground">Data</th>
+                      <th className="text-left font-semibold p-4 text-muted-foreground">Tempo Impiegato</th>
                       <th className="text-left font-semibold p-4 text-muted-foreground">Stato</th>
                       <th className="text-left font-semibold p-4 text-muted-foreground"></th>
                     </tr>
@@ -103,6 +116,10 @@ export default async function DashboardPage() {
                             : 'N/A'
                         }
                         </td>
+                         <td className="p-4 text-muted-foreground">{task.date}</td>
+                        <td className="p-4 text-muted-foreground">
+                            {task.status === "Completato" ? formatDuration(task.duration) : '-'}
+                        </td>
                         <td className="p-4 text-muted-foreground">
                         <span className={cn("px-2 py-1 rounded-full text-xs font-medium", statusBadge[task.status])}>
                             {task.status}
@@ -117,7 +134,7 @@ export default async function DashboardPage() {
                     ))}
                      {tasks.length === 0 && (
                       <tr>
-                        <td colSpan={4} className="text-center h-24">
+                        <td colSpan={6} className="text-center h-24">
                           Nessuna attività recente.
                         </td>
                       </tr>
