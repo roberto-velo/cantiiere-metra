@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { NotificationMenu } from "./notification-menu";
+
 
 export function AppHeader() {
 
@@ -38,10 +40,13 @@ export function AppHeader() {
               ))}
             </nav>
             
-             <div className="md:hidden">
+             <div className="flex items-center gap-2">
+                <div className="md:hidden">
+                    <NotificationMenu />
+                </div>
                 <Sheet>
                     <SheetTrigger asChild>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" className="md:hidden">
                             <Menu className="h-6 w-6 text-primary-foreground" />
                             <span className="sr-only">Apri menu</span>
                         </Button>
