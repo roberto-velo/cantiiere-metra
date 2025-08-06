@@ -11,13 +11,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import localApi from "@/lib/data";
 import type { TaskPriority, TaskStatus } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { PlusCircle, Search, ClipboardList, Calendar, ArrowLeft, ArrowRight, Timer } from "lucide-react";
+import { PlusCircle, Search, ClipboardList, Calendar, ArrowLeft, ArrowRight, Timer, Filter } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
+import { TaskFilters } from "@/components/task-filters";
 
 const priorityBadge: Record<TaskPriority, string> = {
   Alta: "bg-red-500/20 text-red-700 border border-red-500/30",
@@ -43,8 +43,8 @@ const formatDuration = (totalSeconds: number = 0) => {
 };
 
 
-async function TasksList({ page }: { page: number }) {
-    const { tasks, totalPages } = await localApi.getTasks(page);
+async function TasksList({ page, searchTerm, status, dateRange }: { page: number, searchTerm?: string, status?: TaskStatus, dateRange?: string }) {
+    const { tasks, totalPages } = await localApi.getTasks({ page, searchTerm, status, dateRange });
     const [clients, technicians] = await Promise.all([
         localApi.getAllClients(),
         localApi.getAllTechnicians()
@@ -62,7 +62,7 @@ async function TasksList({ page }: { page: number }) {
                 <TableHead>Tecnico</TableHead>
                 <TableHead>Stato</TableHead>
                 <TableHead>Priorità</TableHead>
-                <TableHead>Data</TableHead>
+                <TableHead>Data e Ora</TableHead>
                 <TableHead>Durata</TableHead>
                 <TableHead className="text-right"></TableHead>
               </TableRow>
@@ -104,7 +104,7 @@ async function TasksList({ page }: { page: number }) {
                         {task.priority}
                       </span>
                     </TableCell>
-                    <TableCell>{task.date}</TableCell>
+                    <TableCell>{task.date} {task.time}</TableCell>
                     <TableCell>
                       {task.status === "Completato" ? formatDuration(task.duration) : '-'}
                     </TableCell>
@@ -121,7 +121,7 @@ async function TasksList({ page }: { page: number }) {
               {tasks.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={8} className="text-center h-24">
-                    Nessuna attività trovata.
+                    Nessuna attività trovata. Prova a cambiare i filtri.
                   </TableCell>
                 </TableRow>
               )}
@@ -149,8 +149,12 @@ async function TasksList({ page }: { page: number }) {
   );
 }
 
-export default async function AttivitaPage({ searchParams }: { searchParams?: { page?: string } }) {
+export default async function AttivitaPage({ searchParams }: { searchParams?: { page?: string, q?: string, status?: string, range?: string } }) {
   const currentPage = Number(searchParams?.page) || 1;
+  const searchTerm = searchParams?.q;
+  const status = searchParams?.status as TaskStatus | undefined;
+  const dateRange = searchParams?.range;
+
 
   return (
     <div className="flex flex-col flex-1">
@@ -173,45 +177,19 @@ export default async function AttivitaPage({ searchParams }: { searchParams?: { 
         </div>
       </header>
       <main className="flex-1 p-4 sm:p-6 space-y-6">
-        <Tabs defaultValue="lista">
-          <div className="flex items-center justify-between">
-            <TabsList>
-              <TabsTrigger value="lista">
-                <ClipboardList className="mr-2 h-4 w-4" /> Lista
-              </TabsTrigger>
-              <TabsTrigger value="calendario" disabled>
-                <Calendar className="mr-2 h-4 w-4" /> Calendario
-              </TabsTrigger>
-            </TabsList>
-          </div>
-          <TabsContent value="lista">
             <Card>
               <CardHeader>
-                <div className="relative flex-1 w-full">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="Cerca attività per descrizione..." className="pl-10" disabled />
-                </div>
+                <TaskFilters />
               </CardHeader>
               <Suspense fallback={<div className="text-center p-8">Caricamento...</div>}>
-                <TasksList page={currentPage} />
+                <TasksList 
+                  page={currentPage} 
+                  searchTerm={searchTerm} 
+                  status={status}
+                  dateRange={dateRange}
+                />
               </Suspense>
             </Card>
-          </TabsContent>
-          <TabsContent value="calendario">
-            <Card>
-              <CardHeader>
-                <CardTitle>Calendario Attività</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-center h-96 bg-muted rounded-md">
-                  <p className="text-muted-foreground">
-                    La vista calendario sarà implementata qui.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
       </main>
     </div>
   );

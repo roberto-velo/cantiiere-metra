@@ -1,6 +1,8 @@
 
 import type { Client, Technician, Task, TaskStatus } from './types';
 import path from 'path';
+import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
+
 
 // Using require for JSON files is one way to read them at build time on the server.
 // This avoids using the 'fs' module in code that might be bundled for the client.
@@ -46,13 +48,48 @@ const localApi = {
     },
 
     // Tasks
-    getTasks: async (page = 1, limit = 10) => {
+    getTasks: async (
+        { page = 1, limit = 10, searchTerm, status, dateRange }: 
+        { page?: number; limit?: number; searchTerm?: string; status?: TaskStatus; dateRange?: string }
+    ) => {
+        let filteredTasks: Task[] = [...tasks];
+
+        if (searchTerm) {
+            filteredTasks = filteredTasks.filter(task =>
+                task.description.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+
+        if (status) {
+            filteredTasks = filteredTasks.filter(task => task.status === status);
+        }
+
+        if (dateRange) {
+            const now = new Date();
+            let interval: { start: Date, end: Date };
+
+            if (dateRange === 'week') {
+                interval = { start: startOfWeek(now), end: endOfWeek(now) };
+            } else if (dateRange === 'month') {
+                interval = { start: startOfMonth(now), end: endOfMonth(now) };
+            }
+
+            if (interval) {
+                 filteredTasks = filteredTasks.filter(task => {
+                    const taskDate = new Date(task.date);
+                    return isWithinInterval(taskDate, interval);
+                });
+            }
+        }
+        
+        const sortedTasks = filteredTasks.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
         const start = (page - 1) * limit;
         const end = page * limit;
-        const sortedTasks = [...tasks].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        
         return {
             tasks: sortedTasks.slice(start, end),
-            totalPages: Math.ceil(tasks.length / limit)
+            totalPages: Math.ceil(sortedTasks.length / limit)
         };
     },
     getTask: async (id: string) => {
