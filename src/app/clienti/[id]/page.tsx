@@ -60,7 +60,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
           <div>
             <h1 className="text-2xl font-bold tracking-tight">{client.name}</h1>
             <p className="text-muted-foreground">
-              Codice cliente: {client.clientCode}
+              Codice cliente: <span className="font-semibold text-primary">{client.clientCode}</span>
             </p>
           </div>
           <ClientActions client={client} />
@@ -80,7 +80,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                     <info.icon className="h-5 w-5 text-muted-foreground mt-1" />
                     <div>
                       <p className="font-medium text-muted-foreground">{info.label}</p>
-                      <p className="text-foreground font-semibold">{info.value}</p>
+                      <p className="font-semibold text-primary">{info.value}</p>
                     </div>
                   </li>
                 ))}
