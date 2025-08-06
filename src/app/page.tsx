@@ -116,8 +116,8 @@ export default async function DashboardPage() {
                             : 'N/A'
                         }
                         </td>
-                         <td className="p-4 text-muted-foreground">{task.date}</td>
-                        <td className="p-4 text-muted-foreground">
+                         <td className="p-4 text-foreground">{task.date}</td>
+                        <td className="p-4 text-foreground">
                             {task.status === "Completato" ? formatDuration(task.duration) : '-'}
                         </td>
                         <td className="p-4 text-muted-foreground">
