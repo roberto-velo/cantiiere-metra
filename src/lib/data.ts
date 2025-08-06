@@ -42,12 +42,22 @@ const localApi = {
     },
     
     // Technicians
-    getTechnicians: async (page = 1, limit = 10) => {
+    getTechnicians: async ({ page = 1, limit = 10, searchTerm }: { page?: number; limit?: number; searchTerm?: string }) => {
+        let filteredTechnicians: Technician[] = JSON.parse(JSON.stringify(techniciansData));
+
+        if (searchTerm) {
+            const lowercasedTerm = searchTerm.toLowerCase();
+            filteredTechnicians = filteredTechnicians.filter(technician =>
+                technician.firstName.toLowerCase().includes(lowercasedTerm) ||
+                technician.lastName.toLowerCase().includes(lowercasedTerm)
+            );
+        }
+
         const start = (page - 1) * limit;
         const end = page * limit;
         return {
-            technicians: techniciansData.slice(start, end),
-            totalPages: Math.ceil(techniciansData.length / limit)
+            technicians: filteredTechnicians.slice(start, end),
+            totalPages: Math.ceil(filteredTechnicians.length / limit)
         };
     },
     getAllTechnicians: async (): Promise<Technician[]> => {

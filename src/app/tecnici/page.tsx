@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -12,20 +11,24 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import localApi from "@/lib/data";
-import { PlusCircle, Search, HardHat, ArrowLeft, ArrowRight } from "lucide-react";
+import { PlusCircle, HardHat, ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
+import { TechnicianSearch } from "@/components/technician-search";
 
 async function TechniciansList({ page, searchTerm }: { page: number, searchTerm?: string }) {
-    const { technicians, totalPages } = await localApi.getTechnicians(page);
+    const { technicians, totalPages } = await localApi.getTechnicians({page, searchTerm});
     
-    const filteredTechnicians = searchTerm
-        ? technicians.filter(
-            (technician) =>
-            technician.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            technician.lastName.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-        : technicians;
+    const params = new URLSearchParams();
+    if(searchTerm) params.set('q', searchTerm);
+    
+    const prevPageParams = new URLSearchParams(params);
+    if (page > 1) prevPageParams.set('page', String(page - 1));
+    const prevPage = `/tecnici?${prevPageParams.toString()}`;
+
+    const nextPageParams = new URLSearchParams(params);
+    if (page < totalPages) nextPageParams.set('page', String(page + 1));
+    const nextPage = `/tecnici?${nextPageParams.toString()}`;
 
     return (
         <>
@@ -41,7 +44,7 @@ async function TechniciansList({ page, searchTerm }: { page: number, searchTerm?
                         </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {filteredTechnicians.map((technician) => (
+                            {technicians.map((technician) => (
                             <TableRow key={technician.id}>
                                 <TableCell className="font-medium">
                                 {technician.firstName} {technician.lastName}
@@ -55,14 +58,14 @@ async function TechniciansList({ page, searchTerm }: { page: number, searchTerm?
                                     </Link>
                                 </Button>
                                 <Button size="sm" asChild>
-                                  <Link href={`/attivita/nuova?clientId=${technician.id}`}>
+                                  <Link href={`/attivita/nuova?technicianId=${technician.id}`}>
                                     Nuova Attività
                                   </Link>
                                 </Button>
                                 </TableCell>
                             </TableRow>
                             ))}
-                        {!filteredTechnicians.length && (
+                        {!technicians.length && (
                             <TableRow>
                                 <TableCell colSpan={4} className="text-center h-24">
                                 Nessun tecnico trovato.
@@ -76,15 +79,15 @@ async function TechniciansList({ page, searchTerm }: { page: number, searchTerm?
             <CardFooter>
                 <div className="flex w-full justify-end gap-2">
                     <Button variant="outline" asChild disabled={page <= 1}>
-                        <Link href={`/tecnici?page=${page - 1}`}>
-                            <ArrowLeft className="mr-2" />
+                        <Link href={prevPage}>
+                            <ArrowLeft className="mr-2 h-4 w-4" />
                             Precedente
                         </Link>
                     </Button>
                     <Button variant="outline" asChild disabled={page >= totalPages}>
-                        <Link href={`/tecnici?page=${page + 1}`}>
+                        <Link href={nextPage}>
                             Successivo
-                            <ArrowRight className="ml-2" />
+                            <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
                     </Button>
                 </div>
@@ -121,15 +124,7 @@ export default function TecniciPage({ searchParams }: { searchParams?: { page?: 
       <main className="flex-1 p-4 sm:p-6 space-y-6">
         <Card>
           <CardHeader>
-             <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Cerca tecnico per nome..."
-                  className="pl-10"
-                  defaultValue={searchTerm}
-                  disabled // Search to be implemented
-                />
-              </div>
+            <TechnicianSearch initialQuery={searchTerm} />
           </CardHeader>
            <Suspense fallback={<div className="text-center p-8">Caricamento...</div>}>
                 <TechniciansList page={currentPage} searchTerm={searchTerm} />
