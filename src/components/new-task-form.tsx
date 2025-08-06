@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ClipboardList, Mail, MapPin, Phone, Upload, Camera, FileText, Map } from "lucide-react";
+import { ArrowLeft, ClipboardList, Mail, MapPin, Phone, Upload, Camera, FileText, Map, Droplet } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
@@ -125,6 +125,15 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
     { icon: Phone, label: "Telefono", value: selectedClient.phone, href: `tel:${selectedClient.phone}` },
     { icon: Mail, label: "Email", value: selectedClient.email, href: `mailto:${selectedClient.email}` },
   ] : [];
+
+  const poolInfo = selectedClient ? [
+      { label: "Tipo Piscina", value: selectedClient.poolType },
+      { label: "Dimensioni", value: selectedClient.poolDimensions },
+      { label: "Volume", value: selectedClient.poolVolume },
+      { label: "Tipo Filtro", value: selectedClient.filterType },
+      { label: "Tipo Trattamento", value: selectedClient.treatmentType },
+  ].filter(info => info.value) : [];
+
 
   return (
     <div className="flex flex-col flex-1">
@@ -333,6 +342,31 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
                             </ul>
                         </CardContent>
                     </Card>
+
+                    {poolInfo.length > 0 && (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Droplet className="h-5 w-5" />
+                                    Informazioni Piscina
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {poolInfo.map((info) => (
+                                        <li key={info.label} className="flex items-start gap-3">
+                                            <div>
+                                                <p className="font-medium text-primary">{info.label}</p>
+                                                <p className="text-foreground font-semibold">{info.value}</p>
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </CardContent>
+                        </Card>
+                    )}
+
+
                     <Card>
                          <CardHeader>
                             <CardTitle className="flex items-center gap-2">
