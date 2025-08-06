@@ -1,50 +1,82 @@
-
 [
-    {
-        "id": "1",
-        "clientId": "1",
-        "technicianId": "1",
-        "date": "2024-08-10",
-        "time": "09:00",
-        "description": "Sostituzione caldaia condominiale",
-        "status": "Pianificato",
-        "priority": "Alta",
-        "photos": [],
-        "documents": [
-            { "id": "d1", "name": "Manuale Caldaia.pdf", "url": "#" },
-            { "id": "d2", "name": "Schema Impianto.pdf", "url": "#" }
-        ],
-        "notes": "Il cliente ha richiesto intervento urgente. Portare ricambi specifici modello X."
-    },
-    {
-        "id": "2",
-        "clientId": "2",
-        "technicianId": "2",
-        "date": "2024-08-12",
-        "time": "14:30",
-        "description": "Riparazione quadro elettrico principale",
-        "status": "In corso",
-        "priority": "Alta",
-        "photos": [
-             { "id": "p1", "url": "https://placehold.co/400x400.png", "description": "Quadro prima" },
-             { "id": "p2", "url": "https://placehold.co/400x400.png", "description": "Dettaglio del danno" }
-        ],
-        "documents": [],
-        "notes": ""
-    },
-    {
-        "id": "3",
-        "clientId": "3",
-        "technicianId": "1",
-        "date": "2024-08-05",
-        "time": "11:00",
-        "description": "Manutenzione ordinaria impianto idraulico",
-        "status": "Completato",
-        "priority": "Media",
-        "photos": [],
-        "documents": [
-            { "id": "d3", "name": "Rapporto Intervento.pdf", "url": "#" }
-        ],
-        "notes": "Intervento completato con successo. Nessuna anomalia riscontrata."
-    }
+  {
+    "id": "1",
+    "clientId": "1",
+    "technicianId": "1",
+    "date": "2024-08-10",
+    "time": "09:00",
+    "description": "Sostituzione caldaia condominiale",
+    "status": "Pianificato",
+    "priority": "Alta",
+    "photos": [],
+    "documents": [
+      {
+        "id": "d1",
+        "name": "Manuale Caldaia.pdf",
+        "url": "#"
+      },
+      {
+        "id": "d2",
+        "name": "Schema Impianto.pdf",
+        "url": "#"
+      }
+    ],
+    "notes": "Il cliente ha richiesto intervento urgente. Portare ricambi specifici modello X."
+  },
+  {
+    "id": "2",
+    "clientId": "2",
+    "technicianId": "2",
+    "date": "2024-08-12",
+    "time": "14:30",
+    "description": "Riparazione quadro elettrico principale",
+    "status": "In corso",
+    "priority": "Alta",
+    "photos": [
+      {
+        "id": "p1",
+        "url": "https://placehold.co/400x400.png",
+        "description": "Quadro prima"
+      },
+      {
+        "id": "p2",
+        "url": "https://placehold.co/400x400.png",
+        "description": "Dettaglio del danno"
+      }
+    ],
+    "documents": [],
+    "notes": ""
+  },
+  {
+    "id": "3",
+    "clientId": "3",
+    "technicianId": "1",
+    "date": "2024-08-05",
+    "time": "11:00",
+    "description": "Manutenzione ordinaria impianto idraulico",
+    "status": "Completato",
+    "priority": "Media",
+    "photos": [],
+    "documents": [
+      {
+        "id": "d3",
+        "name": "Rapporto Intervento.pdf",
+        "url": "#"
+      }
+    ],
+    "notes": "Intervento completato con successo. Nessuna anomalia riscontrata."
+  },
+  {
+    "id": "1754466615794",
+    "clientId": "1754456985711",
+    "technicianId": "1",
+    "date": "2025-08-07",
+    "time": "09:49",
+    "description": "kkkkkkk",
+    "priority": "Media",
+    "notes": "",
+    "photos": [],
+    "documents": [],
+    "status": "Pianificato"
+  }
 ]

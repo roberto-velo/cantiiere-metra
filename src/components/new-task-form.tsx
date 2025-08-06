@@ -107,6 +107,7 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
             description: `L'attività "${values.description}" è stata creata con successo.`,
             });
             router.push('/attivita');
+            router.refresh(); // This will refresh the data on the tasks page
         } else {
             throw new Error(result.message);
         }
@@ -122,8 +123,8 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
   }
 
   const clientInfo = selectedClient ? [
-    { icon: Phone, label: "Telefono", value: selectedClient.phone },
-    { icon: Mail, label: "Email", value: selectedClient.email },
+    { icon: Phone, label: "Telefono", value: selectedClient.phone, href: `tel:${selectedClient.phone}` },
+    { icon: Mail, label: "Email", value: selectedClient.email, href: `mailto:${selectedClient.email}` },
   ] : [];
 
   return (
@@ -313,8 +314,10 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
                                 <li key={info.label} className="flex items-start gap-4">
                                     <info.icon className="h-5 w-5 text-primary mt-1" />
                                     <div>
-                                    <p className="font-medium text-primary">{info.label}</p>
-                                    <p className="text-foreground font-semibold">{info.value}</p>
+                                      <p className="font-medium text-primary">{info.label}</p>
+                                      <a href={info.href} className="font-semibold text-foreground hover:underline">
+                                          {info.value}
+                                      </a>
                                     </div>
                                 </li>
                                 ))}
