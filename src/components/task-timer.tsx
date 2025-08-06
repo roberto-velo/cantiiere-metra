@@ -31,14 +31,13 @@ export function TaskTimer({ initialStatus, initialDuration = 0, onStatusChange, 
   
   const isCompleted = status === 'Completato';
   
-  // Set initial state for timer based on task status
+  // Sync state with props
   useEffect(() => {
     setStatus(initialStatus);
     setSeconds(initialDuration);
-    // if task is "In corso" when page loads, but timer is not running, it means it's paused.
-    if (initialStatus === "In corso") {
-        setIsRunning(false); 
-    }
+    // If the task is loaded as "In corso" it means it was running and is now paused.
+    // The timer should not start automatically.
+    setIsRunning(false); 
   }, [initialStatus, initialDuration]);
 
   // Timer interval logic
@@ -121,7 +120,7 @@ export function TaskTimer({ initialStatus, initialDuration = 0, onStatusChange, 
           {!isRunning ? (
              <Button onClick={handleStart} disabled={isCompleted}>
               <Play className="mr-2" />
-              {status === 'In corso' ? 'Riprendi' : 'Inizia'}
+              {status === 'In corso' && !isRunning ? 'Riprendi' : 'Inizia'}
             </Button>
           ) : (
             <Button onClick={handlePause} variant="outline">
