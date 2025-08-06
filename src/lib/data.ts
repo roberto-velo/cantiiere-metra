@@ -3,7 +3,7 @@ import type { Client, Technician, Task, TaskStatus } from './types';
 import path from 'path';
 
 // Using require inside the functions ensures fs is only used server-side.
-const fs = require('fs');
+
 
 // Define paths to the JSON data files
 const dataDir = path.join(process.cwd(), 'src', 'lib', 'db');
@@ -13,6 +13,7 @@ const tasksPath = path.join(dataDir, 'tasks.json');
 
 // Helper function to read data from a JSON file
 const readData = <T>(filePath: string): T[] => {
+    const fs = require('fs');
     try {
         const jsonData = fs.readFileSync(filePath, 'utf-8');
         return JSON.parse(jsonData) as T[];
@@ -24,6 +25,7 @@ const readData = <T>(filePath: string): T[] => {
 
 // Helper function to write data to a JSON file
 const writeData = (filePath: string, data: any): void => {
+    const fs = require('fs');
     try {
         fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
     } catch (error) {
@@ -74,13 +76,14 @@ const localApi = {
         let clients = readData<Client>(clientsPath);
         let tasks = readData<Task>(tasksPath);
         const initialLength = clients.length;
-        clients = clients.filter(c => c.id !== id);
         
-        if (clients.length < initialLength) {
+        const updatedClients = clients.filter(c => c.id !== id);
+        
+        if (updatedClients.length < initialLength) {
              // Also delete related tasks
-            tasks = tasks.filter(t => t.clientId !== id);
-            writeData(clientsPath, clients);
-            writeData(tasksPath, tasks);
+            const updatedTasks = tasks.filter(t => t.clientId !== id);
+            writeData(clientsPath, updatedClients);
+            writeData(tasksPath, updatedTasks);
             return true;
         }
         return false;
@@ -158,11 +161,11 @@ const localApi = {
         return null;
     },
     deleteTask: async (id: string) => {
-        let tasks = readData<Task>(tasksPath);
+        const tasks = readData<Task>(tasksPath);
         const initialLength = tasks.length;
-        tasks = tasks.filter(t => t.id !== id);
-        if (tasks.length < initialLength) {
-            writeData(tasksPath, tasks);
+        const updatedTasks = tasks.filter(t => t.id !== id);
+        if (updatedTasks.length < initialLength) {
+            writeData(tasksPath, updatedTasks);
             return true;
         }
         return false;
