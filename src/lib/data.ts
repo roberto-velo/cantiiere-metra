@@ -1,7 +1,7 @@
 
 import type { Client, Technician, Task, TaskStatus } from './types';
 import path from 'path';
-import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, parseISO, isValid } from 'date-fns';
+import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, parseISO, isValid, startOfYear, endOfYear } from 'date-fns';
 
 
 // Using require for JSON files is one way to read them at build time on the server.
@@ -76,6 +76,8 @@ const localApi = {
                 interval = { start: startOfWeek(now, { weekStartsOn: 1 }), end: endOfWeek(now, { weekStartsOn: 1 }) };
             } else if (dateRange === 'month') {
                 interval = { start: startOfMonth(now), end: endOfMonth(now) };
+            } else if (dateRange === 'year') {
+                interval = { start: startOfYear(now), end: endOfYear(now) };
             }
 
             if (interval) {
