@@ -76,8 +76,15 @@ export function TaskCalendar({ tasks, clients }: TaskCalendarProps) {
                         <div className="grid gap-1">
                             <p className="font-medium">{task.description}</p>
                             <p className="text-sm text-muted-foreground">
-                                {client?.name ? `${client.name} - ` : ''} 
-                                Ore: {task.time}
+                                {client?.name ? (
+                                    <>
+                                        Cliente: {client.name}
+                                        <br/>
+                                        Ore: {task.time}
+                                    </>
+                                ) : (
+                                    `Ore: ${task.time}`
+                                )}
                             </p>
                             <Button variant="link" size="sm" asChild className="p-0 h-auto justify-start">
                                 <Link href={`/attivita/${task.id}`}>Visualizza Dettagli</Link>
