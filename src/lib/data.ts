@@ -52,21 +52,24 @@ const localApi = {
         { page = 1, limit = 10, searchTerm, status, dateRange }: 
         { page?: number; limit?: number; searchTerm?: string; status?: TaskStatus; dateRange?: string }
     ) => {
-        let filteredTasks: Task[] = [...tasks];
+        let filteredTasks: Task[] = JSON.parse(JSON.stringify(tasks));
 
+        // 1. Filter by searchTerm
         if (searchTerm) {
             filteredTasks = filteredTasks.filter(task =>
                 task.description.toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
 
+        // 2. Filter by status
         if (status) {
             filteredTasks = filteredTasks.filter(task => task.status === status);
         }
 
+        // 3. Filter by dateRange
         if (dateRange) {
             const now = new Date();
-            let interval: { start: Date, end: Date };
+            let interval: { start: Date, end: Date } | null = null;
 
             if (dateRange === 'week') {
                 interval = { start: startOfWeek(now, { weekStartsOn: 1 }), end: endOfWeek(now, { weekStartsOn: 1 }) };
@@ -76,12 +79,15 @@ const localApi = {
 
             if (interval) {
                  filteredTasks = filteredTasks.filter(task => {
-                    // Ensure date is valid before parsing
                     if (!task.date || isNaN(new Date(task.date).getTime())) {
                         return false;
                     }
-                    const taskDate = parseISO(task.date);
-                    return isWithinInterval(taskDate, interval);
+                    try {
+                        const taskDate = parseISO(task.date);
+                        return isWithinInterval(taskDate, interval!);
+                    } catch (e) {
+                        return false;
+                    }
                 });
             }
         }

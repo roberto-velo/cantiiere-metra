@@ -6,21 +6,34 @@ import { Input } from "./ui/input";
 import { Search } from "lucide-react";
 import { Button } from "./ui/button";
 import { useCallback } from "react";
+import { cn } from "@/lib/utils";
 
 export function TaskFilters() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  
+  const searchTerm = searchParams.get("q") || "";
+  const currentStatus = searchParams.get('status');
+  const currentRange = searchParams.get('range');
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString())
-      params.set(name, value)
+      const params = new URLSearchParams(searchParams.toString());
+      if (params.get(name) === value) {
+        params.delete(name);
+      } else {
+        params.set(name, value);
+      }
       params.delete('page');
-      return params.toString()
+      return params.toString();
     },
     [searchParams]
-  )
+  );
+  
+  const handleFilterClick = (name: 'status' | 'range', value: string) => {
+    router.replace(`${pathname}?${createQueryString(name, value)}`);
+  };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -33,20 +46,7 @@ export function TaskFilters() {
     router.replace(`${pathname}?${params.toString()}`);
   };
 
-  const handleFilterClick = (key: 'status' | 'range', value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    // If the current filter is already active, remove it. Otherwise, set it.
-    if (params.get(key) === value) {
-      params.delete(key);
-    } else {
-      params.set(key, value);
-    }
-    params.delete('page');
-    router.replace(`${pathname}?${params.toString()}`);
-  }
-
   const resetFilters = () => {
-    // Keep the search query 'q' if it exists, but clear other filters.
     const params = new URLSearchParams(searchParams.toString());
     params.delete('status');
     params.delete('range');
@@ -54,9 +54,6 @@ export function TaskFilters() {
     router.replace(`${pathname}?${params.toString()}`);
   };
   
-
-  const currentStatus = searchParams.get('status');
-  const currentRange = searchParams.get('range');
   const hasActiveFilters = !!currentStatus || !!currentRange;
 
   return (
@@ -67,7 +64,7 @@ export function TaskFilters() {
           placeholder="Cerca attività per descrizione..."
           className="pl-10"
           onChange={handleSearch}
-          defaultValue={searchParams.get("q") || ""}
+          defaultValue={searchTerm}
         />
       </div>
       <div className="flex flex-wrap items-center gap-2">
@@ -75,6 +72,8 @@ export function TaskFilters() {
           
           <Button variant={!hasActiveFilters ? 'default' : 'outline'} size="sm" onClick={resetFilters}>Tutte</Button>
           
+          <div className="border-l h-6 mx-2"></div>
+
           <Button variant={currentStatus === 'Pianificato' ? 'default' : 'outline'} size="sm" onClick={() => handleFilterClick('status', 'Pianificato')}>Pianificate</Button>
           <Button variant={currentStatus === 'In corso' ? 'default' : 'outline'} size="sm" onClick={() => handleFilterClick('status', 'In corso')}>In Corso</Button>
           <Button variant={currentStatus === 'Completato' ? 'default' : 'outline'} size="sm" onClick={() => handleFilterClick('status', 'Completato')}>Completate</Button>
