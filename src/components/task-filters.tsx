@@ -64,7 +64,7 @@ export function TaskFilters() {
         <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-                placeholder="Cerca attività, cliente o tecnico..."
+                placeholder="ricerca solo per cliente"
                 className="pl-10"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}

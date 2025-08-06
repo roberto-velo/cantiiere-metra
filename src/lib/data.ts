@@ -56,20 +56,14 @@ const localApi = {
         const clients = await localApi.getAllClients();
         const technicians = await localApi.getAllTechnicians();
 
-        // 1. Filter by searchTerm
+        // 1. Filter by searchTerm (only client name)
         if (searchTerm) {
             const lowercasedTerm = searchTerm.toLowerCase();
             filteredTasks = filteredTasks.filter(task => {
                 const client = clients.find(c => c.id === task.clientId);
-                const technician = technicians.find(t => t.id === task.technicianId);
                 const clientName = client ? client.name.toLowerCase() : '';
-                const technicianName = technician ? `${technician.firstName.toLowerCase()} ${technician.lastName.toLowerCase()}` : '';
-
-                return (
-                    task.description.toLowerCase().includes(lowercasedTerm) ||
-                    clientName.includes(lowercasedTerm) ||
-                    technicianName.includes(lowercasedTerm)
-                );
+                
+                return clientName.includes(lowercasedTerm);
             });
         }
 
