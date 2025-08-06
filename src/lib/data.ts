@@ -1,7 +1,7 @@
 
 import type { Client, Technician, Task, TaskStatus } from './types';
 import path from 'path';
-import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, parseISO, isValid, startOfYear, endOfYear } from 'date-fns';
+import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, parseISO, isValid, startOfYear, endOfYear, isEqual } from 'date-fns';
 
 
 // Using require for JSON files is one way to read them at build time on the server.
@@ -49,12 +49,11 @@ const localApi = {
 
     // Tasks
     getTasks: async (
-        { page = 1, limit = 10, searchTerm, status, dateRange }: 
-        { page?: number; limit?: number; searchTerm?: string; status?: TaskStatus; dateRange?: string }
+        { page = 1, limit = 10, searchTerm, status, dateRange, date }: 
+        { page?: number; limit?: number; searchTerm?: string; status?: TaskStatus; dateRange?: string, date?: string }
     ) => {
         let filteredTasks: Task[] = JSON.parse(JSON.stringify(tasksData));
         const clients = await localApi.getAllClients();
-        const technicians = await localApi.getAllTechnicians();
 
         // 1. Filter by searchTerm (only client name)
         if (searchTerm) {
@@ -72,8 +71,16 @@ const localApi = {
             filteredTasks = filteredTasks.filter(task => task.status === status);
         }
 
-        // 3. Filter by dateRange
-        if (dateRange) {
+        // 3. Filter by dateRange or specific date
+        if (date) {
+            const selectedDate = parseISO(date);
+            if (isValid(selectedDate)) {
+                 filteredTasks = filteredTasks.filter(task => {
+                    const taskDate = parseISO(task.date);
+                    return isValid(taskDate) && isEqual(taskDate, selectedDate);
+                });
+            }
+        } else if (dateRange) {
             const now = new Date();
             let interval: { start: Date, end: Date } | null = null;
 

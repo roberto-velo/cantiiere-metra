@@ -46,13 +46,15 @@ const formatDuration = (totalSeconds: number = 0) => {
 async function TasksList({ 
   page,
   dateRange,
-  searchTerm
+  searchTerm,
+  date
 }: { 
   page: number;
   dateRange?: string;
   searchTerm?: string;
+  date?: string;
 }) {
-    const { tasks, totalPages } = await localApi.getTasks({ page, dateRange, searchTerm });
+    const { tasks, totalPages } = await localApi.getTasks({ page, dateRange, searchTerm, date });
     const [clients, technicians] = await Promise.all([
         localApi.getAllClients(),
         localApi.getAllTechnicians()
@@ -61,6 +63,7 @@ async function TasksList({
     const params = new URLSearchParams();
     if(dateRange) params.set('range', dateRange);
     if(searchTerm) params.set('q', searchTerm);
+    if(date) params.set('date', date);
 
 
     const prevPageParams = new URLSearchParams(params);
@@ -175,6 +178,7 @@ export default function AttivitaPage({ searchParams }: { searchParams?: { [key: 
   const currentPage = Number(searchParams?.page) || 1;
   const dateRange = searchParams?.range as string | undefined;
   const searchTerm = searchParams?.q as string | undefined;
+  const date = searchParams?.date as string | undefined;
   
   return (
     <div className="flex flex-col flex-1">
@@ -206,6 +210,7 @@ export default function AttivitaPage({ searchParams }: { searchParams?: { [key: 
                   page={currentPage} 
                   dateRange={dateRange}
                   searchTerm={searchTerm}
+                  date={date}
                 />
               </Suspense>
             </Card>
