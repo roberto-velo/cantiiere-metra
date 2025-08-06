@@ -97,12 +97,12 @@ export default async function DashboardPage() {
                 <table className="w-full text-sm">
                   <thead className="bg-muted/50">
                     <tr className="border-b">
-                      <th className="text-left font-semibold p-4 text-muted-foreground">Descrizione</th>
-                      <th className="text-left font-semibold p-4 text-muted-foreground">Cliente</th>
-                      <th className="text-left font-semibold p-4 text-muted-foreground">Data</th>
-                      <th className="text-left font-semibold p-4 text-muted-foreground">Tempo Impiegato</th>
-                      <th className="text-left font-semibold p-4 text-muted-foreground">Stato</th>
-                      <th className="text-left font-semibold p-4 text-muted-foreground"></th>
+                      <th className="text-left font-semibold p-4 text-primary">Descrizione</th>
+                      <th className="text-left font-semibold p-4 text-primary">Cliente</th>
+                      <th className="text-left font-semibold p-4 text-primary">Data</th>
+                      <th className="text-left font-semibold p-4 text-primary">Tempo Impiegato</th>
+                      <th className="text-left font-semibold p-4 text-primary">Stato</th>
+                      <th className="text-left font-semibold p-4 text-primary"></th>
                     </tr>
                   </thead>
                   <tbody>
