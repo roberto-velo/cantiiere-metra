@@ -106,7 +106,7 @@ export default function TecniciPage({ searchParams }: { searchParams?: { page?: 
             <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
               <HardHat className="h-6 w-6" /> Tecnici
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-primary">
               Gestisci l'anagrafinca dei tuoi dipendenti e tecnici.
             </p>
           </div>
