@@ -64,6 +64,7 @@ export type Reminder = {
   title: string;
   description?: string;
   dueDate: string;
+  dueTime?: string;
   relatedTo: "client" | "technician" | "none";
   relatedId?: string;
   isCompleted: boolean;

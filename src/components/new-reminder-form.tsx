@@ -35,6 +35,7 @@ const formSchema = z.object({
   title: z.string().min(3, "Il titolo deve avere almeno 3 caratteri."),
   description: z.string().optional(),
   dueDate: z.string().min(1, "La data di scadenza è obbligatoria."),
+  dueTime: z.string().optional(),
   relatedTo: z.enum(["client", "technician", "none"]).default("none"),
   relatedId: z.string().optional(),
 });
@@ -54,6 +55,7 @@ export function NewReminderForm({ clients, technicians }: NewReminderFormProps) 
       title: "",
       description: "",
       dueDate: format(new Date(), 'yyyy-MM-dd'),
+      dueTime: "",
       relatedTo: "none",
     },
   });
@@ -111,20 +113,20 @@ export function NewReminderForm({ clients, technicians }: NewReminderFormProps) 
                 <CardTitle>Dettagli Promemoria</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Titolo</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Es: Scadenza certificazione" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                    control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                        <FormItem className="md:col-span-1">
-                        <FormLabel>Titolo</FormLabel>
-                        <FormControl>
-                            <Input placeholder="Es: Scadenza certificazione" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
                      <FormField
                         control={form.control}
                         name="dueDate"
@@ -133,6 +135,19 @@ export function NewReminderForm({ clients, technicians }: NewReminderFormProps) 
                             <FormLabel>Data Scadenza</FormLabel>
                             <FormControl>
                             <Input type="date" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                     <FormField
+                        control={form.control}
+                        name="dueTime"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Orario (Opzionale)</FormLabel>
+                            <FormControl>
+                            <Input type="time" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
