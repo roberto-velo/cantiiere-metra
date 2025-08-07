@@ -20,7 +20,8 @@ import {
   Droplet,
   Map,
   ArrowLeft,
-  Camera
+  Camera,
+  HardHat
 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -39,7 +40,10 @@ export default async function ClientDetailPage({ params, searchParams }: { param
 
   const backPath = searchParams?.from || '/clienti';
 
-  const clientTasks = await localApi.getTasksByClientId(client.id);
+  const [clientTasks, technicians] = await Promise.all([
+    localApi.getTasksByClientId(client.id),
+    localApi.getAllTechnicians()
+  ]);
 
   const clientInfo = [
     { icon: Phone, label: "Telefono", value: client.phone, href: `tel:${client.phone}` },
@@ -153,16 +157,22 @@ export default async function ClientDetailPage({ params, searchParams }: { param
                     <TableRow>
                       <TableHead className="text-primary">Data</TableHead>
                       <TableHead className="text-primary">Descrizione</TableHead>
+                      <TableHead className="text-primary">Tecnico</TableHead>
                       <TableHead className="text-primary">Stato</TableHead>
                       <TableHead className="text-right"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {clientTasks.length > 0 ? (
-                      clientTasks.map((task) => (
+                      clientTasks.map((task) => {
+                        const assignedTechnicians = technicians.filter(t => task.technicianIds.includes(t.id));
+                        const technicianNames = assignedTechnicians.map(t => `${t.firstName} ${t.lastName}`).join(', ');
+
+                        return (
                         <TableRow key={task.id}>
                           <TableCell className="whitespace-nowrap">{task.date}</TableCell>
                           <TableCell>{task.description}</TableCell>
+                          <TableCell className="whitespace-nowrap">{technicianNames || 'N/A'}</TableCell>
                           <TableCell>{task.status}</TableCell>
                           <TableCell className="text-right">
                             <Button asChild variant="ghost" size="sm">
@@ -170,10 +180,11 @@ export default async function ClientDetailPage({ params, searchParams }: { param
                             </Button>
                           </TableCell>
                         </TableRow>
-                      ))
+                        )
+                      })
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={4} className="text-center h-24">Nessuna attività trovata.</TableCell>
+                        <TableCell colSpan={5} className="text-center h-24">Nessuna attività trovata.</TableCell>
                       </TableRow>
                     )}
                   </TableBody>
