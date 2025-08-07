@@ -14,21 +14,21 @@ body {
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 180 100% 25.1%; /* Teal */
+    --primary: 195 90% 40%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 210 40% 96.1%;
+    --accent: 142 90% 60%;
     --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 180 100% 25.1%;
-    --chart-1: 180 100% 25.1%;
-    --chart-2: 196 78% 52%;
+    --ring: 195 90% 40%;
+    --chart-1: 195 90% 40%;
+    --chart-2: 142 90% 60%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
@@ -37,12 +37,12 @@ body {
     /* Light Sidebar Theme */
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222.2 84% 4.9%;
-    --sidebar-primary: 180 100% 25.1%;
+    --sidebar-primary: 195 90% 40%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 210 40% 96.1%;
     --sidebar-accent-foreground: 222.2 47.4% 11.2%;
     --sidebar-border: 214.3 31.8% 91.4%;
-    --sidebar-ring: 180 100% 25.1%;
+    --sidebar-ring: 195 90% 40%;
   }
 
   .dark {
@@ -52,21 +52,21 @@ body {
     --card-foreground: 210 20% 98%;
     --popover: 220 20% 7%;
     --popover-foreground: 210 20% 98%;
-    --primary: 180 100% 35.1%;
+    --primary: 195 90% 45%;
     --primary-foreground: 222.2 47.4% 11.2%;
     --secondary: 220 20% 15%;
     --secondary-foreground: 210 20% 98%;
     --muted: 220 20% 15%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 220 20% 15%;
+    --accent: 142 90% 65%;
     --accent-foreground: 210 20% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 220 20% 20%;
     --input: 220 20% 20%;
-    --ring: 180 100% 35.1%;
-    --chart-1: 180 100% 35.1%;
-    --chart-2: 196 78% 62%;
+    --ring: 195 90% 45%;
+    --chart-1: 195 90% 45%;
+    --chart-2: 142 90% 65%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
@@ -74,12 +74,12 @@ body {
     /* Dark Sidebar Theme - remains for dark mode toggle if needed */
     --sidebar-background: 220 20% 7%;
     --sidebar-foreground: 210 20% 98%;
-    --sidebar-primary: 180 100% 35.1%;
+    --sidebar-primary: 195 90% 45%;
     --sidebar-primary-foreground: 220 20% 7%;
     --sidebar-accent: 220 20% 15%;
     --sidebar-accent-foreground: 210 20% 98%;
     --sidebar-border: 220 20% 15%;
-    --sidebar-ring: 180 100% 35.1%;
+    --sidebar-ring: 195 90% 45%;
   }
 }
 
@@ -90,21 +90,5 @@ body {
   body {
     @apply bg-background text-foreground;
     transition: background-color 0.3s, color 0.3s;
-  }
-}
-
-@layer components {
-  .glow-on-hover {
-    transition: box-shadow 0.3s ease-in-out, transform 0.2s ease-in-out;
-  }
-  .glow-on-hover:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px -5px hsl(var(--primary) / 0.2), 0 8px 10px -6px hsl(var(--primary) / 0.2);
-  }
-  .text-dashboard-teal {
-    color: hsl(var(--primary));
-  }
-  .dark .text-dashboard-teal {
-    color: hsl(var(--primary));
   }
 }
