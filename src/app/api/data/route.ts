@@ -6,12 +6,13 @@ import path from 'path';
 // Note: This is a simplified in-memory "database" for demonstration purposes.
 // In a real-world application, you would use a proper database.
 const dataDir = path.join(process.cwd(), 'src', 'lib', 'db');
+const VALID_FILES = ['clients.json', 'tasks.json', 'technicians.json', 'reminders.json'];
 
 async function getHandler(request: Request) {
     const { searchParams } = new URL(request.url);
     const file = searchParams.get('file');
 
-    if (!file || !['clients.json', 'tasks.json', 'technicians.json', 'reminders.json'].includes(file)) {
+    if (!file || !VALID_FILES.includes(file)) {
         return NextResponse.json({ message: 'Invalid file specified' }, { status: 400 });
     }
 
@@ -37,7 +38,7 @@ async function postHandler(request: Request) {
     const { searchParams } = new URL(request.url);
     const file = searchParams.get('file');
 
-     if (!file || !['clients.json', 'tasks.json', 'technicians.json', 'reminders.json'].includes(file)) {
+     if (!file || !VALID_FILES.includes(file)) {
         return NextResponse.json({ message: 'Invalid file specified' }, { status: 400 });
     }
     
