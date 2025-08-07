@@ -49,7 +49,7 @@ export function AppHeader() {
             <nav className="hidden md:flex items-center gap-4">
               {navLinks.map((link) => (
                 <Button variant="ghost" asChild key={link.href}>
-                  <Link href={link.href} className="flex items-center gap-2 text-primary-foreground hover:bg-primary/80 hover:text-primary-foreground">
+                  <Link href={link.href} className="flex items-center gap-2 text-black hover:bg-primary/20">
                     <link.icon className="h-4 w-4" />
                     {link.label}
                   </Link>
@@ -62,7 +62,7 @@ export function AppHeader() {
             <Sheet>
                 <SheetTrigger asChild>
                     <Button variant="ghost" size="icon" className="md:hidden">
-                        <Menu className="h-6 w-6 text-primary-foreground" />
+                        <Menu className="h-6 w-6 text-black" />
                         <span className="sr-only">Apri menu</span>
                     </Button>
                 </SheetTrigger>
