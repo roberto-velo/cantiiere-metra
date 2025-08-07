@@ -169,7 +169,7 @@ export default async function DashboardPage() {
                     <p className="text-sm font-medium">
                       Certificazione Gas Mario Rossi
                     </p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-primary">
                       Scade tra 2 settimane
                     </p>
                   </div>
