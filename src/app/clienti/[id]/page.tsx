@@ -28,11 +28,12 @@ import { notFound } from "next/navigation";
 import { ClientActions } from "@/components/client-actions";
 import { FileUpload } from "@/components/file-upload";
 import { AttachmentItem } from "@/components/attachment-item";
+import type { Photo, Document } from "@/lib/types";
 
 export default async function ClientDetailPage({ params, searchParams }: { params: { id: string }, searchParams: { from?: string } }) {
   
   const { id } = params;
-  const client = await localApi.getClient(Number(id));
+  const client = await localApi.getClient(id);
   
   if (!client) {
     notFound();
@@ -59,8 +60,8 @@ export default async function ClientDetailPage({ params, searchParams }: { param
   ].filter(info => info.value);
 
   // We need to associate attachments with their tasks
-  const allPhotos = clientTasks.flatMap(t => (t.photos as any[]).map(p => ({ ...p, taskId: t.id })));
-  const allDocuments = clientTasks.flatMap(t => (t.documents as any[]).map(d => ({ ...d, taskId: t.id })));
+  const allPhotos = clientTasks.flatMap(t => (t.photos as Photo[]).map(p => ({ ...p, taskId: t.id })));
+  const allDocuments = clientTasks.flatMap(t => (t.documents as Document[]).map(d => ({ ...d, taskId: t.id })));
 
 
   return (

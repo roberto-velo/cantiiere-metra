@@ -3,13 +3,15 @@ import { NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
 
+// Note: This is a simplified in-memory "database" for demonstration purposes.
+// In a real-world application, you would use a proper database.
 const dataDir = path.join(process.cwd(), 'src', 'lib', 'db');
 
 async function getHandler(request: Request) {
     const { searchParams } = new URL(request.url);
     const file = searchParams.get('file');
 
-    if (!file || !['clients.json', 'tasks.json', 'technicians.json'].includes(file)) {
+    if (!file || !['clients.json', 'tasks.json', 'technicians.json', 'reminders.json'].includes(file)) {
         return NextResponse.json({ message: 'Invalid file specified' }, { status: 400 });
     }
 
@@ -19,7 +21,9 @@ async function getHandler(request: Request) {
         return NextResponse.json(JSON.parse(data));
     } catch (error) {
          if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-             // If the file doesn't exist, return an empty array, which is a valid state.
+             // If the file doesn't exist, create it with an empty array.
+             const filePath = path.join(dataDir, file);
+             await fs.mkdir(dataDir, { recursive: true });
              await fs.writeFile(filePath, '[]', 'utf-8');
              return NextResponse.json([]);
          }
@@ -33,7 +37,7 @@ async function postHandler(request: Request) {
     const { searchParams } = new URL(request.url);
     const file = searchParams.get('file');
 
-     if (!file || !['clients.json', 'tasks.json', 'technicians.json'].includes(file)) {
+     if (!file || !['clients.json', 'tasks.json', 'technicians.json', 'reminders.json'].includes(file)) {
         return NextResponse.json({ message: 'Invalid file specified' }, { status: 400 });
     }
     

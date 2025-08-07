@@ -27,14 +27,14 @@ import type { Qualification } from "@/lib/types";
 export default async function TechnicianDetailPage({ params }: { params: { id: string } }) {
   
   const { id } = params;
-  const technician = await localApi.getTechnician(Number(id));
+  const technician = await localApi.getTechnician(id);
 
   if (!technician) {
     notFound();
   }
 
   const [technicianTasks, clients] = await Promise.all([
-      localApi.getTasksByTechnicianId(Number(id)),
+      localApi.getTasksByTechnicianId(id),
       localApi.getAllClients()
   ]);
 
@@ -95,8 +95,8 @@ export default async function TechnicianDetailPage({ params }: { params: { id: s
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {(technician.qualifications as Qualification[])?.length > 0 ? (
-                      (technician.qualifications as Qualification[]).map((q) => (
+                    {technician.qualifications.length > 0 ? (
+                      technician.qualifications.map((q) => (
                         <TableRow key={q.id}>
                           <TableCell>{q.name}</TableCell>
                           <TableCell className="flex items-center gap-2 whitespace-nowrap">

@@ -11,7 +11,7 @@ import Link from "next/link";
 // and passes it to the client component form.
 export default async function ModificaClientePage({ params }: { params: { id: string } }) {
   const { id } = params;
-  const client = await localApi.getClient(Number(id));
+  const client = await localApi.getClient(id);
 
   if (!client) {
     notFound();

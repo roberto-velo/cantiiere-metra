@@ -9,7 +9,7 @@ import Link from "next/link";
 
 export default async function ModificaTecnicoPage({ params }: { params: { id: string } }) {
   const { id } = params;
-  const technician = await localApi.getTechnician(Number(id));
+  const technician = await localApi.getTechnician(id);
 
   if (!technician) {
     notFound();

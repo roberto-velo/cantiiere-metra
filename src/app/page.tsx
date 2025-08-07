@@ -4,6 +4,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +14,7 @@ import {
   ListTodo,
   ArrowUpRight,
   PlusCircle,
+  Bell,
 } from "lucide-react";
 import Link from "next/link";
 import localApi from "@/lib/data";
@@ -27,6 +29,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { ReminderItem } from "@/components/reminder-item";
 
 
 const statusBadge: Record<TaskStatus, string> = {
@@ -35,21 +39,10 @@ const statusBadge: Record<TaskStatus, string> = {
   Completato: "bg-green-500/20 text-green-700 border border-green-500/30",
 };
 
-const formatDuration = (totalSeconds: number = 0) => {
-    if (!totalSeconds) return 'N/A';
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const secs = totalSeconds % 60;
-    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
-      2,
-      "0"
-    )}:${String(secs).padStart(2, "0")}`;
-};
-
 
 export default async function DashboardPage() {
   
-  const { tasks, technicians, clients } = await localApi.getDashboardData();
+  const { tasks, technicians, clients, reminders } = await localApi.getDashboardData();
 
   const scheduledTasks = tasks.filter(
     (task) => task.status === "Pianificato"
@@ -91,7 +84,7 @@ export default async function DashboardPage() {
       </div>
 
        <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
-            <Card className="xl:col-span-3">
+            <Card className="xl:col-span-2">
               <CardHeader className="flex flex-row items-center">
                 <div className="grid gap-2">
                   <CardTitle>Attività Recenti</CardTitle>
@@ -148,6 +141,46 @@ export default async function DashboardPage() {
                     )}
                   </TableBody>
                 </Table>
+              </CardContent>
+            </Card>
+             <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Bell className="h-5 w-5" />
+                    Promemoria
+                  </div>
+                  <Button asChild size="sm" variant="ghost">
+                    <Link href="/promemoria/nuovo">
+                      <PlusCircle className="mr-2" />
+                      Nuovo
+                    </Link>
+                  </Button>
+                </CardTitle>
+                <CardDescription>
+                  Promemoria e scadenze imminenti.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {reminders.length > 0 ? (
+                  <ScrollArea className="h-72">
+                    <div className="space-y-6 pr-4">
+                      {reminders.map((reminder) => (
+                        <ReminderItem key={reminder.id} reminder={reminder} />
+                      ))}
+                    </div>
+                  </ScrollArea>
+                ) : (
+                  <div className="flex flex-col items-center justify-center text-center h-full p-8">
+                     <Bell className="h-10 w-10 text-muted-foreground mb-4" />
+                    <p className="text-sm text-muted-foreground">
+                      Nessun promemoria attivo.
+                    </p>
+                     <Button size="sm" className="mt-4" asChild>
+                       <Link href="/promemoria/nuovo">Crea Promemoria</Link>
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>

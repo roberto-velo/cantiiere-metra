@@ -1,95 +1,71 @@
 
-import type { Client, Technician, Task, TaskStatus } from './types';
-import { supabase } from './supabase';
+import type { Client, Technician, Task, TaskStatus, Reminder } from './types';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, parseISO, isValid, startOfYear, endOfYear, startOfDay, endOfDay } from 'date-fns';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
+
+async function fetchData<T>(file: 'clients' | 'tasks' | 'technicians' | 'reminders'): Promise<T[]> {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/data?file=${file}`, { cache: 'no-store' });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || `Failed to fetch ${file}`);
+        }
+        return response.json();
+    } catch (error) {
+        console.error(`Error in fetchData for ${file}:`, error);
+        return [];
+    }
+}
 
 const localApi = {
     // Clients
     getClients: async ({ page = 1, limit = 10, searchTerm }: { page?: number; limit?: number, searchTerm?: string }) => {
-        let query = supabase.from('clients').select('*', { count: 'exact' });
-
+        let allClients = await localApi.getAllClients();
         if (searchTerm) {
-            query = query.ilike('name', `%${searchTerm}%`);
+            allClients = allClients.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()));
         }
-        
-        const start = (page - 1) * limit;
-        const end = page * limit - 1;
-        query = query.range(start, end).order('id');
 
-        const { data, error, count } = await query;
-        if (error) {
-            console.error('Error fetching clients:', error);
-            return { clients: [], totalPages: 0 };
-        }
+        const totalPages = Math.ceil(allClients.length / limit);
+        const paginatedClients = allClients.slice((page - 1) * limit, page * limit);
         
-        return {
-            clients: data,
-            totalPages: Math.ceil((count || 0) / limit)
-        };
+        return { clients: paginatedClients, totalPages };
     },
     getAllClients: async (): Promise<Client[]> => {
-        const { data, error } = await supabase.from('clients').select('*');
-        if (error) {
-            console.error('Error fetching all clients:', error);
-            return [];
-        }
-        return data as Client[];
+        return fetchData<Client>('clients');
     },
-    getClient: async (id: number) => {
-        const { data, error } = await supabase.from('clients').select('*').eq('id', id).single();
-        if (error) {
-            console.error('Error fetching client:', error);
-            return null;
-        }
-        return data as Client;
+    getClient: async (id: string) => {
+        const clients = await localApi.getAllClients();
+        return clients.find(c => c.id === id) || null;
     },
     
     // Technicians
     getTechnicians: async ({ page = 1, limit = 10, searchTerm }: { page?: number; limit?: number; searchTerm?: string }) => {
-        let query = supabase.from('technicians').select('*', { count: 'exact' });
-
+        let allTechnicians = await localApi.getAllTechnicians();
         if (searchTerm) {
-            query = query.or(`firstName.ilike.%${searchTerm}%,lastName.ilike.%${searchTerm}%`);
+            const lowercasedTerm = searchTerm.toLowerCase();
+            allTechnicians = allTechnicians.filter(t => 
+                t.firstName.toLowerCase().includes(lowercasedTerm) ||
+                t.lastName.toLowerCase().includes(lowercasedTerm)
+            );
         }
-        
-        const start = (page - 1) * limit;
-        const end = page * limit -1;
-        query = query.range(start, end).order('id');
-        
-        const { data, error, count } = await query;
-        if (error) {
-            console.error('Error fetching technicians:', error);
-            return { technicians: [], totalPages: 0 };
-        }
-        return {
-            technicians: data,
-            totalPages: Math.ceil((count || 0) / limit)
-        };
+
+        const totalPages = Math.ceil(allTechnicians.length / limit);
+        const paginatedTechnicians = allTechnicians.slice((page - 1) * limit, page * limit);
+
+        return { technicians: paginatedTechnicians, totalPages };
     },
     getAllTechnicians: async (): Promise<Technician[]> => {
-        const { data, error } = await supabase.from('technicians').select('*');
-        if (error) {
-            console.error('Error fetching all technicians:', error);
-            return [];
-        }
-        return data as Technician[];
+        return fetchData<Technician>('technicians');
     },
-    getTechnician: async (id: number) => {
-        const { data, error } = await supabase.from('technicians').select('*').eq('id', id).single();
-         if (error) {
-            console.error('Error fetching technician:', error);
-            return null;
-        }
-        return data as Technician;
+    getTechnician: async (id: string) => {
+        const technicians = await localApi.getAllTechnicians();
+        return technicians.find(t => t.id === id) || null;
     },
-    getTechniciansByIds: async (ids: number[]) => {
+    getTechniciansByIds: async (ids: string[]) => {
        if (!ids || ids.length === 0) return [];
-       const { data, error } = await supabase.from('technicians').select('*').in('id', ids);
-        if (error) {
-            console.error('Error fetching technicians by IDs:', error);
-            return [];
-        }
-        return data as Technician[];
+       const technicians = await localApi.getAllTechnicians();
+       return technicians.filter(t => ids.includes(t.id));
     },
 
     // Tasks
@@ -97,30 +73,38 @@ const localApi = {
         { page = 1, limit = 10, searchTerm, status, dateRange, date }: 
         { page?: number; limit?: number; searchTerm?: string; status?: TaskStatus; dateRange?: string, date?: string }
     ) => {
-        let query = supabase.from('tasks').select('*, clients!inner(name)', { count: 'exact' });
+        const [tasks, clients] = await Promise.all([
+            fetchData<Task>('tasks'),
+            localApi.getAllClients()
+        ]);
+
+        let filteredTasks = tasks;
 
         if (searchTerm) {
-            query = query.ilike('clients.name', `%${searchTerm}%`);
+            const lowercasedTerm = searchTerm.toLowerCase();
+            const matchingClientIds = clients
+                .filter(c => c.name.toLowerCase().includes(lowercasedTerm))
+                .map(c => c.id);
+            filteredTasks = filteredTasks.filter(t => matchingClientIds.includes(t.clientId));
         }
 
         if (status) {
-            query = query.eq('status', status);
+            filteredTasks = filteredTasks.filter(t => t.status === status);
         }
+        
+        const now = new Date();
+        let interval: { start: Date, end: Date } | null = null;
         
         if (date) {
              try {
                 const selectedDate = parseISO(date);
                 if (isValid(selectedDate)) {
-                    query = query.gte('date', startOfDay(selectedDate).toISOString())
-                                 .lte('date', endOfDay(selectedDate).toISOString());
+                    interval = { start: startOfDay(selectedDate), end: endOfDay(selectedDate) };
                 }
             } catch (e) {
                 console.error("Error parsing date for filtering: ", e);
             }
         } else if (dateRange) {
-            const now = new Date();
-            let interval: { start: Date, end: Date } | null = null;
-
             if (dateRange === 'week') {
                 interval = { start: startOfWeek(now, { weekStartsOn: 1 }), end: endOfWeek(now, { weekStartsOn: 1 }) };
             } else if (dateRange === 'month') {
@@ -128,69 +112,64 @@ const localApi = {
             } else if (dateRange === 'year') {
                 interval = { start: startOfYear(now), end: endOfYear(now) };
             }
+        }
 
-            if (interval) {
-                query = query.gte('date', interval.start.toISOString())
-                             .lte('date', interval.end.toISOString());
-            }
+        if (interval) {
+            const { start, end } = interval;
+            filteredTasks = filteredTasks.filter(t => {
+                try {
+                    const taskDate = parseISO(t.date);
+                    return isValid(taskDate) && isWithinInterval(taskDate, { start, end });
+                } catch (e) {
+                    return false;
+                }
+            });
         }
         
-        query = query.order('date', { ascending: false }).order('time', { ascending: false });
-
-        const start = (page - 1) * limit;
-        const end = page * limit - 1;
-        query = query.range(start, end);
-
-        const { data, error, count } = await query;
-        if (error) {
-            console.error('Error fetching tasks:', error);
-            return { tasks: [], totalPages: 0 };
-        }
+        filteredTasks.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         
-        const tasks = data.map(({ clients, ...task }) => task);
+        const totalPages = Math.ceil(filteredTasks.length / limit);
+        const paginatedTasks = filteredTasks.slice((page - 1) * limit, page * limit);
         
         return {
-            tasks: tasks as Task[],
-            totalPages: Math.ceil((count || 0) / limit)
+            tasks: paginatedTasks,
+            totalPages: totalPages
         };
     },
-    getTask: async (id: number) => {
-        const { data, error } = await supabase.from('tasks').select('*').eq('id', id).single();
-         if (error) {
-            console.error('Error fetching task:', error);
-            return null;
-        }
-        return data as Task;
+    getTask: async (id: string) => {
+        const tasks = await fetchData<Task>('tasks');
+        return tasks.find(t => t.id === id) || null;
     },
-    getTasksByClientId: async (clientId: number) => {
-        const { data, error } = await supabase.from('tasks').select('*').eq('clientId', clientId);
-        if (error) {
-            console.error('Error fetching tasks by client ID:', error);
-            return [];
-        }
-        return data as Task[];
+    getTasksByClientId: async (clientId: string) => {
+        const tasks = await fetchData<Task>('tasks');
+        return tasks.filter(t => t.clientId === clientId);
     },
-    getTasksByTechnicianId: async (technicianId: number) => {
-         const { data, error } = await supabase.from('tasks').select('*').contains('technicianIds', [technicianId]);
-         if (error) {
-            console.error('Error fetching tasks by technician ID:', error);
-            return [];
-        }
-        return data as Task[];
+    getTasksByTechnicianId: async (technicianId: string) => {
+        const tasks = await fetchData<Task>('tasks');
+        return tasks.filter(t => t.technicianIds.includes(technicianId));
+    },
+
+    // Reminders
+    getReminders: async (): Promise<Reminder[]> => {
+        const reminders = await fetchData<Reminder>('reminders');
+        // sort by due date ascending
+        return reminders.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
     },
 
     // Dashboard
     getDashboardData: async () => {
-        const [tasks, technicians, clients] = await Promise.all([
+        const [tasks, technicians, clients, reminders] = await Promise.all([
             localApi.getTasks({limit: 1000}),
             localApi.getAllTechnicians(),
             localApi.getAllClients(),
+            localApi.getReminders(),
         ]);
 
         return {
             tasks: tasks.tasks,
             technicians,
             clients,
+            reminders,
         }
     }
 };

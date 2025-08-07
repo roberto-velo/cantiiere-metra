@@ -26,7 +26,7 @@ import type { Photo, Document } from "@/lib/types";
 export default async function TaskDetailPage({ params }: { params: { id: string } }) {
   
   const { id } = params;
-  const task = await localApi.getTask(Number(id));
+  const task = await localApi.getTask(id);
   
   if (!task) {
     notFound();
@@ -110,10 +110,10 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
               <FileUpload taskId={task.id} uploadType="photo" />
             </CardHeader>
             <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {(task.photos as Photo[]).map((photo) => (
+              {task.photos.map((photo: Photo) => (
                 <AttachmentItem key={photo.id} type="photo" item={photo} taskId={task.id} />
               ))}
-               {(task.photos as Photo[]).length === 0 && <p className="text-muted-foreground col-span-full">Nessuna foto allegata.</p>}
+               {task.photos.length === 0 && <p className="text-muted-foreground col-span-full">Nessuna foto allegata.</p>}
             </CardContent>
           </Card>
 
@@ -128,10 +128,10 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
             <CardContent>
                <div className="overflow-x-auto">
                 <ul className="space-y-2">
-                    {(task.documents as Document[]).map((doc) => (
+                    {task.documents.map((doc: Document) => (
                         <AttachmentItem key={doc.id} type="document" item={doc} taskId={task.id} />
                     ))}
-                    {(task.documents as Document[]).length === 0 && <p className="text-muted-foreground text-center py-4">Nessun documento allegato.</p>}
+                    {task.documents.length === 0 && <p className="text-muted-foreground text-center py-4">Nessun documento allegato.</p>}
                 </ul>
               </div>
             </CardContent>
