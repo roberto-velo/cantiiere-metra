@@ -7,7 +7,7 @@ import { TaskTimer } from "./task-timer";
 import { updateTaskStatusAction, updateTaskDurationAction } from "@/lib/actions";
 import { useNotifications } from "@/hooks/use-notifications";
 
-export function TaskTimerWrapper({ taskId, initialStatus, initialDuration }: { taskId: number, initialStatus: TaskStatus, initialDuration?: number }) {
+export function TaskTimerWrapper({ taskId, initialStatus, initialDuration }: { taskId: string, initialStatus: TaskStatus, initialDuration?: number }) {
   const [status, setStatus] = useState<TaskStatus>(initialStatus);
   const { addNotification } = useNotifications();
 

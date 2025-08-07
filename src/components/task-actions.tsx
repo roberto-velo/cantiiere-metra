@@ -26,7 +26,7 @@ import {
 import { SheetHeader, SheetTitle } from "./ui/sheet";
 
 interface TaskActionsProps {
-  taskId: number;
+  taskId: string;
   description: string;
 }
 

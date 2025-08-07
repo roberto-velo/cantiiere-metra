@@ -107,8 +107,8 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
     try {
         const newActivity = {
             ...values,
-            clientId: Number(values.clientId),
-            technicianIds: values.technicianIds.map(Number),
+            clientId: values.clientId,
+            technicianIds: values.technicianIds,
             status: "Pianificato",
             photos: [], 
             documents: [],
