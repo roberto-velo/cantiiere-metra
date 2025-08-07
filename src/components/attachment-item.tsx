@@ -70,7 +70,7 @@ export function AttachmentItem({ type, item, taskId }: AttachmentItemProps) {
 
   if (type === 'photo') {
     const photo = item as Photo;
-    const imageUrl = photo.url.startsWith('http') || photo.url.startsWith('/') ? photo.url : `/${photo.url}`;
+    const imageUrl = photo.url;
     
     return (
       <div className="space-y-2">
