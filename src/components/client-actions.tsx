@@ -88,7 +88,6 @@ export function ClientActions({ client }: { client: Client }) {
   
   const handleDownloadPdf = async () => {
     setIsDownloading(true);
-    const { toast } = await import("@/hooks/use-toast");
 
     try {
         const doc = new jsPDF();
@@ -98,7 +97,6 @@ export function ClientActions({ client }: { client: Client }) {
         let yPos = 20;
         const pageHeight = doc.internal.pageSize.height;
         const margin = 15;
-        const contentWidth = doc.internal.pageSize.width - margin * 2;
 
         // --- Header ---
         doc.setFontSize(22);
