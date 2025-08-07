@@ -1,5 +1,4 @@
 
-
 import {
   Card,
   CardContent,
@@ -66,7 +65,7 @@ export default async function DashboardPage() {
   const statsCards = [
     { title: "Attività Pianificate", value: scheduledTasks, icon: ListTodo, note: "Da completare questa settimana", noteColor: "text-primary" },
     { title: "Attività Completate", value: completedTasks, icon: CalendarCheck2, note: "Questa settimana", noteColor: "text-primary" },
-    { title: "Clienti Attivi", value: totalClients, icon: UsersRound, note: "Totale clienti registrati" },
+    { title: "Clienti Attivi", value: totalClients, icon: UsersRound, note: "Totale clienti registrati", noteColor: "text-primary" },
     { title: "Tecnici Attivi", value: activeTechnicians, icon: HardHat, note: "Disponibili per nuove attività" },
   ];
 
