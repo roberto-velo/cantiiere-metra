@@ -49,9 +49,8 @@ export function AppHeader() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-gradient-to-r from-primary/80 via-primary to-primary/60">
-      <div className="container flex h-20 items-center justify-end">
-        <div className="flex items-center gap-4">
-          <Link href="/" className="flex items-center gap-2 font-bold text-lg">
+      <div className="container flex h-20 items-center justify-between">
+         <Link href="/" className="flex items-center gap-2 font-bold text-lg">
               <Image 
                   src="/metra-logo.png" 
                   alt="CantiereFlow Logo" 
@@ -60,7 +59,7 @@ export function AppHeader() {
                   priority
               />
           </Link>
-          
+        <div className="flex items-center gap-4">
           <nav className="hidden md:flex items-center gap-2">
               {navLinks.map((link) => (
               <Button key={link.href} variant="ghost" asChild className={cn(
