@@ -2,11 +2,12 @@
 import type { Client, Technician, Task, TaskStatus, Reminder } from './types';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, parseISO, isValid, startOfYear, endOfYear, startOfDay, endOfDay } from 'date-fns';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9002';
 
 async function fetchData<T>(file: 'clients' | 'tasks' | 'technicians' | 'reminders'): Promise<T[]> {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/data?file=${file}`, { cache: 'no-store' });
+        const url = `${API_BASE_URL}/api/data?file=${file}`;
+        const response = await fetch(url, { cache: 'no-store' });
         if (!response.ok) {
             const error = await response.json();
             throw new Error(error.message || `Failed to fetch ${file}`);
