@@ -1,100 +1,95 @@
 
 import type { Client, Technician, Task, TaskStatus, Reminder } from './types';
-import path from 'path';
+import { supabase } from './supabase';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, parseISO, isValid, startOfYear, endOfYear, startOfDay, endOfDay } from 'date-fns';
-
-// This is the main data fetching logic. It now uses a custom API
-// to fetch data, making it compatible with production environments
-// where direct file system access is restricted.
-
-// Helper function to fetch data from our API
-const fetchData = async (fileName: string) => {
-    // Determine the base URL based on the environment
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:9002';
-    const url = new URL('/api/data', baseUrl);
-    url.searchParams.set('file', fileName);
-
-    try {
-        // Use a relative path for fetch on the server, and the full URL for client-side fetches.
-        // This is a more robust way to handle API calls in Next.js.
-        const fetchUrl = typeof window === 'undefined' ? new URL(`/api/data?file=${fileName}`, baseUrl) : url;
-
-        const response = await fetch(fetchUrl.toString(), {
-            // Revalidate frequently to get fresh data, but cache for a short period
-            // to avoid excessive requests during a single user interaction.
-            next: { revalidate: 1 } 
-        });
-
-        if (!response.ok) {
-            console.error(`Failed to fetch ${fileName}: ${response.statusText}`);
-            return [];
-        }
-
-        return await response.json();
-    } catch (error) {
-        console.error(`Network or fetch error for ${fileName}:`, error);
-        // In case of a complete fetch failure, return an empty array to prevent crashes
-        return [];
-    }
-};
-
 
 const localApi = {
     // Clients
     getClients: async ({ page = 1, limit = 10, searchTerm }: { page?: number; limit?: number, searchTerm?: string }) => {
-        let filteredClients: Client[] = await fetchData('clients.json');
+        let query = supabase.from('clients').select('*', { count: 'exact' });
 
         if (searchTerm) {
-            const lowercasedTerm = searchTerm.toLowerCase();
-            filteredClients = filteredClients.filter(client => 
-                client.name.toLowerCase().includes(lowercasedTerm)
-            );
+            query = query.ilike('name', `%${searchTerm}%`);
         }
-
+        
         const start = (page - 1) * limit;
-        const end = page * limit;
+        const end = page * limit - 1;
+        query = query.range(start, end);
+
+        const { data, error, count } = await query;
+        if (error) {
+            console.error('Error fetching clients:', error);
+            return { clients: [], totalPages: 0 };
+        }
+        
         return {
-            clients: filteredClients.slice(start, end),
-            totalPages: Math.ceil(filteredClients.length / limit)
+            clients: data,
+            totalPages: Math.ceil((count || 0) / limit)
         };
     },
     getAllClients: async (): Promise<Client[]> => {
-        return fetchData('clients.json');
+        const { data, error } = await supabase.from('clients').select('*');
+        if (error) {
+            console.error('Error fetching all clients:', error);
+            return [];
+        }
+        return data as Client[];
     },
     getClient: async (id: string) => {
-        const clients: Client[] = await fetchData('clients.json');
-        return clients.find(c => c.id === id) || null;
+        const { data, error } = await supabase.from('clients').select('*').eq('id', id).single();
+        if (error) {
+            console.error('Error fetching client:', error);
+            return null;
+        }
+        return data as Client;
     },
     
     // Technicians
     getTechnicians: async ({ page = 1, limit = 10, searchTerm }: { page?: number; limit?: number; searchTerm?: string }) => {
-        let filteredTechnicians: Technician[] = await fetchData('technicians.json');
+        let query = supabase.from('technicians').select('*', { count: 'exact' });
 
         if (searchTerm) {
-            const lowercasedTerm = searchTerm.toLowerCase();
-            filteredTechnicians = filteredTechnicians.filter(technician =>
-                technician.firstName.toLowerCase().includes(lowercasedTerm) ||
-                technician.lastName.toLowerCase().includes(lowercasedTerm)
-            );
+            query = query.or(`firstName.ilike.%${searchTerm}%,lastName.ilike.%${searchTerm}%`);
         }
-
+        
         const start = (page - 1) * limit;
-        const end = page * limit;
+        const end = page * limit -1;
+        query = query.range(start, end);
+        
+        const { data, error, count } = await query;
+        if (error) {
+            console.error('Error fetching technicians:', error);
+            return { technicians: [], totalPages: 0 };
+        }
         return {
-            technicians: filteredTechnicians.slice(start, end),
-            totalPages: Math.ceil(filteredTechnicians.length / limit)
+            technicians: data,
+            totalPages: Math.ceil((count || 0) / limit)
         };
     },
     getAllTechnicians: async (): Promise<Technician[]> => {
-        return fetchData('technicians.json');
+        const { data, error } = await supabase.from('technicians').select('*');
+        if (error) {
+            console.error('Error fetching all technicians:', error);
+            return [];
+        }
+        return data as Technician[];
     },
     getTechnician: async (id: string) => {
-        const technicians: Technician[] = await fetchData('technicians.json');
-        return technicians.find(t => t.id === id) || null;
+        const { data, error } = await supabase.from('technicians').select('*').eq('id', id).single();
+         if (error) {
+            console.error('Error fetching technician:', error);
+            return null;
+        }
+        return data as Technician;
     },
     getTechniciansByIds: async (ids: string[]) => {
-        const technicians: Technician[] = await fetchData('technicians.json');
-        return technicians.filter(t => ids.includes(t.id));
+       if (!ids || ids.length === 0) return [];
+       const { data, error } = await supabase.from('technicians').select('*').in('id', ids);
+        if (error) {
+            console.error('Error fetching technicians by IDs:', error);
+            return [];
+        }
+        return data as Technician[];
     },
 
     // Tasks
@@ -102,39 +97,22 @@ const localApi = {
         { page = 1, limit = 10, searchTerm, status, dateRange, date }: 
         { page?: number; limit?: number; searchTerm?: string; status?: TaskStatus; dateRange?: string, date?: string }
     ) => {
-        let filteredTasks: Task[] = await fetchData('tasks.json');
-        const clients = await localApi.getAllClients();
-        const technicians = await localApi.getAllTechnicians();
+        let query = supabase.from('tasks').select('*, clients!inner(name)', { count: 'exact' });
 
-        // 1. Filter by searchTerm (client only)
         if (searchTerm) {
-            const lowercasedTerm = searchTerm.toLowerCase();
-            filteredTasks = filteredTasks.filter(task => {
-                const client = clients.find(c => c.id === task.clientId);
-                const clientName = client ? client.name.toLowerCase() : '';
-                return clientName.includes(lowercasedTerm);
-            });
+            query = query.ilike('clients.name', `%${searchTerm}%`);
         }
 
-        // 2. Filter by status
         if (status) {
-            filteredTasks = filteredTasks.filter(task => task.status === status);
+            query = query.eq('status', status);
         }
-
-        // 3. Filter by dateRange or specific date
+        
         if (date) {
              try {
                 const selectedDate = parseISO(date);
                 if (isValid(selectedDate)) {
-                    const dayInterval = { start: startOfDay(selectedDate), end: endOfDay(selectedDate) };
-                    filteredTasks = filteredTasks.filter(task => {
-                        try {
-                            const taskDate = parseISO(task.date);
-                            return isValid(taskDate) && isWithinInterval(taskDate, dayInterval);
-                        } catch {
-                            return false;
-                        }
-                    });
+                    query = query.gte('date', startOfDay(selectedDate).toISOString())
+                                 .lte('date', endOfDay(selectedDate).toISOString());
                 }
             } catch (e) {
                 console.error("Error parsing date for filtering: ", e);
@@ -152,70 +130,79 @@ const localApi = {
             }
 
             if (interval) {
-                 filteredTasks = filteredTasks.filter(task => {
-                    try {
-                        const taskDate = parseISO(task.date);
-                        return isValid(taskDate) && isWithinInterval(taskDate, interval!);
-                    } catch {
-                        return false;
-                    }
-                });
+                query = query.gte('date', interval.start.toISOString())
+                             .lte('date', interval.end.toISOString());
             }
         }
         
-        const sortedTasks = filteredTasks.sort((a,b) => {
-            const dateA = new Date(`${a.date}T${a.time}`).getTime();
-            const dateB = new Date(`${b.date}T${b.time}`).getTime();
-            if (isNaN(dateA) || isNaN(dateB)) return 0;
-            return dateB - dateA;
-        });
+        query = query.order('date', { ascending: false }).order('time', { ascending: false });
 
         const start = (page - 1) * limit;
-        const end = page * limit;
+        const end = page * limit - 1;
+        query = query.range(start, end);
+
+        const { data, error, count } = await query;
+        if (error) {
+            console.error('Error fetching tasks:', error);
+            return { tasks: [], totalPages: 0 };
+        }
+        
+        const tasks = data.map(({ clients, ...task }) => task);
         
         return {
-            tasks: sortedTasks.slice(start, end),
-            totalPages: Math.ceil(sortedTasks.length / limit)
+            tasks: tasks as Task[],
+            totalPages: Math.ceil((count || 0) / limit)
         };
     },
     getTask: async (id: string) => {
-        const tasks: Task[] = await fetchData('tasks.json');
-        return tasks.find(t => t.id === id) || null;
+        const { data, error } = await supabase.from('tasks').select('*').eq('id', id).single();
+         if (error) {
+            console.error('Error fetching task:', error);
+            return null;
+        }
+        return data as Task;
     },
     getTasksByClientId: async (clientId: string) => {
-        const tasks: Task[] = await fetchData('tasks.json');
-        return tasks.filter(t => t.clientId === clientId);
+        const { data, error } = await supabase.from('tasks').select('*').eq('clientId', clientId);
+        if (error) {
+            console.error('Error fetching tasks by client ID:', error);
+            return [];
+        }
+        return data as Task[];
     },
     getTasksByTechnicianId: async (technicianId: string) => {
-        const tasks: Task[] = await fetchData('tasks.json');
-        return tasks.filter(t => t.technicianIds.includes(technicianId));
+         const { data, error } = await supabase.from('tasks').select('*').contains('technicianIds', [technicianId]);
+         if (error) {
+            console.error('Error fetching tasks by technician ID:', error);
+            return [];
+        }
+        return data as Task[];
     },
     
     // Reminders
     getReminders: async (): Promise<Reminder[]> => {
-        return fetchData('reminders.json');
+        const { data, error } = await supabase.from('reminders').select('*');
+        if (error) {
+            console.error('Error fetching reminders:', error);
+            return [];
+        }
+        return data as Reminder[];
     },
 
     // Dashboard
     getDashboardData: async () => {
-        const [tasksData, techniciansData, clientsData, remindersData] = await Promise.all([
-            fetchData('tasks.json'),
-            fetchData('technicians.json'),
-            fetchData('clients.json'),
-            fetchData('reminders.json')
+        const [tasks, technicians, clients, reminders] = await Promise.all([
+            localApi.getTasks({limit: 1000}),
+            localApi.getAllTechnicians(),
+            localApi.getAllClients(),
+            localApi.getReminders()
         ]);
 
-        const sortedTasks = [...tasksData].sort((a,b) => {
-             const dateA = new Date(`${a.date}T${a.time}`).getTime();
-            const dateB = new Date(`${b.date}T${b.time}`).getTime();
-            if (isNaN(dateA) || isNaN(dateB)) return 0;
-            return dateB - dateA;
-        });
         return {
-            tasks: sortedTasks,
-            technicians: techniciansData,
-            clients: clientsData,
-            reminders: remindersData,
+            tasks: tasks.tasks,
+            technicians,
+            clients,
+            reminders,
         }
     }
 };

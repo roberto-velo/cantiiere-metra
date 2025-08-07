@@ -1,4 +1,12 @@
 
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
 export type Client = {
   id: string;
   name: string;
@@ -26,7 +34,7 @@ export type Technician = {
   lastName: string;
   phone: string;
   role: string;
-  qualifications: Qualification[];
+  qualifications: Json;
 };
 
 export type TaskStatus = 'Pianificato' | 'In corso' | 'Completato';
@@ -36,6 +44,7 @@ export type Photo = {
   id: string;
   url: string;
   description: string;
+  name: string;
 };
 
 export type Document = {
@@ -53,8 +62,8 @@ export type Task = {
   description: string;
   status: TaskStatus;
   priority: TaskPriority;
-  photos: Photo[];
-  documents: Document[];
+  photos: Json;
+  documents: Json;
   notes: string;
   duration?: number; // Duration in seconds
 };
@@ -69,3 +78,5 @@ export type Reminder = {
   relatedId?: string;
   isCompleted: boolean;
 };
+
+export type Attachment = Photo | Document;
