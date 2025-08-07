@@ -2,14 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import localApi from "@/lib/data";
 import {
   Mail,
@@ -17,14 +9,16 @@ import {
   Phone,
   FileText,
   ClipboardList,
-  Upload,
   Droplet,
   Map,
-  ArrowLeft
+  ArrowLeft,
+  Camera
 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ClientActions } from "@/components/client-actions";
+import { FileUpload } from "@/components/file-upload";
+import { AttachmentItem } from "@/components/attachment-item";
 
 export default async function ClientDetailPage({ params, searchParams }: { params: { id: string }, searchParams: { from?: string } }) {
   
@@ -52,8 +46,10 @@ export default async function ClientDetailPage({ params, searchParams }: { param
       { label: "Tipo Trattamento", value: client.treatmentType },
   ].filter(info => info.value);
 
+  // We need to associate attachments with their tasks
+  const allPhotos = clientTasks.flatMap(t => t.photos.map(p => ({ ...p, taskId: t.id })));
+  const allDocuments = clientTasks.flatMap(t => t.documents.map(d => ({ ...d, taskId: t.id })));
 
-  const allDocuments = clientTasks.flatMap(t => t.documents);
 
   return (
     <div className="flex flex-col flex-1" id="client-detail-page">
@@ -179,32 +175,35 @@ export default async function ClientDetailPage({ params, searchParams }: { param
           </Card>
 
           <Card>
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <CardTitle className="flex items-center gap-2">
+                <Camera className="h-5 w-5" />
+                Foto
+              </CardTitle>
+               {clientTasks[0] && <FileUpload taskId={clientTasks[0].id} uploadType="photo" />}
+            </CardHeader>
+            <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
+               {allPhotos.map((photo) => (
+                <AttachmentItem key={photo.id} type="photo" item={photo} taskId={photo.taskId} />
+              ))}
+               {allPhotos.length === 0 && <p className="text-muted-foreground col-span-full">Nessuna foto allegata.</p>}
+            </CardContent>
+          </Card>
+
+          <Card>
             <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5" />
-                Documenti Allegati
+                File Allegati
               </CardTitle>
-              <Button size="sm" variant="outline" disabled>
-                <Upload className="mr-2 h-4 w-4" />
-                Carica
-              </Button>
+              {clientTasks[0] && <FileUpload taskId={clientTasks[0].id} uploadType="document" />}
             </CardHeader>
             <CardContent>
                <div className="overflow-x-auto">
                 {allDocuments.length > 0 ? (
                   <ul className="space-y-2">
                       {allDocuments.map((doc) => (
-                        <li
-                          key={doc.id}
-                          className="flex items-center justify-between rounded-md border p-3 min-w-[300px]"
-                        >
-                          <span className="font-medium truncate pr-4">{doc.name}</span>
-                          <Button variant="ghost" size="sm" asChild>
-                            <a href={doc.url} download>
-                              Scarica
-                            </a>
-                          </Button>
-                        </li>
+                         <AttachmentItem key={doc.id} type="document" item={doc} taskId={doc.taskId} />
                       ))}
                     </ul>
                 ) : (
