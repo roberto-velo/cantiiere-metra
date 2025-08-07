@@ -65,7 +65,7 @@ export default async function DashboardPage() {
     { title: "Attività Pianificate", value: scheduledTasks, icon: ListTodo, note: "Da completare questa settimana", noteColor: "text-primary" },
     { title: "Attività Completate", value: completedTasks, icon: CalendarCheck2, note: "Questa settimana", noteColor: "text-primary" },
     { title: "Clienti Attivi", value: totalClients, icon: UsersRound, note: "Totale clienti registrati", noteColor: "text-primary" },
-    { title: "Tecnici Attivi", value: activeTechnicians, icon: HardHat, note: "Disponibili per nuove attività", noteColor: "text-primary" },
+    { title: "Tecnici Attivi", value: activeTechnicians, icon: HardHat, note: "Disponibili per nuove attività", noteColor: "text-primary", iconColor: "text-yellow-500" },
   ];
 
   const sortedReminders = reminders
@@ -83,7 +83,7 @@ export default async function DashboardPage() {
                   <CardTitle className="text-sm font-medium">
                     {card.title}
                   </CardTitle>
-                  <card.icon className="h-4 w-4 text-muted-foreground" />
+                  <card.icon className={cn("h-4 w-4 text-muted-foreground", card.iconColor)} />
                 </div>
               </CardHeader>
               <CardContent>
