@@ -55,7 +55,7 @@ export default async function DashboardPage() {
   const { tasks, technicians, clients } = await localApi.getDashboardData();
 
   const scheduledTasks = tasks.filter(
-    (task) => task.status === "Pianificato" || task.status === "In corso"
+    (task) => task.status === "Pianificato"
   ).length;
   const completedTasks = tasks.filter(
     (task) => task.status === "Completato"
