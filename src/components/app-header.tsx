@@ -48,62 +48,60 @@ export function AppHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background">
-      <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-6">
-           <Link href="/" className="flex items-center gap-2 font-bold text-lg text-primary">
-                <Image 
-                    src="/metra-logo.png" 
-                    alt="CantiereFlow Logo" 
-                    width={180} 
-                    height={45}
-                    priority
-                />
-            </Link>
-          <nav className="hidden md:flex items-center gap-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
-                  isActive(link.href) ? "text-primary" : "text-muted-foreground"
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-
-        <div className="flex items-center gap-2">
-            <NotificationMenu />
-            <Sheet>
-                <SheetTrigger asChild>
-                <Button variant="outline" size="icon" className="md:hidden">
-                    <Menu className="h-5 w-5" />
-                    <span className="sr-only">Apri menu</span>
+    <header className="sticky top-0 z-40 w-full border-b bg-gradient-to-r from-primary via-primary/80 to-primary/60">
+      <div className="container flex h-20 items-center justify-between">
+        <Link href="/" className="flex items-center gap-2 font-bold text-lg">
+            <Image 
+                src="/metra-logo.png" 
+                alt="CantiereFlow Logo" 
+                width={220} 
+                height={55}
+                priority
+            />
+        </Link>
+        <div className="flex items-center gap-4">
+            <nav className="hidden md:flex items-center gap-2">
+                {navLinks.map((link) => (
+                <Button key={link.href} variant="ghost" asChild className={cn(
+                    "text-sm font-semibold transition-colors text-black hover:text-black hover:bg-primary/20",
+                    isActive(link.href) ? "bg-black/10" : ""
+                )}>
+                    <Link href={link.href}>
+                        {link.label}
+                    </Link>
                 </Button>
-                </SheetTrigger>
-                <SheetContent side="left">
-                <nav className="grid gap-6 text-lg font-medium mt-8">
-                     {navLinks.map((link) => (
-                        <SheetClose asChild key={link.href}>
-                            <Link
-                                href={link.href}
-                                className={cn(
-                                "flex items-center gap-4 px-2.5",
-                                isActive(link.href) ? "text-foreground" : "text-muted-foreground hover:text-foreground"
-                                )}
-                            >
-                                <link.icon className="h-5 w-5" />
-                                {link.label}
-                            </Link>
-                        </SheetClose>
-                    ))}
-                </nav>
-                </SheetContent>
-            </Sheet>
+                ))}
+            </nav>
+
+            <div className="flex items-center gap-2">
+                <NotificationMenu />
+                <Sheet>
+                    <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon" className="md:hidden text-black hover:text-black hover:bg-primary/20">
+                        <Menu className="h-6 w-6" />
+                        <span className="sr-only">Apri menu</span>
+                    </Button>
+                    </SheetTrigger>
+                    <SheetContent side="left">
+                    <nav className="grid gap-6 text-lg font-medium mt-8">
+                        {navLinks.map((link) => (
+                            <SheetClose asChild key={link.href}>
+                                <Link
+                                    href={link.href}
+                                    className={cn(
+                                    "flex items-center gap-4 px-2.5",
+                                    isActive(link.href) ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                                    )}
+                                >
+                                    <link.icon className="h-5 w-5" />
+                                    {link.label}
+                                </Link>
+                            </SheetClose>
+                        ))}
+                    </nav>
+                    </SheetContent>
+                </Sheet>
+            </div>
         </div>
       </div>
     </header>

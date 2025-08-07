@@ -26,7 +26,7 @@ export function NotificationMenu() {
   if (!isClient) {
     // Render a placeholder or nothing on the server
     return (
-      <Button variant="ghost" size="icon" className="relative">
+      <Button variant="ghost" size="icon" className="relative text-black hover:text-black hover:bg-primary/20">
         <Bell className="h-5 w-5" />
         <span className="sr-only">Notifiche</span>
       </Button>
@@ -36,7 +36,7 @@ export function NotificationMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
+        <Button variant="ghost" size="icon" className="relative text-black hover:text-black hover:bg-primary/20">
           <Bell className="h-5 w-5" />
           {notifications.length > 0 && (
              <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
