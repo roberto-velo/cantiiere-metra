@@ -70,12 +70,11 @@ export function AttachmentItem({ type, item, taskId }: AttachmentItemProps) {
 
   if (type === 'photo') {
     const photo = item as Photo;
-    const imageUrl = photo.url;
     
     return (
       <div className="space-y-2">
         <div className="aspect-square w-full overflow-hidden rounded-md relative group">
-          <Image src={imageUrl} alt={photo.description} fill className="object-cover" data-ai-hint="construction site" />
+          <Image src={photo.url} alt={photo.description} fill className="object-cover" data-ai-hint="construction site" />
           <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                 <DialogTrigger asChild>
