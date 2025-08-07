@@ -24,7 +24,7 @@ import { TaskCalendar } from "@/components/task-calendar";
 const priorityBadge: Record<TaskPriority, string> = {
   Alta: "bg-red-500/20 text-red-700 border border-red-500/30",
   Media: "bg-yellow-500/20 text-yellow-700 border border-yellow-500/30",
-  Bassa: "bg-green-500/20 text-green-700 border border-green-500/30",
+  Bassa: "bg-sky-500/20 text-sky-700 border border-sky-500/30",
 };
 
 const statusBadge: Record<TaskStatus, string> = {
