@@ -91,7 +91,11 @@ export function ClientActions({ client }: { client: Client }) {
 
     try {
         const doc = new jsPDF();
-        const tasks = await localApi.getTasksByClientId(client.id);
+        const [tasks, technicians] = await Promise.all([
+            localApi.getTasksByClientId(client.id),
+            localApi.getAllTechnicians()
+        ]);
+        
         const allPhotos = tasks.flatMap(t => t.photos);
 
         let yPos = 20;
@@ -191,10 +195,16 @@ export function ClientActions({ client }: { client: Client }) {
             doc.setFont("helvetica", "bold");
             doc.text("Storico Lavorazioni", margin, yPos);
             yPos += 8;
+            const taskBody = tasks.map(t => {
+                const assignedTechnicians = technicians.filter(tech => t.technicianIds.includes(tech.id));
+                const technicianNames = assignedTechnicians.map(tech => `${tech.firstName} ${tech.lastName}`).join(', ');
+                return [t.date, t.description, technicianNames, t.status]
+            });
+
              (doc as any).autoTable({
                 startY: yPos,
-                head: [['Data', 'Descrizione', 'Stato']],
-                body: tasks.map(t => [t.date, t.description, t.status]),
+                head: [['Data', 'Descrizione', 'Tecnico', 'Stato']],
+                body: taskBody,
                 theme: 'striped',
                 headStyles: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
             });
@@ -203,7 +213,6 @@ export function ClientActions({ client }: { client: Client }) {
         
         // --- Photos ---
         if (allPhotos.length > 0) {
-            checkPageBreak(70); // Check space for section title and at least one row of images
             doc.addPage();
             yPos = margin;
             doc.setFontSize(14);
@@ -223,7 +232,8 @@ export function ClientActions({ client }: { client: Client }) {
                     xPos = margin;
                     yPos += imgHeight + gap + 10; // 10 for description space
                 }
-                checkPageBreak(imgHeight + 10);
+                
+                checkPageBreak(imgHeight + 15);
                 
                 try {
                   doc.addImage(photoDataUrls[i], 'JPEG', xPos, yPos, imgWidth, imgHeight);
