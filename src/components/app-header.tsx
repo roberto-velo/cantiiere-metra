@@ -35,7 +35,7 @@ export function AppHeader() {
   ];
   
   return (
-    <header className="bg-primary text-primary-foreground border-b p-4 sm:p-6 sticky top-0 z-50">
+    <header className="bg-gradient-to-r from-primary to-background/10 text-primary-foreground border-b p-4 sm:p-6 sticky top-0 z-50">
       <div className="flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
           <Image 
