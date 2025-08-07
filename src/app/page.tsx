@@ -64,7 +64,7 @@ export default async function DashboardPage() {
   const totalClients = clients.length;
 
   const statsCards = [
-    { title: "Attività Pianificate", value: scheduledTasks, icon: ListTodo, note: "Da completare questa settimana" },
+    { title: "Attività Pianificate", value: scheduledTasks, icon: ListTodo, note: "Da completare questa settimana", noteColor: "text-primary" },
     { title: "Attività Completate", value: completedTasks, icon: CalendarCheck2, note: "Questa settimana" },
     { title: "Clienti Attivi", value: totalClients, icon: UsersRound, note: "Totale clienti registrati" },
     { title: "Tecnici Attivi", value: activeTechnicians, icon: HardHat, note: "Disponibili per nuove attività" },
@@ -85,7 +85,7 @@ export default async function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{card.value}</div>
-                <p className="text-xs text-muted-foreground">
+                <p className={cn("text-xs", card.noteColor || 'text-muted-foreground')}>
                   {card.note}
                 </p>
               </CardContent>
