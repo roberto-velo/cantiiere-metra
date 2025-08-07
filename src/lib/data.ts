@@ -1,6 +1,6 @@
 
 
-import type { Client, Technician, Task, TaskStatus } from './types';
+import type { Client, Technician, Task, TaskStatus, Reminder } from './types';
 import path from 'path';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, parseISO, isValid, startOfYear, endOfYear, startOfDay, endOfDay } from 'date-fns';
 
@@ -10,6 +10,7 @@ import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, par
 import clientsData from './db/clients.json';
 import techniciansData from './db/technicians.json';
 import tasksData from './db/tasks.json';
+import remindersData from './db/reminders.json';
 
 // --- API Simulation using in-memory data ---
 // This file is now ONLY for READING data. All mutation (write) logic
@@ -161,6 +162,11 @@ const localApi = {
         return tasksData.filter(t => t.technicianIds.includes(technicianId));
     },
     
+    // Reminders
+    getReminders: async (): Promise<Reminder[]> => {
+        return JSON.parse(JSON.stringify(remindersData));
+    },
+
     // Dashboard
     getDashboardData: async () => {
         const sortedTasks = [...tasksData].sort((a,b) => {

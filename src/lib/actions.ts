@@ -4,7 +4,7 @@
 import fs from 'fs';
 import path from 'path';
 import { revalidatePath } from 'next/cache';
-import type { Client, Task, TaskStatus, Technician, Photo, Document } from './types';
+import type { Client, Task, TaskStatus, Technician, Photo, Document, Reminder } from './types';
 import { randomUUID } from 'crypto';
 
 const dataDir = path.join(process.cwd(), 'src', 'lib', 'db');
@@ -314,5 +314,25 @@ export async function updateAttachmentAction({ taskId, attachmentId, type, data 
         return { success: true, message: "Allegato aggiornato con successo." };
     } catch (error) {
         return { success: false, message: "Errore durante l'aggiornamento dell'allegato." };
+    }
+}
+
+
+// --- Reminder Actions ---
+export async function addReminderAction(reminderData: Omit<Reminder, 'id' | 'isCompleted'>) {
+    try {
+        const reminders = readData('reminders.json');
+        const newReminder: Reminder = {
+            id: String(Date.now()),
+            isCompleted: false,
+            ...reminderData
+        };
+        const updatedReminders = [...reminders, newReminder];
+        writeData('reminders.json', updatedReminders);
+        revalidatePath('/');
+        return { success: true, reminder: newReminder };
+    } catch (error) {
+        console.error('Error adding reminder:', error);
+        return { success: false, message: 'Failed to add reminder.' };
     }
 }

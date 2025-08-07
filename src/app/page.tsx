@@ -15,6 +15,7 @@ import {
   CalendarCheck2,
   ListTodo,
   ArrowUpRight,
+  PlusCircle,
 } from "lucide-react";
 import Link from "next/link";
 import localApi from "@/lib/data";
@@ -156,11 +157,19 @@ export default async function DashboardPage() {
               </CardContent>
             </Card>
             <Card>
-              <CardHeader>
-                <CardTitle>Promemoria</CardTitle>
-                 <p className="text-sm text-primary">
+               <CardHeader className="flex flex-row items-center">
+                <div className="grid gap-2">
+                  <CardTitle>Promemoria</CardTitle>
+                  <p className="text-sm text-primary">
                     Scadenze e notifiche importanti.
                   </p>
+                </div>
+                <Button asChild size="sm" className="ml-auto gap-1">
+                  <Link href="/promemoria/nuovo">
+                    <PlusCircle className="h-4 w-4" />
+                    Nuovo
+                  </Link>
+                </Button>
               </CardHeader>
               <CardContent className="grid gap-8">
                  <div className="flex items-center gap-4">

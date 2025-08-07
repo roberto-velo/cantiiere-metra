@@ -58,3 +58,13 @@ export type Task = {
   notes: string;
   duration?: number; // Duration in seconds
 };
+
+export type Reminder = {
+  id: string;
+  title: string;
+  description?: string;
+  dueDate: string;
+  relatedTo: "client" | "technician" | "none";
+  relatedId?: string;
+  isCompleted: boolean;
+};
