@@ -62,7 +62,7 @@ export default async function DashboardPage() {
   const totalClients = clients.length;
 
   const statsCards = [
-    { title: "Attività Pianificate", value: scheduledTasks, icon: ListTodo, note: "Da completare questa settimana", noteColor: "text-primary" },
+    { title: "Attività Pianificate", value: scheduledTasks, icon: ListTodo, note: "Da completare questa settimana", noteColor: "text-primary", iconColor: "text-blue-500" },
     { title: "Attività Completate", value: completedTasks, icon: CalendarCheck2, note: "Questa settimana", noteColor: "text-primary" },
     { title: "Clienti Attivi", value: totalClients, icon: UsersRound, note: "Totale clienti registrati", noteColor: "text-primary" },
     { title: "Tecnici Attivi", value: activeTechnicians, icon: HardHat, note: "Disponibili per nuove attività", noteColor: "text-primary", iconColor: "text-yellow-500" },
