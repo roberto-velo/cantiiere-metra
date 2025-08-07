@@ -10,15 +10,15 @@
     "description": "aaaaaaaaa",
     "priority": "Media",
     "notes": "",
-    "photos": [],
-    "documents": [
+    "photos": [
       {
-        "id": "1754489857174",
-        "name": "image.jpg",
+        "id": "1754554116192",
+        "name": "07e0bc9a-d48b-4061-8c75-1b2611ca881d.jpeg",
         "description": "",
-        "url": "/uploads/1754489857166.jpeg"
+        "url": "/uploads/07e0bc9a-d48b-4061-8c75-1b2611ca881d.jpeg"
       }
     ],
+    "documents": [],
     "status": "Completato",
     "duration": 5
   }
