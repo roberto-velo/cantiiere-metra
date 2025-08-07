@@ -105,7 +105,7 @@ async function ClientsList({ page, searchTerm }: { page: number, searchTerm?: st
 }
 
 
-export default function ClientiPage({ searchParams }: { searchParams?: { page?: string, q?: string } }) {
+export default async function ClientiPage({ searchParams }: { searchParams?: { page?: string, q?: string } }) {
   const currentPage = Number(searchParams?.page) || 1;
   const searchTerm = searchParams?.q;
 

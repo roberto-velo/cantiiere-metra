@@ -101,7 +101,7 @@ async function TechniciansList({ page, searchTerm }: { page: number, searchTerm?
 }
 
 
-export default function TecniciPage({ searchParams }: { searchParams?: { page?: string, q?: string } }) {
+export default async function TecniciPage({ searchParams }: { searchParams?: { page?: string, q?: string } }) {
   const currentPage = Number(searchParams?.page) || 1;
   const searchTerm = searchParams?.q;
 
