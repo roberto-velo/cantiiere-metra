@@ -336,3 +336,19 @@ export async function addReminderAction(reminderData: Omit<Reminder, 'id' | 'isC
         return { success: false, message: 'Failed to add reminder.' };
     }
 }
+
+export async function deleteReminderAction(id: string) {
+    try {
+        const reminders = readData('reminders.json');
+        const updatedReminders = reminders.filter((r: Reminder) => r.id !== id);
+        if (reminders.length === updatedReminders.length) {
+            return { success: false, message: 'Reminder not found.' };
+        }
+        writeData('reminders.json', updatedReminders);
+        revalidatePath('/');
+        return { success: true };
+    } catch (error) {
+        console.error('Error deleting reminder:', error);
+        return { success: false, message: 'Failed to delete reminder.' };
+    }
+}

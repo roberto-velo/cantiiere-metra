@@ -4,14 +4,11 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-  ClipboardList,
   HardHat,
   UsersRound,
-  Bell,
   CalendarCheck2,
   ListTodo,
   ArrowUpRight,
@@ -30,8 +27,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge";
-import { format, formatDistanceToNow, parseISO } from "date-fns";
-import { it } from "date-fns/locale";
+import { ReminderItem } from "@/components/reminder-item";
 
 
 const statusBadge: Record<TaskStatus, string> = {
@@ -178,20 +174,10 @@ export default async function DashboardPage() {
                   </Link>
                 </Button>
               </CardHeader>
-              <CardContent className="grid gap-6">
+              <CardContent className="grid gap-4">
                 {sortedReminders.length > 0 ? (
                     sortedReminders.map(reminder => (
-                        <div key={reminder.id} className="flex items-center gap-4">
-                            <Bell className="h-6 w-6 text-primary" />
-                            <div className="grid gap-1">
-                                <p className="text-sm font-medium">
-                                    {reminder.title}
-                                </p>
-                                <p className="text-sm text-primary">
-                                    Scade {formatDistanceToNow(parseISO(reminder.dueDate), { locale: it, addSuffix: true })}
-                                </p>
-                            </div>
-                        </div>
+                      <ReminderItem key={reminder.id} reminder={reminder} />
                     ))
                 ) : (
                     <p className="text-sm text-muted-foreground text-center">Nessun promemoria attivo.</p>
