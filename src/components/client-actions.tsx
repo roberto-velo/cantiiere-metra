@@ -32,6 +32,19 @@ import { MoreVertical } from "lucide-react";
 import { SheetHeader, SheetTitle } from "./ui/sheet";
 
 
+// Helper function to convert image to data URL
+async function toDataURL(url: string): Promise<string> {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+}
+
+
 export function ClientActions({ client }: { client: Client }) {
   const router = useRouter();
   const { toast } = useToast();
@@ -65,6 +78,7 @@ export function ClientActions({ client }: { client: Client }) {
   const handleDownloadPdf = async () => {
     const mainContent = document.getElementById('client-detail-page');
     const actionsWrapper = document.getElementById('client-actions-wrapper');
+    
     if (!mainContent) {
         toast({
             title: "Errore",
@@ -76,13 +90,34 @@ export function ClientActions({ client }: { client: Client }) {
     
     setIsDownloading(true);
 
-    // Hide actions before capturing
     if (actionsWrapper) actionsWrapper.style.display = 'none';
+
+    // Convert local images to data URLs for html2canvas
+    const images = Array.from(mainContent.getElementsByTagName('img'));
+    const originalSrcs = images.map(img => img.src);
+    try {
+      const dataUrls = await Promise.all(images.map(img => toDataURL(img.src)));
+      images.forEach((img, index) => {
+        img.src = dataUrls[index];
+      });
+    } catch (error) {
+       console.error("Error converting images to data URLs:", error);
+       toast({
+          title: "Errore PDF",
+          description: "Impossibile caricare le immagini per il PDF.",
+          variant: "destructive",
+      });
+       if (actionsWrapper) actionsWrapper.style.display = 'flex';
+       setIsDownloading(false);
+       return;
+    }
+
 
     try {
         const canvas = await html2canvas(mainContent, {
             scale: 2, 
             useCORS: true, 
+            allowTaint: true,
         });
 
         const imgData = canvas.toDataURL('image/png');
@@ -93,17 +128,24 @@ export function ClientActions({ client }: { client: Client }) {
         });
 
         const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
         const imgWidth = canvas.width;
         const imgHeight = canvas.height;
         const ratio = imgWidth / imgHeight;
         const widthInPdf = pdfWidth;
         const heightInPdf = widthInPdf / ratio;
         
-        const totalPdfPages = Math.ceil(heightInPdf / pdf.internal.pageSize.getHeight());
+        let heightLeft = heightInPdf;
+        let position = 0;
+        
+        pdf.addImage(imgData, 'PNG', 0, position, widthInPdf, heightInPdf);
+        heightLeft -= pdfHeight;
 
-        for (let i = 0; i < totalPdfPages; i++) {
-          if (i > 0) pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 0, -i * pdf.internal.pageSize.getHeight(), widthInPdf, heightInPdf);
+        while (heightLeft > 0) {
+            position = heightLeft - heightInPdf;
+            pdf.addPage();
+            pdf.addImage(imgData, 'PNG', 0, position, widthInPdf, heightInPdf);
+            heightLeft -= pdfHeight;
         }
         
         pdf.save(`scheda-cliente-${client.name.replace(/\s/g, '_')}.pdf`);
@@ -116,7 +158,10 @@ export function ClientActions({ client }: { client: Client }) {
         });
         console.error("Error generating PDF: ", error);
     } finally {
-        // Show actions again
+        // Restore original image sources and button visibility
+        images.forEach((img, index) => {
+            img.src = originalSrcs[index];
+        });
         if (actionsWrapper) actionsWrapper.style.display = 'flex';
         setIsDownloading(false);
     }
