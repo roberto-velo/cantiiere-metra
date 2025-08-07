@@ -112,14 +112,14 @@ export default async function DashboardPage() {
                  <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Descrizione</TableHead>
-                      <TableHead className="hidden sm:table-cell">
+                      <TableHead className="text-primary">Descrizione</TableHead>
+                      <TableHead className="hidden sm:table-cell text-primary">
                         Cliente
                       </TableHead>
-                      <TableHead className="hidden md:table-cell">
+                      <TableHead className="hidden md:table-cell text-primary">
                         Data
                       </TableHead>
-                      <TableHead className="text-right">Stato</TableHead>
+                      <TableHead className="text-right text-primary">Stato</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
