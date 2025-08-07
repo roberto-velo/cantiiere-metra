@@ -201,7 +201,7 @@ export function NewReminderForm({ clients, technicians }: NewReminderFormProps) 
                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                                             <FormControl><SelectTrigger><SelectValue placeholder="Scegli un cliente" /></SelectTrigger></FormControl>
                                             <SelectContent>
-                                                {clients.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                                {clients.map(c => <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>)}
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />
@@ -219,7 +219,7 @@ export function NewReminderForm({ clients, technicians }: NewReminderFormProps) 
                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                                             <FormControl><SelectTrigger><SelectValue placeholder="Scegli un tecnico" /></SelectTrigger></FormControl>
                                             <SelectContent>
-                                                {technicians.map(t => <SelectItem key={t.id} value={t.id}>{t.firstName} {t.lastName}</SelectItem>)}
+                                                {technicians.map(t => <SelectItem key={t.id} value={String(t.id)}>{t.firstName} {t.lastName}</SelectItem>)}
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />

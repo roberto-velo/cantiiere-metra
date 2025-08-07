@@ -14,7 +14,7 @@ const localApi = {
         
         const start = (page - 1) * limit;
         const end = page * limit - 1;
-        query = query.range(start, end);
+        query = query.range(start, end).order('id');
 
         const { data, error, count } = await query;
         if (error) {
@@ -35,7 +35,7 @@ const localApi = {
         }
         return data as Client[];
     },
-    getClient: async (id: string) => {
+    getClient: async (id: number) => {
         const { data, error } = await supabase.from('clients').select('*').eq('id', id).single();
         if (error) {
             console.error('Error fetching client:', error);
@@ -54,7 +54,7 @@ const localApi = {
         
         const start = (page - 1) * limit;
         const end = page * limit -1;
-        query = query.range(start, end);
+        query = query.range(start, end).order('id');
         
         const { data, error, count } = await query;
         if (error) {
@@ -74,7 +74,7 @@ const localApi = {
         }
         return data as Technician[];
     },
-    getTechnician: async (id: string) => {
+    getTechnician: async (id: number) => {
         const { data, error } = await supabase.from('technicians').select('*').eq('id', id).single();
          if (error) {
             console.error('Error fetching technician:', error);
@@ -82,7 +82,7 @@ const localApi = {
         }
         return data as Technician;
     },
-    getTechniciansByIds: async (ids: string[]) => {
+    getTechniciansByIds: async (ids: number[]) => {
        if (!ids || ids.length === 0) return [];
        const { data, error } = await supabase.from('technicians').select('*').in('id', ids);
         if (error) {
@@ -154,7 +154,7 @@ const localApi = {
             totalPages: Math.ceil((count || 0) / limit)
         };
     },
-    getTask: async (id: string) => {
+    getTask: async (id: number) => {
         const { data, error } = await supabase.from('tasks').select('*').eq('id', id).single();
          if (error) {
             console.error('Error fetching task:', error);
@@ -162,7 +162,7 @@ const localApi = {
         }
         return data as Task;
     },
-    getTasksByClientId: async (clientId: string) => {
+    getTasksByClientId: async (clientId: number) => {
         const { data, error } = await supabase.from('tasks').select('*').eq('clientId', clientId);
         if (error) {
             console.error('Error fetching tasks by client ID:', error);
@@ -170,7 +170,7 @@ const localApi = {
         }
         return data as Task[];
     },
-    getTasksByTechnicianId: async (technicianId: string) => {
+    getTasksByTechnicianId: async (technicianId: number) => {
          const { data, error } = await supabase.from('tasks').select('*').contains('technicianIds', [technicianId]);
          if (error) {
             console.error('Error fetching tasks by technician ID:', error);

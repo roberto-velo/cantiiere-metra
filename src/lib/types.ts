@@ -8,7 +8,7 @@ export type Json =
   | Json[]
 
 export type Client = {
-  id: string;
+  id: number;
   name: string;
   address: string;
   phone: string;
@@ -29,7 +29,7 @@ export type Qualification = {
 };
 
 export type Technician = {
-  id: string;
+  id: number;
   firstName: string;
   lastName: string;
   phone: string;
@@ -54,9 +54,9 @@ export type Document = {
 };
 
 export type Task = {
-  id: string;
-  clientId: string;
-  technicianIds: string[];
+  id: number;
+  clientId: number;
+  technicianIds: number[];
   date: string;
   time: string;
   description: string;
@@ -69,7 +69,7 @@ export type Task = {
 };
 
 export type Reminder = {
-  id: string;
+  id: number;
   title: string;
   description?: string;
   dueDate: string;

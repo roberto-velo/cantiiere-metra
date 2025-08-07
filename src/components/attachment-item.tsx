@@ -33,7 +33,7 @@ import type { Photo, Document } from "@/lib/types";
 interface AttachmentItemProps {
   type: 'photo' | 'document';
   item: Photo | Document;
-  taskId: string;
+  taskId: number;
 }
 
 export function AttachmentItem({ type, item, taskId }: AttachmentItemProps) {

@@ -19,7 +19,7 @@ import { addAttachmentToTaskAction } from "@/lib/actions";
 import { Camera, FileUp, Loader2, Upload } from "lucide-react";
 
 interface FileUploadProps {
-  taskId: string;
+  taskId: number;
   uploadType: "photo" | "document";
 }
 

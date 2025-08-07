@@ -21,7 +21,7 @@ export async function addClientAction(clientData: Omit<Client, 'id'>) {
     }
 }
 
-export async function updateClientAction(id: string, clientData: Partial<Omit<Client, 'id'>>) {
+export async function updateClientAction(id: number, clientData: Partial<Omit<Client, 'id'>>) {
     try {
         const { data, error } = await supabase.from('clients').update(clientData).eq('id', id).select().single();
         if (error) throw error;
@@ -34,7 +34,7 @@ export async function updateClientAction(id: string, clientData: Partial<Omit<Cl
     }
 }
 
-export async function deleteClientAction(id: string) {
+export async function deleteClientAction(id: number) {
     try {
         const { error } = await supabase.from('clients').delete().eq('id', id);
         if (error) throw error;
@@ -60,7 +60,7 @@ export async function addTechnicianAction(technicianData: Omit<Technician, 'id'>
     }
 }
 
-export async function updateTechnicianAction(id: string, technicianData: Partial<Omit<Technician, 'id'>>) {
+export async function updateTechnicianAction(id: number, technicianData: Partial<Omit<Technician, 'id'>>) {
     try {
         const { data, error } = await supabase.from('technicians').update(technicianData).eq('id', id).select().single();
         if (error) throw error;
@@ -73,7 +73,7 @@ export async function updateTechnicianAction(id: string, technicianData: Partial
     }
 }
 
-export async function deleteTechnicianAction(id: string) {
+export async function deleteTechnicianAction(id: number) {
     try {
         const { error } = await supabase.from('technicians').delete().eq('id', id);
         if (error) throw error;
@@ -105,7 +105,7 @@ export async function addTaskAction(taskData: Omit<Task, 'id' | 'photos' | 'docu
     }
 }
 
-export async function updateTaskStatusAction(taskId: string, status: TaskStatus) {
+export async function updateTaskStatusAction(taskId: number, status: TaskStatus) {
     try {
         const { data, error } = await supabase.from('tasks').update({ status }).eq('id', taskId).select().single();
         if (error) throw error;
@@ -118,7 +118,7 @@ export async function updateTaskStatusAction(taskId: string, status: TaskStatus)
     }
 }
 
-export async function updateTaskDurationAction(taskId: string, duration: number) {
+export async function updateTaskDurationAction(taskId: number, duration: number) {
      try {
         const { data, error } = await supabase.from('tasks').update({ duration, status: 'Completato' }).eq('id', taskId).select().single();
         if (error) throw error;
@@ -132,7 +132,7 @@ export async function updateTaskDurationAction(taskId: string, duration: number)
 }
 
 
-export async function deleteTaskAction(id: string) {
+export async function deleteTaskAction(id: number) {
     try {
         const { error } = await supabase.from('tasks').delete().eq('id', id);
         if (error) throw error;
@@ -146,7 +146,7 @@ export async function deleteTaskAction(id: string) {
 
 
 export async function addAttachmentToTaskAction(
-    { taskId, attachment, type }: { taskId: string; attachment: Omit<Photo, 'id'> | Omit<Document, 'id'>; type: 'photo' | 'document' }
+    { taskId, attachment, type }: { taskId: number; attachment: Omit<Photo, 'id'> | Omit<Document, 'id'>; type: 'photo' | 'document' }
 ) {
     try {
         const { data: task, error: fetchError } = await supabase.from('tasks').select('photos, documents').eq('id', taskId).single();
@@ -195,7 +195,7 @@ export async function addAttachmentToTaskAction(
     }
 }
 
-export async function deleteAttachmentAction({ taskId, attachmentId, type }: { taskId: string, attachmentId: string, type: 'photo' | 'document' }) {
+export async function deleteAttachmentAction({ taskId, attachmentId, type }: { taskId: number, attachmentId: string, type: 'photo' | 'document' }) {
     try {
         const { data: task, error: fetchError } = await supabase.from('tasks').select('photos, documents').eq('id', taskId).single();
         if (fetchError || !task) throw fetchError || new Error("Attività non trovata.");
@@ -218,7 +218,7 @@ export async function deleteAttachmentAction({ taskId, attachmentId, type }: { t
     }
 }
 
-export async function updateAttachmentAction({ taskId, attachmentId, type, data }: { taskId: string, attachmentId: string, type: 'photo' | 'document', data: { name?: string, description?: string } }) {
+export async function updateAttachmentAction({ taskId, attachmentId, type, data }: { taskId: number, attachmentId: string, type: 'photo' | 'document', data: { name?: string, description?: string } }) {
      try {
         const { data: task, error: fetchError } = await supabase.from('tasks').select('photos, documents').eq('id', taskId).single();
         if (fetchError || !task) throw fetchError || new Error("Attività non trovata.");
@@ -263,7 +263,7 @@ export async function addReminderAction(reminderData: Omit<Reminder, 'id' | 'isC
     }
 }
 
-export async function deleteReminderAction(id: string) {
+export async function deleteReminderAction(id: number) {
     try {
         const { error } = await supabase.from('reminders').delete().eq('id', id);
         if (error) throw error;

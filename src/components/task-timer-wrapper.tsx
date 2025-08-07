@@ -7,7 +7,7 @@ import { TaskTimer } from "./task-timer";
 import { updateTaskStatusAction, updateTaskDurationAction } from "@/lib/actions";
 import { useNotifications } from "@/hooks/use-notifications";
 
-export function TaskTimerWrapper({ taskId, initialStatus, initialDuration }: { taskId: string, initialStatus: TaskStatus, initialDuration?: number }) {
+export function TaskTimerWrapper({ taskId, initialStatus, initialDuration }: { taskId: number, initialStatus: TaskStatus, initialDuration?: number }) {
   const [status, setStatus] = useState<TaskStatus>(initialStatus);
   const { addNotification } = useNotifications();
 
@@ -16,19 +16,19 @@ export function TaskTimerWrapper({ taskId, initialStatus, initialDuration }: { t
     await updateTaskStatusAction(taskId, newStatus);
     
     if (newStatus === 'In corso') {
-        addNotification(`Attività #${taskId.slice(-4)} avviata`, 'task-started');
+        addNotification(`Attività #${String(taskId).slice(-4)} avviata`, 'task-started');
     }
   };
 
   const handlePause = () => {
-      addNotification(`Attività #${taskId.slice(-4)} in pausa`, 'task-paused');
+      addNotification(`Attività #${String(taskId).slice(-4)} in pausa`, 'task-paused');
   }
 
   const handleComplete = async (duration: number) => {
     const newStatus: TaskStatus = 'Completato';
     setStatus(newStatus);
     await updateTaskDurationAction(taskId, duration);
-    addNotification(`Attività #${taskId.slice(-4)} completata`, 'task-completed');
+    addNotification(`Attività #${String(taskId).slice(-4)} completata`, 'task-completed');
   };
 
   return <TaskTimer 
@@ -39,5 +39,3 @@ export function TaskTimerWrapper({ taskId, initialStatus, initialDuration }: { t
             onPause={handlePause}
           />;
 }
-
-    

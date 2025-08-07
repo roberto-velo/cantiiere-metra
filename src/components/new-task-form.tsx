@@ -82,12 +82,12 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
   const clientId = form.watch("clientId");
   const technicianIds = form.watch("technicianIds");
 
-  const selectedTechnicians = technicians.filter(tech => technicianIds.includes(tech.id));
+  const selectedTechnicians = technicians.filter(tech => technicianIds.includes(String(tech.id)));
   const selectedTechniciansNames = selectedTechnicians.map(tech => `${tech.firstName} ${tech.lastName}`).join(', ');
 
   useEffect(() => {
     if (initialClientId) {
-        const client = clients.find((c) => c.id === initialClientId);
+        const client = clients.find((c) => String(c.id) === initialClientId);
         setSelectedClient(client || null);
     }
   }, [initialClientId, clients]);
@@ -95,7 +95,7 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
 
   useEffect(() => {
     if (clientId) {
-      const client = clients.find((c) => c.id === clientId);
+      const client = clients.find((c) => String(c.id) === clientId);
       setSelectedClient(client || null);
     } else {
       setSelectedClient(null);
@@ -107,6 +107,8 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
     try {
         const newActivity = {
             ...values,
+            clientId: Number(values.clientId),
+            technicianIds: values.technicianIds.map(Number),
             status: "Pianificato",
             photos: [], 
             documents: [],
@@ -115,7 +117,7 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
         
         const result = await addTaskAction(newActivity);
 
-        if (result.success) {
+        if (result.success && result.task) {
             toast({
               title: "Attività Creata!",
               description: `L'attività "${values.description}" è stata creata con successo.`,
@@ -200,7 +202,7 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
                           </FormControl>
                           <SelectContent>
                             {clients.map((client) => (
-                              <SelectItem key={client.id} value={client.id}>
+                              <SelectItem key={client.id} value={String(client.id)}>
                                 {client.name}
                               </SelectItem>
                             ))}
@@ -229,11 +231,11 @@ export function NewTaskForm({ clients, technicians, initialClientId }: NewTaskFo
                                     {technicians.map((tech) => (
                                          <DropdownMenuItem key={tech.id} onSelect={(e) => e.preventDefault()}>
                                             <Checkbox
-                                                checked={field.value.includes(tech.id)}
+                                                checked={field.value.includes(String(tech.id))}
                                                 onCheckedChange={(checked) => {
                                                     return checked
-                                                    ? field.onChange([...field.value, tech.id])
-                                                    : field.onChange(field.value.filter((id) => id !== tech.id))
+                                                    ? field.onChange([...field.value, String(tech.id)])
+                                                    : field.onChange(field.value.filter((id) => id !== String(tech.id)))
                                                 }}
                                             />
                                             <span className="ml-2">{tech.firstName} {tech.lastName}</span>

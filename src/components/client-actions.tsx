@@ -18,7 +18,7 @@ import { deleteClientAction } from "@/lib/actions";
 import { Pencil, Trash2, Download } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { Client } from "@/lib/types";
+import type { Client, Photo } from "@/lib/types";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { useState } from "react";
@@ -96,7 +96,7 @@ export function ClientActions({ client }: { client: Client }) {
             localApi.getAllTechnicians()
         ]);
         
-        const allPhotos = tasks.flatMap(t => t.photos);
+        const allPhotos = tasks.flatMap(t => t.photos as Photo[]);
 
         let yPos = 20;
         const pageHeight = doc.internal.pageSize.height;

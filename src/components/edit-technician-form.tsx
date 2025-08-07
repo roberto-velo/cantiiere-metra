@@ -28,7 +28,7 @@ import {
 import { format, parseISO } from "date-fns";
 import { useRouter } from "next/navigation";
 import { updateTechnicianAction } from "@/lib/actions";
-import type { Technician } from "@/lib/types";
+import type { Technician, Qualification } from "@/lib/types";
 
 const qualificationSchema = z.object({
   id: z.string(),
@@ -57,7 +57,7 @@ export function EditTechnicianForm({ technician }: EditTechnicianFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       ...technician,
-      qualifications: technician.qualifications.map(q => ({
+      qualifications: (technician.qualifications as Qualification[]).map(q => ({
         ...q,
         expiryDate: parseISO(q.expiryDate)
       })),
