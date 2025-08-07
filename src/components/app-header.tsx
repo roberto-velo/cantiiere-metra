@@ -1,3 +1,4 @@
+
 "use client";
 import * as React from "react";
 import Link from "next/link";
@@ -47,7 +48,7 @@ export function AppHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-gradient-to-r from-primary/80 via-primary to-primary/60">
+    <header className="sticky top-0 z-40 w-full border-b bg-gradient-to-r from-primary/70 via-primary/90 to-primary/50">
       <div className="flex h-20 items-center justify-between px-4 sm:px-6">
          <Link href="/" className="flex items-center gap-2 font-bold text-lg">
               <Image 
