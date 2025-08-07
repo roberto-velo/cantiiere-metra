@@ -1,0 +1,42 @@
+
+[
+  {
+    "id": "1754487668040",
+    "clientId": "1754475851601",
+    "technicianIds": [
+      "1754475670329"
+    ],
+    "date": "2025-08-07",
+    "time": "15:40",
+    "description": "aaaaaaaaa",
+    "priority": "Media",
+    "notes": "",
+    "photos": [
+      {
+        "id": "1754554116192",
+        "name": "07e0bc9a-d48b-4061-8c75-1b2611ca881d.jpeg",
+        "description": "",
+        "url": "/uploads/07e0bc9a-d48b-4061-8c75-1b2611ca881d.jpeg"
+      }
+    ],
+    "documents": [],
+    "status": "Completato",
+    "duration": 5
+  },
+  {
+    "id": "1754559230834",
+    "clientId": "1754475851601",
+    "technicianIds": [
+      "1754475670329"
+    ],
+    "date": "2025-08-08",
+    "time": "11:33",
+    "description": "zzzzzzzzzz",
+    "priority": "Media",
+    "notes": "",
+    "photos": [],
+    "documents": [],
+    "status": "Pianificato",
+    "duration": 0
+  }
+]

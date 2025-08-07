@@ -1,0 +1,17 @@
+
+[
+  {
+    "id": "1754475851601",
+    "name": "roberto",
+    "email": "roberto.velo14@gmail.com",
+    "phone": "3396187374",
+    "address": "via monte cavallo 16 cordenons",
+    "clientCode": "ROB453",
+    "mapUrl": "https://www.google.com/maps/dir/?api=1&destination=via%20monte%20cavallo%2016%20cordenons&travelmode=driving",
+    "poolType": "Interrata",
+    "poolDimensions": "8x4x1.5",
+    "poolVolume": "50",
+    "filterType": "Eco Summer",
+    "treatmentType": "Centralina sale"
+  }
+]

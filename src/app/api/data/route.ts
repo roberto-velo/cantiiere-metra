@@ -5,7 +5,7 @@ import path from 'path';
 
 // Note: This is a simplified in-memory "database" for demonstration purposes.
 // In a real-world application, you would use a proper database.
-const dataDir = path.join(process.cwd(), 'src', 'lib', 'db');
+const dataDir = path.join(process.cwd(), 'data');
 const VALID_FILES = ['clients.json', 'tasks.json', 'technicians.json', 'reminders.json'];
 
 async function getHandler(request: Request) {

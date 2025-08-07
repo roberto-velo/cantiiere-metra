@@ -160,10 +160,10 @@ const localApi = {
     // Dashboard
     getDashboardData: async () => {
         const [tasks, technicians, clients, reminders] = await Promise.all([
-            localApi.getTasks({limit: 1000}).then(res => res.tasks),
-            localApi.getAllTechnicians(),
-            localApi.getAllClients(),
-            localApi.getReminders(),
+            fetchData<Task>('tasks'),
+            fetchData<Technician>('technicians'),
+            fetchData<Client>('clients'),
+            fetchData<Reminder>('reminders'),
         ]);
 
         return {
