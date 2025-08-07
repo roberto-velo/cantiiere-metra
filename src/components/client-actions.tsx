@@ -34,14 +34,23 @@ import { SheetHeader, SheetTitle } from "./ui/sheet";
 
 // Helper function to convert image to data URL
 async function toDataURL(url: string): Promise<string> {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-    });
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+        }
+        const blob = await response.blob();
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    } catch (error) {
+        console.error(`Error converting ${url} to data URL:`, error);
+        // Return a placeholder or the original URL if conversion fails
+        return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+    }
 }
 
 
@@ -96,7 +105,8 @@ export function ClientActions({ client }: { client: Client }) {
     const images = Array.from(mainContent.getElementsByTagName('img'));
     const originalSrcs = images.map(img => img.src);
     try {
-      const dataUrls = await Promise.all(images.map(img => toDataURL(img.src)));
+      const dataUrlPromises = images.map(img => toDataURL(img.src));
+      const dataUrls = await Promise.all(dataUrlPromises);
       images.forEach((img, index) => {
         img.src = dataUrls[index];
       });
@@ -107,7 +117,7 @@ export function ClientActions({ client }: { client: Client }) {
           description: "Impossibile caricare le immagini per il PDF.",
           variant: "destructive",
       });
-       if (actionsWrapper) actionsWrapper.style.display = 'flex';
+       if (actionsWrapper) actionsWrapper.style.display = '';
        setIsDownloading(false);
        return;
     }
@@ -115,9 +125,10 @@ export function ClientActions({ client }: { client: Client }) {
 
     try {
         const canvas = await html2canvas(mainContent, {
-            scale: 2, 
+            scale: 3, 
             useCORS: true, 
             allowTaint: true,
+            logging: false,
         });
 
         const imgData = canvas.toDataURL('image/png');
@@ -129,23 +140,26 @@ export function ClientActions({ client }: { client: Client }) {
 
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
-        const imgWidth = canvas.width;
-        const imgHeight = canvas.height;
-        const ratio = imgWidth / imgHeight;
-        const widthInPdf = pdfWidth;
-        const heightInPdf = widthInPdf / ratio;
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+        const ratio = canvasWidth / canvasHeight;
+
+        // Add margins
+        const margin = 10;
+        const contentWidth = pdfWidth - (margin * 2);
+        const contentHeight = contentWidth / ratio;
         
-        let heightLeft = heightInPdf;
+        let heightLeft = contentHeight;
         let position = 0;
         
-        pdf.addImage(imgData, 'PNG', 0, position, widthInPdf, heightInPdf);
-        heightLeft -= pdfHeight;
+        pdf.addImage(imgData, 'PNG', margin, position + margin, contentWidth, contentHeight);
+        heightLeft -= (pdfHeight - (margin * 2));
 
         while (heightLeft > 0) {
-            position = heightLeft - heightInPdf;
+            position = -heightLeft;
             pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, position, widthInPdf, heightInPdf);
-            heightLeft -= pdfHeight;
+            pdf.addImage(imgData, 'PNG', margin, position + margin, contentWidth, contentHeight);
+            heightLeft -= (pdfHeight - (margin * 2));
         }
         
         pdf.save(`scheda-cliente-${client.name.replace(/\s/g, '_')}.pdf`);
@@ -162,7 +176,7 @@ export function ClientActions({ client }: { client: Client }) {
         images.forEach((img, index) => {
             img.src = originalSrcs[index];
         });
-        if (actionsWrapper) actionsWrapper.style.display = 'flex';
+        if (actionsWrapper) actionsWrapper.style.display = '';
         setIsDownloading(false);
     }
   };
