@@ -17,7 +17,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "./ui/button";
-import { useTransition } from "react";
+import { useTransition, useState, useEffect } from "react";
 import { deleteReminderAction } from "@/lib/actions";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -29,6 +29,22 @@ interface ReminderItemProps {
 export function ReminderItem({ reminder }: ReminderItemProps) {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
+  const [formattedDate, setFormattedDate] = useState("");
+
+  useEffect(() => {
+    // Calculate date on client to avoid hydration mismatch
+    try {
+        const date = parseISO(reminder.dueDate);
+        setFormattedDate(formatDistanceToNow(date, {
+            locale: it,
+            addSuffix: true,
+        }));
+    } catch(e) {
+        console.error("Invalid date for reminder", reminder.id);
+        setFormattedDate("Data non valida");
+    }
+  }, [reminder.dueDate, reminder.id]);
+
 
   const handleDelete = () => {
     startTransition(async () => {
@@ -48,10 +64,7 @@ export function ReminderItem({ reminder }: ReminderItemProps) {
         <p className="text-sm font-medium">{reminder.title}</p>
         <p className="text-sm text-primary">
           Scade{" "}
-          {formatDistanceToNow(parseISO(reminder.dueDate), {
-            locale: it,
-            addSuffix: true,
-          })}
+          {formattedDate || '...'}
         </p>
       </div>
       <AlertDialog>
