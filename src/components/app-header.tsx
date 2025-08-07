@@ -40,9 +40,10 @@ export function AppHeader() {
         <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
           <Image 
             src="/metra-logo.png" 
-            alt="Metra Logo" 
-            width={250} 
-            height={63}
+            alt="CantiereFlow Logo" 
+            width={180} 
+            height={45}
+            priority
           />
         </Link>
         <div className="flex items-center gap-4">
@@ -73,7 +74,7 @@ export function AppHeader() {
                       <nav className="flex flex-col gap-4 mt-8">
                         {navLinks.map((link) => (
                             <SheetClose asChild key={link.href}>
-                              <Link href={link.href} className="flex items-center gap-3 p-2 rounded-md text-lg hover:bg-primary/80">
+                              <Link href={link.href} className="flex items-center gap-3 p-2 rounded-md text-lg hover:bg-white/20">
                                 <link.icon className="h-5 w-5" />
                                 {link.label}
                               </Link>
