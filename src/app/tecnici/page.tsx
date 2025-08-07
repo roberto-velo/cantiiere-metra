@@ -31,16 +31,19 @@ async function TechniciansList({ page, searchTerm }: { page: number, searchTerm?
     const nextPage = `/tecnici?${nextPageParams.toString()}`;
 
     return (
-        <>
-            <CardContent className="p-0 sm:p-6">
+        <Card>
+             <CardHeader>
+                <TechnicianSearch initialQuery={searchTerm} />
+             </CardHeader>
+            <CardContent>
                 <div className="overflow-x-auto">
                     <Table>
                         <TableHeader>
                         <TableRow>
-                            <TableHead className="text-primary">Nome</TableHead>
-                            <TableHead className="text-primary hidden sm:table-cell">Ruolo</TableHead>
-                            <TableHead className="text-primary hidden md:table-cell">Telefono</TableHead>
-                            <TableHead className="text-right text-primary">Azioni</TableHead>
+                            <TableHead>Nome</TableHead>
+                            <TableHead className="hidden sm:table-cell">Ruolo</TableHead>
+                            <TableHead className="hidden md:table-cell">Telefono</TableHead>
+                            <TableHead className="text-right">Azioni</TableHead>
                         </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -93,7 +96,7 @@ async function TechniciansList({ page, searchTerm }: { page: number, searchTerm?
                     </Button>
                 </div>
             </CardFooter>
-        </>
+        </Card>
     );
 }
 
@@ -103,35 +106,21 @@ export default function TecniciPage({ searchParams }: { searchParams?: { page?: 
   const searchTerm = searchParams?.q;
 
   return (
-    <div className="flex flex-col flex-1">
-      <header className="bg-muted/30 border-b p-4 sm:p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="space-y-1">
-            <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-              <HardHat className="h-6 w-6" /> Tecnici
-            </h1>
-            <p className="text-primary">
-              Gestisci l'anagrafinca dei tuoi dipendenti e tecnici.
-            </p>
-          </div>
-          <Button asChild>
-            <Link href="/tecnici/nuovo">
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Nuovo Tecnico
-            </Link>
-          </Button>
+    <div className="flex flex-col flex-1 gap-4">
+       <div className="flex items-center">
+            <h1 className="text-lg font-semibold md:text-2xl">Tecnici</h1>
+            <div className="ml-auto flex items-center gap-2">
+                <Button asChild size="sm">
+                    <Link href="/tecnici/nuovo">
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Nuovo Tecnico
+                    </Link>
+                </Button>
+            </div>
         </div>
-      </header>
-      <main className="flex-1 p-4 sm:p-6 space-y-6">
-        <Card>
-          <CardHeader>
-            <TechnicianSearch initialQuery={searchTerm} />
-          </CardHeader>
-           <Suspense fallback={<div className="text-center p-8">Caricamento...</div>}>
-                <TechniciansList page={currentPage} searchTerm={searchTerm} />
-           </Suspense>
-        </Card>
-      </main>
+        <Suspense fallback={<div className="text-center p-8">Caricamento...</div>}>
+            <TechniciansList page={currentPage} searchTerm={searchTerm} />
+        </Suspense>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  CardDescription
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,11 +15,22 @@ import {
   Bell,
   CalendarCheck2,
   ListTodo,
+  ArrowUpRight,
 } from "lucide-react";
 import Link from "next/link";
 import localApi from "@/lib/data";
 import { cn } from "@/lib/utils";
 import type { TaskStatus } from "@/lib/types";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge";
+
 
 const statusBadge: Record<TaskStatus, string> = {
   Pianificato: "bg-blue-500/20 text-blue-700 border border-blue-500/30",
@@ -59,93 +71,124 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <div className="flex flex-col flex-1">
-      <header className="bg-muted/30 border-b p-4 sm:p-6">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h1>
-        <p className="text-primary">
-          Riepilogo giornaliero e settimanale delle tue attività.
-        </p>
-      </header>
-
-      <div className="flex-1 p-4 sm:p-6 space-y-8">
-        <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {statsCards.map((card, index) => (
-              <Card key={index} className="glow-on-hover">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-primary">
-                  {card.title}
+    <div className="flex flex-col flex-1 gap-4 sm:gap-8">
+      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+        {statsCards.map((card, index) => (
+             <Card key={index} className="sm:col-span-1">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm font-medium">
+                    {card.title}
                   </CardTitle>
-                  <card.icon className="h-5 w-5 text-primary" />
+                  <card.icon className="h-4 w-4 text-muted-foreground" />
+                </div>
               </CardHeader>
               <CardContent>
-                  <div className="text-3xl font-bold text-foreground">{card.value}</div>
-                  <p className="text-xs text-foreground pt-1">
+                <div className="text-2xl font-bold">{card.value}</div>
+                <p className="text-xs text-muted-foreground">
                   {card.note}
-                  </p>
+                </p>
               </CardContent>
-              </Card>
-          ))}
-        </section>
+            </Card>
+        ))}
+      </div>
 
-        <section>
-          <h2 className="text-2xl font-semibold tracking-tight mb-4 text-foreground">
-            Attività Recenti
-          </h2>
-          <Card className="overflow-hidden">
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead className="bg-muted/50">
-                    <tr className="border-b">
-                      <th className="text-left font-semibold p-4 text-primary">Descrizione</th>
-                      <th className="text-left font-semibold p-4 text-primary hidden sm:table-cell">Cliente</th>
-                      <th className="text-left font-semibold p-4 text-primary hidden md:table-cell">Data</th>
-                      <th className="text-left font-semibold p-4 text-primary hidden lg:table-cell">Tempo Impiegato</th>
-                      <th className="text-left font-semibold p-4 text-primary">Stato</th>
-                      <th className="text-left font-semibold p-4 text-primary"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {tasks.slice(0, 5).map((task) => (
-                    <tr key={task.id} className="border-b last:border-b-0 hover:bg-muted/50 transition-colors">
-                        <td className="p-4 font-medium text-foreground">{task.description}</td>
-                        <td className="p-4 text-foreground hidden sm:table-cell">
-                        {
-                            clients.find(c => c.id === task.clientId)?.name 
-                            ? clients.find(c => c.id === task.clientId)?.name 
-                            : 'N/A'
-                        }
-                        </td>
-                         <td className="p-4 text-foreground hidden md:table-cell">{task.date}</td>
-                        <td className="p-4 text-foreground hidden lg:table-cell">
-                            {task.status === "Completato" ? formatDuration(task.duration) : '-'}
-                        </td>
-                        <td className="p-4 text-muted-foreground">
-                        <span className={cn("px-2 py-1 rounded-full text-xs font-medium", statusBadge[task.status])}>
-                            {task.status}
-                        </span>
-                        </td>
-                        <td className="p-4 text-right">
-                        <Button asChild variant="outline" size="sm">
-                            <Link href={`/attivita/${task.id}`}>Dettagli</Link>
-                        </Button>
-                        </td>
-                    </tr>
+       <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
+            <Card className="xl:col-span-2">
+              <CardHeader className="flex flex-row items-center">
+                <div className="grid gap-2">
+                  <CardTitle>Attività Recenti</CardTitle>
+                  <CardDescription>
+                    Le ultime 5 attività registrate nel sistema.
+                  </CardDescription>
+                </div>
+                <Button asChild size="sm" className="ml-auto gap-1">
+                  <Link href="/attivita">
+                    Tutte
+                    <ArrowUpRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardHeader>
+              <CardContent>
+                 <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Descrizione</TableHead>
+                      <TableHead className="hidden sm:table-cell">
+                        Cliente
+                      </TableHead>
+                      <TableHead className="hidden md:table-cell">
+                        Data
+                      </TableHead>
+                      <TableHead className="text-right">Stato</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                     {tasks.slice(0, 5).map((task) => (
+                        <TableRow key={task.id}>
+                           <TableCell>
+                            <div className="font-medium">{task.description}</div>
+                             <div className="hidden text-sm text-muted-foreground md:inline">
+                                {task.time}
+                            </div>
+                          </TableCell>
+                          <TableCell className="hidden sm:table-cell">
+                             {clients.find(c => c.id === task.clientId)?.name ?? 'N/A'}
+                          </TableCell>
+                           <TableCell className="hidden md:table-cell">
+                            {task.date}
+                          </TableCell>
+                          <TableCell className="text-right">
+                             <Badge className={cn("text-xs", statusBadge[task.status])} variant="outline">
+                                {task.status}
+                             </Badge>
+                          </TableCell>
+                        </TableRow>
                     ))}
                      {tasks.length === 0 && (
-                      <tr>
-                        <td colSpan={6} className="text-center h-24">
+                      <TableRow>
+                        <TableCell colSpan={4} className="text-center h-24">
                           Nessuna attività recente.
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     )}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        </section>
-      </div>
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Promemoria</CardTitle>
+                 <CardDescription>
+                    Scadenze e notifiche importanti.
+                  </CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-8">
+                 <div className="flex items-center gap-4">
+                  <Bell className="h-6 w-6" />
+                  <div className="grid gap-1">
+                    <p className="text-sm font-medium">
+                      Certificazione Gas Mario Rossi
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Scade tra 2 settimane
+                    </p>
+                  </div>
+                </div>
+                 <div className="flex items-center gap-4">
+                  <Bell className="h-6 w-6" />
+                  <div className="grid gap-1">
+                    <p className="text-sm font-medium">
+                      Manutenzione programmata Piscina Verdi
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Pianificata per domani
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
     </div>
   );
 }

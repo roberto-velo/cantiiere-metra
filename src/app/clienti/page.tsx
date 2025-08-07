@@ -1,7 +1,7 @@
 
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardDescription, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -33,16 +33,19 @@ async function ClientsList({ page, searchTerm }: { page: number, searchTerm?: st
 
 
   return (
-    <>
-      <CardContent className="p-0 sm:p-6">
+    <Card>
+      <CardHeader>
+        <ClientSearch initialQuery={searchTerm} />
+      </CardHeader>
+      <CardContent>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-primary">Nome</TableHead>
-                <TableHead className="text-primary hidden sm:table-cell">Email</TableHead>
-                <TableHead className="text-primary hidden md:table-cell">Telefono</TableHead>
-                <TableHead className="text-right text-primary">Azioni</TableHead>
+                <TableHead>Nome</TableHead>
+                <TableHead className="hidden sm:table-cell">Email</TableHead>
+                <TableHead className="hidden md:table-cell">Telefono</TableHead>
+                <TableHead className="text-right">Azioni</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -97,7 +100,7 @@ async function ClientsList({ page, searchTerm }: { page: number, searchTerm?: st
             </Button>
         </div>
       </CardFooter>
-    </>
+    </Card>
   );
 }
 
@@ -107,35 +110,21 @@ export default function ClientiPage({ searchParams }: { searchParams?: { page?: 
   const searchTerm = searchParams?.q;
 
   return (
-    <div className="flex flex-col flex-1">
-      <header className="bg-muted/30 border-b p-4 sm:p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="space-y-1">
-            <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-              <UsersRound className="h-6 w-6" /> Clienti
-            </h1>
-            <p className="text-primary">
-              Gestisci l'anagrafinca dei tuoi clienti.
-            </p>
-          </div>
-          <Button asChild>
-            <Link href="/clienti/nuovo">
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Nuovo Cliente
-            </Link>
-          </Button>
+    <div className="flex flex-col flex-1 gap-4">
+      <div className="flex items-center">
+        <h1 className="text-lg font-semibold md:text-2xl">Clienti</h1>
+        <div className="ml-auto flex items-center gap-2">
+            <Button asChild size="sm">
+                <Link href="/clienti/nuovo">
+                <PlusCircle className="h-4 w-4" />
+                Nuovo Cliente
+                </Link>
+            </Button>
         </div>
-      </header>
-      <main className="flex-1 p-4 sm:p-6 space-y-6">
-        <Card>
-          <CardHeader>
-            <ClientSearch initialQuery={searchTerm} />
-          </CardHeader>
-          <Suspense fallback={<div className="text-center p-8">Caricamento...</div>}>
-            <ClientsList page={currentPage} searchTerm={searchTerm} />
-          </Suspense>
-        </Card>
-      </main>
+      </div>
+       <Suspense fallback={<div className="text-center p-8">Caricamento...</div>}>
+          <ClientsList page={currentPage} searchTerm={searchTerm} />
+        </Suspense>
     </div>
   );
 }

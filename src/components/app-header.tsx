@@ -3,15 +3,22 @@
 
 import Link from "next/link";
 import {
-  ClipboardList,
-  HardHat,
-  UsersRound,
   Menu,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import Image from "next/image";
 import dynamic from 'next/dynamic';
+import { usePathname } from "next/navigation";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import { SidebarTrigger } from "./ui/sidebar";
 
 // Dynamically import the NotificationMenu with SSR turned off
 const NotificationMenu = dynamic(() => import('./notification-menu').then(mod => mod.NotificationMenu), {
@@ -26,65 +33,42 @@ const NotificationMenu = dynamic(() => import('./notification-menu').then(mod =>
 
 
 export function AppHeader() {
+  const pathname = usePathname();
+  const pathSegments = pathname.split('/').filter(Boolean);
 
-  const navLinks = [
-    { href: "/", label: "Dashboard", icon: ClipboardList },
-    { href: "/clienti", label: "Clienti", icon: UsersRound },
-    { href: "/tecnici", label: "Tecnici", icon: HardHat },
-    { href: "/attivita", label: "Attività", icon: ClipboardList },
-  ];
-  
+  const breadcrumbItems = [
+    { href: "/", label: "Dashboard" },
+    ...pathSegments.map((segment, index) => {
+      const href = "/" + pathSegments.slice(0, index + 1).join('/');
+      const label = segment.charAt(0).toUpperCase() + segment.slice(1);
+      return { href, label };
+    })
+  ]
+
   return (
-    <header className="bg-gradient-to-r from-primary to-background/10 text-primary-foreground border-b p-4 sm:p-6 sticky top-0 z-50">
-      <div className="flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
-          <Image 
-            src="/metra-logo.png" 
-            alt="CantiereFlow Logo" 
-            width={180} 
-            height={45}
-            priority
-          />
-        </Link>
-        <div className="flex items-center gap-4">
-            <nav className="hidden md:flex items-center gap-4">
-              {navLinks.map((link) => (
-                <Button variant="ghost" asChild key={link.href}>
-                  <Link href={link.href} className="flex items-center gap-2 text-black hover:bg-primary/20">
-                    <link.icon className="h-4 w-4" />
-                    {link.label}
-                  </Link>
-                </Button>
-              ))}
-            </nav>
-            
+     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+       <SidebarTrigger className="sm:hidden" />
+        <Breadcrumb className="hidden md:flex">
+            <BreadcrumbList>
+                {breadcrumbItems.map((item, index) => (
+                    <React.Fragment key={item.href}>
+                    <BreadcrumbItem>
+                        {index < breadcrumbItems.length - 1 ? (
+                        <BreadcrumbLink asChild>
+                            <Link href={item.href}>{item.label}</Link>
+                        </BreadcrumbLink>
+                        ) : (
+                        <BreadcrumbPage>{item.label}</BreadcrumbPage>
+                        )}
+                    </BreadcrumbItem>
+                    {index < breadcrumbItems.length - 1 && <BreadcrumbSeparator />}
+                    </React.Fragment>
+                ))}
+            </BreadcrumbList>
+        </Breadcrumb>
+        <div className="ml-auto flex items-center gap-2">
             <NotificationMenu />
-
-            <Sheet>
-                <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon" className="md:hidden">
-                        <Menu className="h-6 w-6 text-black" />
-                        <span className="sr-only">Apri menu</span>
-                    </Button>
-                </SheetTrigger>
-                <SheetContent side="right" className="w-[250px] bg-primary text-primary-foreground">
-                    <SheetHeader>
-                        <SheetTitle>Menu Principale</SheetTitle>
-                    </SheetHeader>
-                      <nav className="flex flex-col gap-4 mt-8">
-                        {navLinks.map((link) => (
-                            <SheetClose asChild key={link.href}>
-                              <Link href={link.href} className="flex items-center gap-3 p-2 rounded-md text-lg hover:bg-white/20">
-                                <link.icon className="h-5 w-5" />
-                                {link.label}
-                              </Link>
-                            </SheetClose>
-                        ))}
-                    </nav>
-                </SheetContent>
-            </Sheet>
         </div>
-      </div>
     </header>
   );
 }

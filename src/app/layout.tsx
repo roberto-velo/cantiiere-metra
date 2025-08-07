@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { AppHeader } from "@/components/app-header";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
 
 export const metadata: Metadata = {
   title: "CantiereFlow",
@@ -28,10 +30,17 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <div className="min-h-screen w-full bg-background flex flex-col">
-          <AppHeader />
-          <main className="flex-1 flex flex-col">{children}</main>
-        </div>
+        <SidebarProvider>
+            <div className="min-h-screen w-full bg-muted/30 flex flex-col">
+              <AppSidebar />
+              <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+                <AppHeader />
+                <main className="flex-1 flex flex-col p-4 sm:p-0 sm:pr-4">
+                    {children}
+                </main>
+              </div>
+            </div>
+        </SidebarProvider>
         <Toaster />
       </body>
     </html>

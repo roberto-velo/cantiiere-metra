@@ -128,14 +128,14 @@ async function TasksList({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-primary">Attività</TableHead>
-                  <TableHead className="text-primary hidden md:table-cell">Cliente</TableHead>
-                  <TableHead className="text-primary hidden lg:table-cell">Tecnico</TableHead>
-                  <TableHead className="text-primary">Stato</TableHead>
-                  <TableHead className="text-primary hidden md:table-cell">Priorità</TableHead>
-                  <TableHead className="text-primary">Data e Ora</TableHead>
-                  <TableHead className="text-primary hidden lg:table-cell">Durata</TableHead>
-                  <TableHead className="text-right text-primary"></TableHead>
+                  <TableHead>Attività</TableHead>
+                  <TableHead className="hidden md:table-cell">Cliente</TableHead>
+                  <TableHead className="hidden lg:table-cell">Tecnico</TableHead>
+                  <TableHead>Stato</TableHead>
+                  <TableHead className="hidden md:table-cell">Priorità</TableHead>
+                  <TableHead>Data e Ora</TableHead>
+                  <TableHead className="hidden lg:table-cell">Durata</TableHead>
+                  <TableHead className="text-right"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -251,57 +251,45 @@ export default async function AttivitaPage({ searchParams }: { searchParams?: { 
   const clients = await localApi.getAllClients();
 
   return (
-    <div className="flex flex-col flex-1">
-      <header className="bg-muted/30 border-b p-4 sm:p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="space-y-1">
-            <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-              <ClipboardList className="h-6 w-6" /> Attività
-            </h1>
-            <p className="text-primary">
-              Crea, visualizza e gestisci le attività dei tecnici.
-            </p>
-          </div>
-          <Button asChild>
-            <Link href="/attivita/nuova">
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Nuova Attività
-            </Link>
-          </Button>
-        </div>
-      </header>
-      <main className="flex-1 p-4 sm:p-6 space-y-6">
-            <Tabs defaultValue={defaultView} className="w-full">
-              <div className="flex flex-col-reverse md:flex-row md:items-center justify-between gap-4">
-                  <TaskFilters />
-                  <TabsList className="self-start grid grid-cols-2 w-full md:w-auto">
-                      <TabsTrigger value="list"><List className="mr-2"/>Lista</TabsTrigger>
-                      <TabsTrigger value="calendar"><Calendar className="mr-2"/>Calendario</TabsTrigger>
-                  </TabsList>
-              </div>
-                <TabsContent value="list">
-                  
-                    <Suspense fallback={<div className="text-center p-8">Caricamento...</div>}>
-                        <TasksList 
-                          page={currentPage} 
-                          dateRange={dateRange}
-                          searchTerm={searchTerm}
-                          date={date}
-                        />
-                    </Suspense>
-                 
-                </TabsContent>
-                <TabsContent value="calendar">
-                   <Card>
-                    <CardContent className="p-0 sm:p-2 md:p-4">
-                         <Suspense fallback={<div className="text-center p-8">Caricamento...</div>}>
-                            <TaskCalendar tasks={allTasks} clients={clients} />
-                         </Suspense>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-            </Tabs>
-      </main>
+    <div className="flex flex-col flex-1 gap-4">
+        <Tabs defaultValue={defaultView} className="w-full">
+            <div className="flex items-center">
+                <TabsList className="self-start grid grid-cols-2 w-full md:w-auto">
+                    <TabsTrigger value="list"><List className="mr-2"/>Lista</TabsTrigger>
+                    <TabsTrigger value="calendar"><Calendar className="mr-2"/>Calendario</TabsTrigger>
+                </TabsList>
+                <div className="ml-auto flex items-center gap-2">
+                    <Button asChild size="sm">
+                        <Link href="/attivita/nuova">
+                        <PlusCircle className="h-4 w-4" />
+                        Nuova Attività
+                        </Link>
+                    </Button>
+                </div>
+            </div>
+            <div className="pt-4">
+                 <TaskFilters />
+            </div>
+            <TabsContent value="list">
+                <Suspense fallback={<div className="text-center p-8">Caricamento...</div>}>
+                    <TasksList 
+                        page={currentPage} 
+                        dateRange={dateRange}
+                        searchTerm={searchTerm}
+                        date={date}
+                    />
+                </Suspense>
+            </TabsContent>
+            <TabsContent value="calendar">
+                <Card>
+                <CardContent className="p-0 sm:p-2 md:p-4">
+                        <Suspense fallback={<div className="text-center p-8">Caricamento...</div>}>
+                        <TaskCalendar tasks={allTasks} clients={clients} />
+                        </Suspense>
+                </CardContent>
+                </Card>
+            </TabsContent>
+        </Tabs>
     </div>
   );
 }
