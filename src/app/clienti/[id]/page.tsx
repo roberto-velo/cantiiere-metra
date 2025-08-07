@@ -37,7 +37,7 @@ export default async function ClientDetailPage({ params, searchParams }: { param
     notFound();
   }
 
-  const backPath = searchParams.from || '/clienti';
+  const backPath = searchParams?.from || '/clienti';
 
   const clientTasks = await localApi.getTasksByClientId(client.id);
 

@@ -20,6 +20,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Client } from "@/lib/types";
 import jsPDF from "jspdf";
+import "jspdf-autotable";
 import { useState } from "react";
 import {
   DropdownMenu,
@@ -143,7 +144,7 @@ export function ClientActions({ client }: { client: Client }) {
         doc.setFont("helvetica", "bold");
         doc.text("Dettagli Cliente", margin, yPos);
         yPos += 8;
-        doc.autoTable({
+        (doc as any).autoTable({
             startY: yPos,
             head: [],
             body: [
@@ -175,7 +176,7 @@ export function ClientActions({ client }: { client: Client }) {
                 ["Tipo Trattamento", client.treatmentType],
             ].filter(row => row[1]); // Filter out empty values
 
-             doc.autoTable({
+             (doc as any).autoTable({
                 startY: yPos,
                 head: [],
                 body: poolData,
@@ -192,7 +193,7 @@ export function ClientActions({ client }: { client: Client }) {
             doc.setFont("helvetica", "bold");
             doc.text("Storico Lavorazioni", margin, yPos);
             yPos += 8;
-             doc.autoTable({
+             (doc as any).autoTable({
                 startY: yPos,
                 head: [['Data', 'Descrizione', 'Stato']],
                 body: tasks.map(t => [t.date, t.description, t.status]),
@@ -216,13 +217,13 @@ export function ClientActions({ client }: { client: Client }) {
             
             const imgWidth = 60;
             const imgHeight = 45;
-            const-gap = 5;
+            const gap = 5;
             let xPos = margin;
 
             for (let i = 0; i < photoDataUrls.length; i++) {
                 if (xPos + imgWidth > doc.internal.pageSize.width - margin) {
                     xPos = margin;
-                    yPos += imgHeight +-gap + 10; // 10 for description space
+                    yPos += imgHeight + gap + 10; // 10 for description space
                 }
                 checkPageBreak(imgHeight + 10);
                 
@@ -236,7 +237,7 @@ export function ClientActions({ client }: { client: Client }) {
                    doc.text("Immagine non caricata", xPos, yPos + (imgHeight / 2));
                 }
 
-                xPos += imgWidth +-gap;
+                xPos += imgWidth + gap;
             }
         }
 
@@ -355,5 +356,3 @@ export function ClientActions({ client }: { client: Client }) {
     </>
   );
 }
-
-    
