@@ -112,7 +112,10 @@ export default async function ClientiPage({ searchParams }: { searchParams?: { p
   return (
     <div className="flex flex-col flex-1 gap-4">
       <div className="flex items-center">
-        <h1 className="text-lg font-semibold md:text-2xl">Clienti</h1>
+        <h1 className="text-lg font-semibold md:text-2xl flex items-center gap-2">
+            <UsersRound />
+            Clienti
+        </h1>
         <div className="ml-auto flex items-center gap-2">
             <Button asChild size="sm">
                 <Link href="/clienti/nuovo">

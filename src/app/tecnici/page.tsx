@@ -108,7 +108,10 @@ export default async function TecniciPage({ searchParams }: { searchParams?: { p
   return (
     <div className="flex flex-col flex-1 gap-4">
        <div className="flex items-center">
-            <h1 className="text-lg font-semibold md:text-2xl">Tecnici</h1>
+            <h1 className="text-lg font-semibold md:text-2xl flex items-center gap-2">
+                <HardHat />
+                Tecnici
+            </h1>
             <div className="ml-auto flex items-center gap-2">
                 <Button asChild size="sm">
                     <Link href="/tecnici/nuovo">
