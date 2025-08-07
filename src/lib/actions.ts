@@ -14,6 +14,7 @@ const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
 const writeData = async (fileName: string, data: any) => {
     // This now calls our API endpoint to write data
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:9002';
+    // Use a relative path for the fetch call on the server side
     const url = new URL('/api/data', baseUrl);
     url.searchParams.set('file', fileName);
 

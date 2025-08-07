@@ -15,7 +15,11 @@ const fetchData = async (fileName: string) => {
     url.searchParams.set('file', fileName);
 
     try {
-        const response = await fetch(url.toString(), {
+        // Use a relative path for fetch on the server, and the full URL for client-side fetches.
+        // This is a more robust way to handle API calls in Next.js.
+        const fetchUrl = typeof window === 'undefined' ? new URL(`/api/data?file=${fileName}`, baseUrl) : url;
+
+        const response = await fetch(fetchUrl.toString(), {
             // Revalidate frequently to get fresh data, but cache for a short period
             // to avoid excessive requests during a single user interaction.
             next: { revalidate: 1 } 
