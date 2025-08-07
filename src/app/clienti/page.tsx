@@ -42,10 +42,10 @@ async function ClientsList({ page, searchTerm }: { page: number, searchTerm?: st
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Nome</TableHead>
-                <TableHead className="hidden sm:table-cell">Email</TableHead>
-                <TableHead className="hidden md:table-cell">Telefono</TableHead>
-                <TableHead className="text-right">Azioni</TableHead>
+                <TableHead className="text-primary">Nome</TableHead>
+                <TableHead className="hidden sm:table-cell text-primary">Email</TableHead>
+                <TableHead className="hidden md:table-cell text-primary">Telefono</TableHead>
+                <TableHead className="text-right text-primary">Azioni</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
