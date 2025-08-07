@@ -20,7 +20,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Client } from "@/lib/types";
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import { useState } from "react";
 import {
   DropdownMenu,
@@ -30,11 +29,13 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { MoreVertical } from "lucide-react";
 import { SheetHeader, SheetTitle } from "./ui/sheet";
+import localApi from "@/lib/data";
 
 
 // Helper function to convert image to data URL
 async function toDataURL(url: string): Promise<string> {
     try {
+        // For local images, we need to fetch them relative to the public folder
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
@@ -48,7 +49,7 @@ async function toDataURL(url: string): Promise<string> {
         });
     } catch (error) {
         console.error(`Error converting ${url} to data URL:`, error);
-        // Return a placeholder or the original URL if conversion fails
+        // Return a placeholder if conversion fails to avoid breaking the PDF generation
         return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
     }
 }
@@ -85,84 +86,162 @@ export function ClientActions({ client }: { client: Client }) {
   };
   
   const handleDownloadPdf = async () => {
-    const mainContent = document.getElementById('client-detail-page');
-    const actionsWrapper = document.getElementById('client-actions-wrapper');
-    
-    if (!mainContent) {
-        toast({
-            title: "Errore",
-            description: "Impossibile trovare il contenuto da esportare.",
-            variant: "destructive",
-        });
-        return;
-    }
-    
     setIsDownloading(true);
-
-    if (actionsWrapper) actionsWrapper.style.display = 'none';
-
-    // Convert local images to data URLs for html2canvas
-    const images = Array.from(mainContent.getElementsByTagName('img'));
-    const originalSrcs = images.map(img => img.src);
-    try {
-      const dataUrlPromises = images.map(img => toDataURL(img.src));
-      const dataUrls = await Promise.all(dataUrlPromises);
-      images.forEach((img, index) => {
-        img.src = dataUrls[index];
-      });
-    } catch (error) {
-       console.error("Error converting images to data URLs:", error);
-       toast({
-          title: "Errore PDF",
-          description: "Impossibile caricare le immagini per il PDF.",
-          variant: "destructive",
-      });
-       if (actionsWrapper) actionsWrapper.style.display = '';
-       setIsDownloading(false);
-       return;
-    }
-
+    const { toast } = await import("@/hooks/use-toast");
 
     try {
-        const canvas = await html2canvas(mainContent, {
-            scale: 3, 
-            useCORS: true, 
-            allowTaint: true,
-            logging: false,
+        const doc = new jsPDF();
+        const tasks = await localApi.getTasksByClientId(client.id);
+        const allPhotos = tasks.flatMap(t => t.photos);
+
+        let yPos = 20;
+        const pageHeight = doc.internal.pageSize.height;
+        const margin = 15;
+        const contentWidth = doc.internal.pageSize.width - margin * 2;
+
+        // --- Header ---
+        doc.setFontSize(22);
+        doc.setFont("helvetica", "bold");
+        doc.text(client.name, margin, yPos);
+        yPos += 8;
+        doc.setFontSize(11);
+        doc.setFont("helvetica", "normal");
+        doc.text(`Codice cliente: ${client.clientCode}`, margin, yPos);
+
+        // --- Footer ---
+        const addFooter = () => {
+            const pageCount = doc.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setTextColor(150);
+                doc.text(
+                    `Pagina ${i} di ${pageCount}`,
+                    doc.internal.pageSize.width / 2,
+                    pageHeight - 10,
+                    { align: "center" }
+                );
+                 doc.text(
+                    `Generato il: ${new Date().toLocaleDateString('it-IT')}`,
+                    margin,
+                    pageHeight - 10
+                );
+            }
+        };
+
+        const checkPageBreak = (spaceNeeded: number) => {
+            if (yPos + spaceNeeded > pageHeight - 20) { // 20 for footer margin
+                doc.addPage();
+                yPos = margin;
+            }
+        };
+
+        yPos += 15;
+
+        // --- Client Details ---
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text("Dettagli Cliente", margin, yPos);
+        yPos += 8;
+        doc.autoTable({
+            startY: yPos,
+            head: [],
+            body: [
+                ["Email", client.email],
+                ["Telefono", client.phone],
+                ["Indirizzo", client.address],
+            ],
+            theme: 'grid',
+            styles: {
+                font: 'helvetica',
+                fontSize: 10,
+            },
+            headStyles: { fontStyle: 'bold' },
         });
+        yPos = (doc as any).lastAutoTable.finalY + 15;
 
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF({
-            orientation: 'p',
-            unit: 'mm',
-            format: 'a4'
-        });
+        // --- Pool Info ---
+         if (client.poolType) {
+            checkPageBreak(30);
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text("Informazioni Piscina", margin, yPos);
+            yPos += 8;
+            const poolData = [
+                ["Tipo Piscina", client.poolType],
+                ["Dimensioni", client.poolDimensions],
+                ["Volume", client.poolVolume],
+                ["Tipo Filtro", client.filterType],
+                ["Tipo Trattamento", client.treatmentType],
+            ].filter(row => row[1]); // Filter out empty values
 
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        const canvasWidth = canvas.width;
-        const canvasHeight = canvas.height;
-        const ratio = canvasWidth / canvasHeight;
+             doc.autoTable({
+                startY: yPos,
+                head: [],
+                body: poolData,
+                theme: 'grid',
+                styles: { font: 'helvetica', fontSize: 10 },
+            });
+            yPos = (doc as any).lastAutoTable.finalY + 15;
+        }
 
-        // Add margins
-        const margin = 10;
-        const contentWidth = pdfWidth - (margin * 2);
-        const contentHeight = contentWidth / ratio;
-        
-        let heightLeft = contentHeight;
-        let position = 0;
-        
-        pdf.addImage(imgData, 'PNG', margin, position + margin, contentWidth, contentHeight);
-        heightLeft -= (pdfHeight - (margin * 2));
-
-        while (heightLeft > 0) {
-            position = -heightLeft;
-            pdf.addPage();
-            pdf.addImage(imgData, 'PNG', margin, position + margin, contentWidth, contentHeight);
-            heightLeft -= (pdfHeight - (margin * 2));
+        // --- Tasks History ---
+        if (tasks.length > 0) {
+            checkPageBreak(40);
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text("Storico Lavorazioni", margin, yPos);
+            yPos += 8;
+             doc.autoTable({
+                startY: yPos,
+                head: [['Data', 'Descrizione', 'Stato']],
+                body: tasks.map(t => [t.date, t.description, t.status]),
+                theme: 'striped',
+                headStyles: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
+            });
+            yPos = (doc as any).lastAutoTable.finalY + 15;
         }
         
-        pdf.save(`scheda-cliente-${client.name.replace(/\s/g, '_')}.pdf`);
+        // --- Photos ---
+        if (allPhotos.length > 0) {
+            checkPageBreak(70); // Check space for section title and at least one row of images
+            doc.addPage();
+            yPos = margin;
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text("Foto Allegati", margin, yPos);
+            yPos += 10;
+
+            const photoDataUrls = await Promise.all(allPhotos.map(p => toDataURL(p.url)));
+            
+            const imgWidth = 60;
+            const imgHeight = 45;
+            const-gap = 5;
+            let xPos = margin;
+
+            for (let i = 0; i < photoDataUrls.length; i++) {
+                if (xPos + imgWidth > doc.internal.pageSize.width - margin) {
+                    xPos = margin;
+                    yPos += imgHeight +-gap + 10; // 10 for description space
+                }
+                checkPageBreak(imgHeight + 10);
+                
+                try {
+                  doc.addImage(photoDataUrls[i], 'JPEG', xPos, yPos, imgWidth, imgHeight);
+                  doc.setFontSize(8);
+                  doc.setTextColor(80);
+                  doc.text(allPhotos[i].description || 'Nessuna descrizione', xPos, yPos + imgHeight + 4);
+                } catch (e) {
+                   console.error("Error adding image to PDF: ", e);
+                   doc.text("Immagine non caricata", xPos, yPos + (imgHeight / 2));
+                }
+
+                xPos += imgWidth +-gap;
+            }
+        }
+
+        addFooter();
+        doc.save(`scheda-cliente-${client.name.replace(/\s/g, '_')}.pdf`);
 
     } catch (error) {
          toast({
@@ -172,11 +251,6 @@ export function ClientActions({ client }: { client: Client }) {
         });
         console.error("Error generating PDF: ", error);
     } finally {
-        // Restore original image sources and button visibility
-        images.forEach((img, index) => {
-            img.src = originalSrcs[index];
-        });
-        if (actionsWrapper) actionsWrapper.style.display = '';
         setIsDownloading(false);
     }
   };
@@ -243,7 +317,7 @@ export function ClientActions({ client }: { client: Client }) {
                 <SheetHeader>
                    <SheetTitle className="sr-only">Azioni Cliente</SheetTitle>
                 </SheetHeader>
-                <DropdownMenuItem onSelect={handleDownloadPdf} disabled={isDownloading}>
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleDownloadPdf(); }} disabled={isDownloading}>
                   <Download className="mr-2 h-4 w-4" />
                   <span>{isDownloading ? 'Download...' : 'Scarica PDF'}</span>
                 </DropdownMenuItem>
@@ -281,3 +355,5 @@ export function ClientActions({ client }: { client: Client }) {
     </>
   );
 }
+
+    
