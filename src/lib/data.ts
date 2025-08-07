@@ -178,7 +178,8 @@ const localApi = {
         return {
             tasks: sortedTasks,
             technicians: techniciansData,
-            clients: clientsData
+            clients: clientsData,
+            reminders: remindersData,
         }
     }
 };

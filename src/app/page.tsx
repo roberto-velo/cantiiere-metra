@@ -30,6 +30,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge";
+import { format, formatDistanceToNow, parseISO } from "date-fns";
+import { it } from "date-fns/locale";
 
 
 const statusBadge: Record<TaskStatus, string> = {
@@ -52,7 +54,7 @@ const formatDuration = (totalSeconds: number = 0) => {
 
 export default async function DashboardPage() {
   
-  const { tasks, technicians, clients } = await localApi.getDashboardData();
+  const { tasks, technicians, clients, reminders } = await localApi.getDashboardData();
 
   const scheduledTasks = tasks.filter(
     (task) => task.status === "Pianificato"
@@ -69,6 +71,11 @@ export default async function DashboardPage() {
     { title: "Clienti Attivi", value: totalClients, icon: UsersRound, note: "Totale clienti registrati", noteColor: "text-primary" },
     { title: "Tecnici Attivi", value: activeTechnicians, icon: HardHat, note: "Disponibili per nuove attività", noteColor: "text-primary" },
   ];
+
+  const sortedReminders = reminders
+    .filter(r => !r.isCompleted)
+    .sort((a,b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
+    .slice(0, 5);
 
   return (
     <div className="flex flex-col flex-1 gap-4 sm:gap-8">
@@ -171,29 +178,24 @@ export default async function DashboardPage() {
                   </Link>
                 </Button>
               </CardHeader>
-              <CardContent className="grid gap-8">
-                 <div className="flex items-center gap-4">
-                  <Bell className="h-6 w-6" />
-                  <div className="grid gap-1">
-                    <p className="text-sm font-medium">
-                      Certificazione Gas Mario Rossi
-                    </p>
-                    <p className="text-sm text-primary">
-                      Scade tra 2 settimane
-                    </p>
-                  </div>
-                </div>
-                 <div className="flex items-center gap-4">
-                  <Bell className="h-6 w-6" />
-                  <div className="grid gap-1">
-                    <p className="text-sm font-medium">
-                      Manutenzione programmata Piscina Verdi
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Pianificata per domani
-                    </p>
-                  </div>
-                </div>
+              <CardContent className="grid gap-6">
+                {sortedReminders.length > 0 ? (
+                    sortedReminders.map(reminder => (
+                        <div key={reminder.id} className="flex items-center gap-4">
+                            <Bell className="h-6 w-6 text-primary" />
+                            <div className="grid gap-1">
+                                <p className="text-sm font-medium">
+                                    {reminder.title}
+                                </p>
+                                <p className="text-sm text-primary">
+                                    Scade {formatDistanceToNow(parseISO(reminder.dueDate), { locale: it, addSuffix: true })}
+                                </p>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <p className="text-sm text-muted-foreground text-center">Nessun promemoria attivo.</p>
+                )}
               </CardContent>
             </Card>
           </div>
