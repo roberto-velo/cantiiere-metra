@@ -9,7 +9,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9002';
 
 async function saveData<T>(file: 'clients' | 'tasks' | 'technicians' | 'reminders', data: T[]): Promise<{success: boolean, message?: string}> {
     try {
-        const url = `${API_BASE_URL}/api/data?file=${file}`;
+        const url = `${API_BASE_URL}/api/data?file=${file}.json`;
         const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

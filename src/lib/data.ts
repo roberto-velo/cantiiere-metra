@@ -6,7 +6,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9002';
 
 async function fetchData<T>(file: 'clients' | 'tasks' | 'technicians' | 'reminders'): Promise<T[]> {
     try {
-        const url = `${API_BASE_URL}/api/data?file=${file}`;
+        const url = `${API_BASE_URL}/api/data?file=${file}.json`;
         const response = await fetch(url, { cache: 'no-store' });
         if (!response.ok) {
             const error = await response.json();
@@ -160,14 +160,14 @@ const localApi = {
     // Dashboard
     getDashboardData: async () => {
         const [tasks, technicians, clients, reminders] = await Promise.all([
-            localApi.getTasks({limit: 1000}),
+            localApi.getTasks({limit: 1000}).then(res => res.tasks),
             localApi.getAllTechnicians(),
             localApi.getAllClients(),
             localApi.getReminders(),
         ]);
 
         return {
-            tasks: tasks.tasks,
+            tasks,
             technicians,
             clients,
             reminders,
