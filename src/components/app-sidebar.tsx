@@ -33,7 +33,12 @@ export function AppSidebar() {
   ];
 
   const isActive = (href: string) => {
-    return pathname === href;
+    // Make dashboard link active only on exact match
+    if (href === "/") {
+        return pathname === href;
+    }
+    // For other links, check if the pathname starts with the href
+    return pathname.startsWith(href);
   };
 
   return (
@@ -57,18 +62,19 @@ export function AppSidebar() {
             <SidebarMenu>
                 {navLinks.map((link) => (
                     <SidebarMenuItem key={link.href}>
-                       <Link href={link.href} legacyBehavior passHref>
-                            <SidebarMenuButton
-                                isActive={isActive(link.href)}
-                                tooltip={{
-                                    children: link.label,
-                                    side: "right",
-                                }}
-                            >
+                        <SidebarMenuButton
+                            asChild
+                            isActive={isActive(link.href)}
+                            tooltip={{
+                                children: link.label,
+                                side: "right",
+                            }}
+                        >
+                            <Link href={link.href}>
                                 <link.icon />
                                 <span>{link.label}</span>
-                            </SidebarMenuButton>
-                        </Link>
+                            </Link>
+                        </SidebarMenuButton>
                     </SidebarMenuItem>
                 ))}
             </SidebarMenu>
