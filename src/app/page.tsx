@@ -158,9 +158,9 @@ export default async function DashboardPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Promemoria</CardTitle>
-                 <CardDescription>
+                 <p className="text-sm text-primary">
                     Scadenze e notifiche importanti.
-                  </CardDescription>
+                  </p>
               </CardHeader>
               <CardContent className="grid gap-8">
                  <div className="flex items-center gap-4">
