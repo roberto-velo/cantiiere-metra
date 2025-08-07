@@ -6,39 +6,47 @@ import path from 'path';
 import { revalidatePath } from 'next/cache';
 import type { Client, Task, TaskStatus, Technician, Photo, Document, Reminder } from './types';
 import { randomUUID } from 'crypto';
+import localApi from './data';
 
-const dataDir = path.join(process.cwd(), 'src', 'lib', 'db');
 const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
 
-const readData = (fileName: string) => {
-    const filePath = path.join(dataDir, fileName);
-    try {
-        const fileContent = fs.readFileSync(filePath, 'utf-8');
-        return JSON.parse(fileContent);
-    } catch (error) {
-        if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-            console.log(`File not found: ${fileName}. Returning empty array.`);
-            return [];
-        }
-        throw error;
-    }
-}
 
-const writeData = (fileName: string, data: any) => {
-    const filePath = path.join(dataDir, fileName);
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+const writeData = async (fileName: string, data: any) => {
+    // This now calls our API endpoint to write data
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:9002';
+    const url = new URL('/api/data', baseUrl);
+    url.searchParams.set('file', fileName);
+
+    const response = await fetch(url.toString(), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+        const errorBody = await response.text();
+        console.error(`Failed to write data for ${fileName}:`, errorBody);
+        throw new Error(`API error: Failed to write data for ${fileName}.`);
+    }
+
+    const result = await response.json();
+    if (!result.success) {
+         throw new Error(`API error: Failed to write data for ${fileName}.`);
+    }
 }
 
 // --- Client Actions ---
 export async function addClientAction(clientData: Omit<Client, 'id'>) {
     try {
-        const clients = readData('clients.json');
+        const clients = await localApi.getAllClients();
         const newClient: Client = {
             id: String(Date.now()),
             ...clientData
         };
         const updatedClients = [...clients, newClient];
-        writeData('clients.json', updatedClients);
+        await writeData('clients.json', updatedClients);
         revalidatePath('/clienti');
         return { success: true, client: newClient };
     } catch (error) {
@@ -49,14 +57,14 @@ export async function addClientAction(clientData: Omit<Client, 'id'>) {
 
 export async function updateClientAction(id: string, clientData: Partial<Omit<Client, 'id'>>) {
     try {
-        const clients = readData('clients.json');
+        const clients = await localApi.getAllClients();
         const clientIndex = clients.findIndex((c: Client) => c.id === id);
         if (clientIndex === -1) {
             return { success: false, message: 'Client not found.' };
         }
         const updatedClient = { ...clients[clientIndex], ...clientData };
         clients[clientIndex] = updatedClient;
-        writeData('clients.json', clients);
+        await writeData('clients.json', clients);
         revalidatePath('/clienti');
         revalidatePath(`/clienti/${id}`);
         return { success: true, client: updatedClient };
@@ -68,12 +76,12 @@ export async function updateClientAction(id: string, clientData: Partial<Omit<Cl
 
 export async function deleteClientAction(id: string) {
     try {
-        const clients = readData('clients.json');
+        const clients = await localApi.getAllClients();
         const updatedClients = clients.filter((c: Client) => c.id !== id);
         if (clients.length === updatedClients.length) {
              return { success: false, message: 'Client not found.' };
         }
-        writeData('clients.json', updatedClients);
+        await writeData('clients.json', updatedClients);
         revalidatePath('/clienti');
         return { success: true };
     } catch (error) {
@@ -86,13 +94,13 @@ export async function deleteClientAction(id: string) {
 // --- Technician Actions ---
 export async function addTechnicianAction(technicianData: Omit<Technician, 'id'>) {
     try {
-        const technicians = readData('technicians.json');
+        const technicians = await localApi.getAllTechnicians();
         const newTechnician: Technician = {
             id: String(Date.now()),
             ...technicianData
         };
         const updatedTechnicians = [...technicians, newTechnician];
-        writeData('technicians.json', updatedTechnicians);
+        await writeData('technicians.json', updatedTechnicians);
         revalidatePath('/tecnici');
         return { success: true, technician: newTechnician };
     } catch (error) {
@@ -103,14 +111,14 @@ export async function addTechnicianAction(technicianData: Omit<Technician, 'id'>
 
 export async function updateTechnicianAction(id: string, technicianData: Partial<Omit<Technician, 'id'>>) {
     try {
-        const technicians = readData('technicians.json');
+        const technicians = await localApi.getAllTechnicians();
         const technicianIndex = technicians.findIndex((t: Technician) => t.id === id);
         if (technicianIndex === -1) {
             return { success: false, message: 'Technician not found.' };
         }
         const updatedTechnician = { ...technicians[technicianIndex], ...technicianData };
         technicians[technicianIndex] = updatedTechnician;
-        writeData('technicians.json', technicians);
+        await writeData('technicians.json', technicians);
         revalidatePath('/tecnici');
         revalidatePath(`/tecnici/${id}`);
         return { success: true, technician: updatedTechnician };
@@ -122,12 +130,12 @@ export async function updateTechnicianAction(id: string, technicianData: Partial
 
 export async function deleteTechnicianAction(id: string) {
     try {
-        const technicians = readData('technicians.json');
+        const technicians = await localApi.getAllTechnicians();
         const updatedTechnicians = technicians.filter((t: Technician) => t.id !== id);
         if (technicians.length === updatedTechnicians.length) {
             return { success: false, message: 'Technician not found.' };
         }
-        writeData('technicians.json', updatedTechnicians);
+        await writeData('technicians.json', updatedTechnicians);
         revalidatePath('/tecnici');
         return { success: true };
     } catch (error) {
@@ -139,7 +147,7 @@ export async function deleteTechnicianAction(id: string) {
 // --- Task Actions ---
 export async function addTaskAction(taskData: Omit<Task, 'id' | 'photos' | 'documents'> & { photos?: any, documents?: any }) {
     try {
-        const tasks = readData('tasks.json');
+        const { tasks } = await localApi.getTasks({ limit: 9999 });
         const newTask: Task = {
             id: String(Date.now()),
             ...taskData,
@@ -148,7 +156,7 @@ export async function addTaskAction(taskData: Omit<Task, 'id' | 'photos' | 'docu
             duration: 0,
         };
         const updatedTasks = [...tasks, newTask];
-        writeData('tasks.json', updatedTasks);
+        await writeData('tasks.json', updatedTasks);
         revalidatePath('/attivita');
         return { success: true, task: newTask };
     } catch (error) {
@@ -159,13 +167,13 @@ export async function addTaskAction(taskData: Omit<Task, 'id' | 'photos' | 'docu
 
 export async function updateTaskStatusAction(taskId: string, status: TaskStatus) {
     try {
-        const tasks = readData('tasks.json');
+        const { tasks } = await localApi.getTasks({ limit: 9999 });
         const taskIndex = tasks.findIndex((t: Task) => t.id === taskId);
         if (taskIndex === -1) {
             return { success: false, message: 'Task not found.' };
         }
         tasks[taskIndex].status = status;
-        writeData('tasks.json', tasks);
+        await writeData('tasks.json', tasks);
         revalidatePath('/attivita');
         revalidatePath(`/attivita/${taskId}`);
         return { success: true, task: tasks[taskIndex] };
@@ -177,14 +185,14 @@ export async function updateTaskStatusAction(taskId: string, status: TaskStatus)
 
 export async function updateTaskDurationAction(taskId: string, duration: number) {
      try {
-        const tasks = readData('tasks.json');
+        const { tasks } = await localApi.getTasks({ limit: 9999 });
         const taskIndex = tasks.findIndex((t: Task) => t.id === taskId);
         if (taskIndex === -1) {
             return { success: false, message: 'Task not found.' };
         }
         tasks[taskIndex].duration = duration;
         tasks[taskIndex].status = 'Completato';
-        writeData('tasks.json', tasks);
+        await writeData('tasks.json', tasks);
         revalidatePath('/attivita');
         revalidatePath(`/attivita/${taskId}`);
         return { success: true, task: tasks[taskIndex] };
@@ -197,12 +205,12 @@ export async function updateTaskDurationAction(taskId: string, duration: number)
 
 export async function deleteTaskAction(id: string) {
     try {
-        const tasks = readData('tasks.json');
+        const { tasks } = await localApi.getTasks({ limit: 9999 });
         const updatedTasks = tasks.filter((t: Task) => t.id !== id);
         if (tasks.length === updatedTasks.length) {
             return { success: false, message: 'Task not found.' };
         }
-        writeData('tasks.json', updatedTasks);
+        await writeData('tasks.json', updatedTasks);
         revalidatePath('/attivita');
         return { success: true };
     } catch (error) {
@@ -216,7 +224,7 @@ export async function addAttachmentToTaskAction(
     { taskId, attachment, type }: { taskId: string; attachment: Omit<Photo, 'id'> | Omit<Document, 'id'>; type: 'photo' | 'document' }
 ) {
     try {
-        const tasks = readData('tasks.json');
+        const { tasks } = await localApi.getTasks({ limit: 9999 });
         const taskIndex = tasks.findIndex((t: Task) => t.id === taskId);
         if (taskIndex === -1) {
             return { success: false, message: 'Task not found.' };
@@ -260,7 +268,7 @@ export async function addAttachmentToTaskAction(
             tasks[taskIndex].documents.push(newAttachment as Document);
         }
 
-        writeData('tasks.json', tasks);
+        await writeData('tasks.json', tasks);
         revalidatePath(`/attivita/${taskId}`);
         revalidatePath(`/clienti`); // To refresh client attachments too
         return { success: true, attachment: newAttachment };
@@ -273,7 +281,7 @@ export async function addAttachmentToTaskAction(
 
 export async function deleteAttachmentAction({ taskId, attachmentId, type }: { taskId: string, attachmentId: string, type: 'photo' | 'document' }) {
     try {
-        const tasks: Task[] = readData('tasks.json');
+        const { tasks } = await localApi.getTasks({ limit: 9999 });
         const taskIndex = tasks.findIndex(t => t.id === taskId);
         if (taskIndex === -1) {
             return { success: false, message: "Attività non trovata." };
@@ -285,7 +293,7 @@ export async function deleteAttachmentAction({ taskId, attachmentId, type }: { t
             tasks[taskIndex].documents = tasks[taskIndex].documents.filter(d => d.id !== attachmentId);
         }
         
-        writeData('tasks.json', tasks);
+        await writeData('tasks.json', tasks);
         revalidatePath(`/attivita/${taskId}`);
         revalidatePath(`/clienti`);
         return { success: true, message: "Allegato eliminato con successo." };
@@ -296,7 +304,7 @@ export async function deleteAttachmentAction({ taskId, attachmentId, type }: { t
 
 export async function updateAttachmentAction({ taskId, attachmentId, type, data }: { taskId: string, attachmentId: string, type: 'photo' | 'document', data: { name?: string, description?: string } }) {
      try {
-        const tasks: Task[] = readData('tasks.json');
+        const { tasks } = await localApi.getTasks({ limit: 9999 });
         const taskIndex = tasks.findIndex(t => t.id === taskId);
         if (taskIndex === -1) {
             return { success: false, message: "Attività non trovata." };
@@ -314,7 +322,7 @@ export async function updateAttachmentAction({ taskId, attachmentId, type, data 
             }
         }
         
-        writeData('tasks.json', tasks);
+        await writeData('tasks.json', tasks);
         revalidatePath(`/attivita/${taskId}`);
         revalidatePath(`/clienti`);
         return { success: true, message: "Allegato aggiornato con successo." };
@@ -327,14 +335,14 @@ export async function updateAttachmentAction({ taskId, attachmentId, type, data 
 // --- Reminder Actions ---
 export async function addReminderAction(reminderData: Omit<Reminder, 'id' | 'isCompleted'>) {
     try {
-        const reminders = readData('reminders.json');
+        const reminders = await localApi.getReminders();
         const newReminder: Reminder = {
             id: String(Date.now()),
             isCompleted: false,
             ...reminderData
         };
         const updatedReminders = [...reminders, newReminder];
-        writeData('reminders.json', updatedReminders);
+        await writeData('reminders.json', updatedReminders);
         revalidatePath('/');
         return { success: true, reminder: newReminder };
     } catch (error) {
@@ -345,12 +353,12 @@ export async function addReminderAction(reminderData: Omit<Reminder, 'id' | 'isC
 
 export async function deleteReminderAction(id: string) {
     try {
-        const reminders = readData('reminders.json');
+        const reminders = await localApi.getReminders();
         const updatedReminders = reminders.filter((r: Reminder) => r.id !== id);
         if (reminders.length === updatedReminders.length) {
             return { success: false, message: 'Reminder not found.' };
         }
-        writeData('reminders.json', updatedReminders);
+        await writeData('reminders.json', updatedReminders);
         revalidatePath('/');
         return { success: true };
     } catch (error) {

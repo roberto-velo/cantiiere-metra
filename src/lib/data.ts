@@ -1,25 +1,44 @@
 
-
 import type { Client, Technician, Task, TaskStatus, Reminder } from './types';
 import path from 'path';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, parseISO, isValid, startOfYear, endOfYear, startOfDay, endOfDay } from 'date-fns';
 
+// This is the main data fetching logic. It now uses a custom API
+// to fetch data, making it compatible with production environments
+// where direct file system access is restricted.
 
-// Using require for JSON files is one way to read them at build time on the server.
-// This avoids using the 'fs' module in code that might be bundled for the client.
-import clientsData from './db/clients.json';
-import techniciansData from './db/technicians.json';
-import tasksData from './db/tasks.json';
-import remindersData from './db/reminders.json';
+// Helper function to fetch data from our API
+const fetchData = async (fileName: string) => {
+    // Determine the base URL based on the environment
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:9002';
+    const url = new URL('/api/data', baseUrl);
+    url.searchParams.set('file', fileName);
 
-// --- API Simulation using in-memory data ---
-// This file is now ONLY for READING data. All mutation (write) logic
-// has been moved to server actions in /lib/actions.ts to fix the 'fs' module error.
+    try {
+        const response = await fetch(url.toString(), {
+            // Revalidate frequently to get fresh data, but cache for a short period
+            // to avoid excessive requests during a single user interaction.
+            next: { revalidate: 1 } 
+        });
+
+        if (!response.ok) {
+            console.error(`Failed to fetch ${fileName}: ${response.statusText}`);
+            return [];
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error(`Network or fetch error for ${fileName}:`, error);
+        // In case of a complete fetch failure, return an empty array to prevent crashes
+        return [];
+    }
+};
+
 
 const localApi = {
     // Clients
     getClients: async ({ page = 1, limit = 10, searchTerm }: { page?: number; limit?: number, searchTerm?: string }) => {
-        let filteredClients: Client[] = JSON.parse(JSON.stringify(clientsData));
+        let filteredClients: Client[] = await fetchData('clients.json');
 
         if (searchTerm) {
             const lowercasedTerm = searchTerm.toLowerCase();
@@ -36,15 +55,16 @@ const localApi = {
         };
     },
     getAllClients: async (): Promise<Client[]> => {
-        return JSON.parse(JSON.stringify(clientsData));
+        return fetchData('clients.json');
     },
     getClient: async (id: string) => {
-        return clientsData.find(c => c.id === id) || null;
+        const clients: Client[] = await fetchData('clients.json');
+        return clients.find(c => c.id === id) || null;
     },
     
     // Technicians
     getTechnicians: async ({ page = 1, limit = 10, searchTerm }: { page?: number; limit?: number; searchTerm?: string }) => {
-        let filteredTechnicians: Technician[] = JSON.parse(JSON.stringify(techniciansData));
+        let filteredTechnicians: Technician[] = await fetchData('technicians.json');
 
         if (searchTerm) {
             const lowercasedTerm = searchTerm.toLowerCase();
@@ -62,13 +82,15 @@ const localApi = {
         };
     },
     getAllTechnicians: async (): Promise<Technician[]> => {
-        return JSON.parse(JSON.stringify(techniciansData));
+        return fetchData('technicians.json');
     },
     getTechnician: async (id: string) => {
-        return techniciansData.find(t => t.id === id) || null;
+        const technicians: Technician[] = await fetchData('technicians.json');
+        return technicians.find(t => t.id === id) || null;
     },
     getTechniciansByIds: async (ids: string[]) => {
-        return techniciansData.filter(t => ids.includes(t.id));
+        const technicians: Technician[] = await fetchData('technicians.json');
+        return technicians.filter(t => ids.includes(t.id));
     },
 
     // Tasks
@@ -76,7 +98,7 @@ const localApi = {
         { page = 1, limit = 10, searchTerm, status, dateRange, date }: 
         { page?: number; limit?: number; searchTerm?: string; status?: TaskStatus; dateRange?: string, date?: string }
     ) => {
-        let filteredTasks: Task[] = JSON.parse(JSON.stringify(tasksData));
+        let filteredTasks: Task[] = await fetchData('tasks.json');
         const clients = await localApi.getAllClients();
         const technicians = await localApi.getAllTechnicians();
 
@@ -153,22 +175,32 @@ const localApi = {
         };
     },
     getTask: async (id: string) => {
-        return tasksData.find(t => t.id === id) || null;
+        const tasks: Task[] = await fetchData('tasks.json');
+        return tasks.find(t => t.id === id) || null;
     },
     getTasksByClientId: async (clientId: string) => {
-        return tasksData.filter(t => t.clientId === clientId);
+        const tasks: Task[] = await fetchData('tasks.json');
+        return tasks.filter(t => t.clientId === clientId);
     },
     getTasksByTechnicianId: async (technicianId: string) => {
-        return tasksData.filter(t => t.technicianIds.includes(technicianId));
+        const tasks: Task[] = await fetchData('tasks.json');
+        return tasks.filter(t => t.technicianIds.includes(technicianId));
     },
     
     // Reminders
     getReminders: async (): Promise<Reminder[]> => {
-        return JSON.parse(JSON.stringify(remindersData));
+        return fetchData('reminders.json');
     },
 
     // Dashboard
     getDashboardData: async () => {
+        const [tasksData, techniciansData, clientsData, remindersData] = await Promise.all([
+            fetchData('tasks.json'),
+            fetchData('technicians.json'),
+            fetchData('clients.json'),
+            fetchData('reminders.json')
+        ]);
+
         const sortedTasks = [...tasksData].sort((a,b) => {
              const dateA = new Date(`${a.date}T${a.time}`).getTime();
             const dateB = new Date(`${b.date}T${b.time}`).getTime();
