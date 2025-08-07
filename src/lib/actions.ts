@@ -236,7 +236,10 @@ export async function addAttachmentToTaskAction(
         
         const [, mimeType, base64Data] = matches;
         const extension = mimeType.split('/').pop() || 'tmp';
-        const fileName = `${randomUUID()}.${extension}`;
+        const fileId = randomUUID();
+        const originalName = (attachment as Document).name || 'file';
+        const safeOriginalName = originalName.replace(/[^a-zA-Z0-9-_\.]/g, '_');
+        const fileName = `${fileId}.${extension}`;
         const filePath = path.join(uploadsDir, fileName);
         
         const fileBuffer = Buffer.from(base64Data, 'base64');
@@ -246,7 +249,7 @@ export async function addAttachmentToTaskAction(
 
         const newAttachment = {
             id: String(Date.now()),
-            name: type === 'document' ? (attachment as Document).name : fileName,
+            name: type === 'document' ? safeOriginalName : fileName,
             description: type === 'photo' ? (attachment as Photo).description : '',
             url: publicUrl,
         };
@@ -259,6 +262,7 @@ export async function addAttachmentToTaskAction(
 
         writeData('tasks.json', tasks);
         revalidatePath(`/attivita/${taskId}`);
+        revalidatePath(`/clienti`); // To refresh client attachments too
         return { success: true, attachment: newAttachment };
 
     } catch (error) {
@@ -283,6 +287,7 @@ export async function deleteAttachmentAction({ taskId, attachmentId, type }: { t
         
         writeData('tasks.json', tasks);
         revalidatePath(`/attivita/${taskId}`);
+        revalidatePath(`/clienti`);
         return { success: true, message: "Allegato eliminato con successo." };
     } catch (error) {
         return { success: false, message: "Errore durante l'eliminazione dell'allegato." };
@@ -311,6 +316,7 @@ export async function updateAttachmentAction({ taskId, attachmentId, type, data 
         
         writeData('tasks.json', tasks);
         revalidatePath(`/attivita/${taskId}`);
+        revalidatePath(`/clienti`);
         return { success: true, message: "Allegato aggiornato con successo." };
     } catch (error) {
         return { success: false, message: "Errore durante l'aggiornamento dell'allegato." };

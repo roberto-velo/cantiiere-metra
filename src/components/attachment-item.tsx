@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -74,7 +73,7 @@ export function AttachmentItem({ type, item, taskId }: AttachmentItemProps) {
     return (
       <div className="space-y-2">
         <div className="aspect-square w-full overflow-hidden rounded-md relative group">
-          <Image src={photo.url} alt={photo.description} fill className="object-cover" data-ai-hint="construction site" />
+          <img src={photo.url} alt={photo.description} className="w-full h-full object-cover" data-ai-hint="construction site" />
           <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                 <DialogTrigger asChild>
