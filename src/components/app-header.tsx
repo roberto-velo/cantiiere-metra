@@ -9,7 +9,6 @@ import {
   HardHat,
   UsersRound,
   Home,
-  Briefcase,
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "./ui/button";
@@ -53,8 +52,13 @@ export function AppHeader() {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-6">
            <Link href="/" className="flex items-center gap-2 font-bold text-lg text-primary">
-                <Briefcase className="h-6 w-6" />
-                <span>CantiereFlow</span>
+                <Image 
+                    src="/metra-logo.png" 
+                    alt="CantiereFlow Logo" 
+                    width={180} 
+                    height={45}
+                    priority
+                />
             </Link>
           <nav className="hidden md:flex items-center gap-4">
             {navLinks.map((link) => (

@@ -8,27 +8,27 @@ body {
 
 @layer base {
   :root {
-    --background: 220 20% 98%;
+    --background: 220 20% 98%; /* Light almost white-blue */
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 195 90% 40%;
+    --primary: 120 60% 35%; /* Vibrant Green */
     --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 195 90% 40%; /* Professional Blue */
+    --secondary-foreground: 0 0% 100%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 142 90% 60%;
+    --accent: 142 90% 60%; /* Vibrant Green Accent */
     --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 195 90% 40%;
-    --chart-1: 195 90% 40%;
-    --chart-2: 142 90% 60%;
+    --ring: 120 60% 35%; /* Vibrant Green */
+    --chart-1: 120 60% 35%;
+    --chart-2: 195 90% 40%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
@@ -52,9 +52,9 @@ body {
     --card-foreground: 210 20% 98%;
     --popover: 220 20% 7%;
     --popover-foreground: 210 20% 98%;
-    --primary: 195 90% 45%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 220 20% 15%;
+    --primary: 120 60% 40%; /* Vibrant Green */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 195 90% 45%; /* Professional Blue */
     --secondary-foreground: 210 20% 98%;
     --muted: 220 20% 15%;
     --muted-foreground: 215 20.2% 65.1%;
@@ -64,9 +64,9 @@ body {
     --destructive-foreground: 0 0% 98%;
     --border: 220 20% 20%;
     --input: 220 20% 20%;
-    --ring: 195 90% 45%;
-    --chart-1: 195 90% 45%;
-    --chart-2: 142 90% 65%;
+    --ring: 120 60% 40%;
+    --chart-1: 120 60% 40%;
+    --chart-2: 195 90% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
