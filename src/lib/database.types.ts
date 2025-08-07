@@ -57,42 +57,6 @@ export type Database = {
         }
         Relationships: []
       }
-      reminders: {
-        Row: {
-          created_at: string
-          description: string | null
-          dueDate: string
-          dueTime: string | null
-          id: number
-          isCompleted: boolean
-          relatedId: string | null
-          relatedTo: string
-          title: string
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          dueDate: string
-          dueTime?: string | null
-          id?: number
-          isCompleted?: boolean
-          relatedId?: string | null
-          relatedTo: string
-          title: string
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          dueDate?: string
-          dueTime?: string | null
-          id?: number
-          isCompleted?: boolean
-          relatedId?: string | null
-          relatedTo?: string
-          title?: string
-        }
-        Relationships: []
-      }
       tasks: {
         Row: {
           clientId: number

@@ -1,5 +1,5 @@
 
-import type { Client, Technician, Task, TaskStatus, Reminder } from './types';
+import type { Client, Technician, Task, TaskStatus } from './types';
 import { supabase } from './supabase';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, parseISO, isValid, startOfYear, endOfYear, startOfDay, endOfDay } from 'date-fns';
 
@@ -178,31 +178,19 @@ const localApi = {
         }
         return data as Task[];
     },
-    
-    // Reminders
-    getReminders: async (): Promise<Reminder[]> => {
-        const { data, error } = await supabase.from('reminders').select('*');
-        if (error) {
-            console.error('Error fetching reminders:', error);
-            return [];
-        }
-        return data as Reminder[];
-    },
 
     // Dashboard
     getDashboardData: async () => {
-        const [tasks, technicians, clients, reminders] = await Promise.all([
+        const [tasks, technicians, clients] = await Promise.all([
             localApi.getTasks({limit: 1000}),
             localApi.getAllTechnicians(),
             localApi.getAllClients(),
-            localApi.getReminders()
         ]);
 
         return {
             tasks: tasks.tasks,
             technicians,
             clients,
-            reminders,
         }
     }
 };

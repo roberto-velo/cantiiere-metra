@@ -68,15 +68,4 @@ export type Task = {
   duration?: number; // Duration in seconds
 };
 
-export type Reminder = {
-  id: number;
-  title: string;
-  description?: string;
-  dueDate: string;
-  dueTime?: string;
-  relatedTo: "client" | "technician" | "none";
-  relatedId?: string;
-  isCompleted: boolean;
-};
-
 export type Attachment = Photo | Document;

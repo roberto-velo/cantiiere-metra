@@ -9,7 +9,7 @@ async function getHandler(request: Request) {
     const { searchParams } = new URL(request.url);
     const file = searchParams.get('file');
 
-    if (!file || !['clients.json', 'tasks.json', 'technicians.json', 'reminders.json'].includes(file)) {
+    if (!file || !['clients.json', 'tasks.json', 'technicians.json'].includes(file)) {
         return NextResponse.json({ message: 'Invalid file specified' }, { status: 400 });
     }
 
@@ -33,7 +33,7 @@ async function postHandler(request: Request) {
     const { searchParams } = new URL(request.url);
     const file = searchParams.get('file');
 
-     if (!file || !['clients.json', 'tasks.json', 'technicians.json', 'reminders.json'].includes(file)) {
+     if (!file || !['clients.json', 'tasks.json', 'technicians.json'].includes(file)) {
         return NextResponse.json({ message: 'Invalid file specified' }, { status: 400 });
     }
     

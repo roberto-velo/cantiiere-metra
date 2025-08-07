@@ -27,7 +27,6 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge";
-import { ReminderItem } from "@/components/reminder-item";
 
 
 const statusBadge: Record<TaskStatus, string> = {
@@ -50,7 +49,7 @@ const formatDuration = (totalSeconds: number = 0) => {
 
 export default async function DashboardPage() {
   
-  const { tasks, technicians, clients, reminders } = await localApi.getDashboardData();
+  const { tasks, technicians, clients } = await localApi.getDashboardData();
 
   const scheduledTasks = tasks.filter(
     (task) => task.status === "Pianificato"
@@ -67,11 +66,6 @@ export default async function DashboardPage() {
     { title: "Clienti Attivi", value: totalClients, icon: UsersRound, note: "Totale clienti registrati", noteColor: "text-primary", iconColor: "text-orange-500" },
     { title: "Tecnici Attivi", value: activeTechnicians, icon: HardHat, note: "Disponibili per nuove attività", noteColor: "text-primary", iconColor: "text-yellow-500" },
   ];
-
-  const sortedReminders = reminders
-    .filter(r => !r.isCompleted)
-    .sort((a,b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
-    .slice(0, 5);
 
   return (
     <div className="flex flex-col flex-1 gap-4 sm:gap-8">
@@ -97,7 +91,7 @@ export default async function DashboardPage() {
       </div>
 
        <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
-            <Card className="xl:col-span-2">
+            <Card className="xl:col-span-3">
               <CardHeader className="flex flex-row items-center">
                 <div className="grid gap-2">
                   <CardTitle>Attività Recenti</CardTitle>
@@ -154,31 +148,6 @@ export default async function DashboardPage() {
                     )}
                   </TableBody>
                 </Table>
-              </CardContent>
-            </Card>
-            <Card>
-               <CardHeader className="flex flex-row items-center">
-                <div className="grid gap-2">
-                  <CardTitle>Promemoria</CardTitle>
-                  <p className="text-sm text-primary">
-                    Scadenze e notifiche importanti.
-                  </p>
-                </div>
-                <Button asChild size="sm" className="ml-auto gap-1">
-                  <Link href="/promemoria/nuovo">
-                    <PlusCircle className="h-4 w-4" />
-                    Nuovo
-                  </Link>
-                </Button>
-              </CardHeader>
-              <CardContent className="grid gap-4">
-                {sortedReminders.length > 0 ? (
-                    sortedReminders.map(reminder => (
-                      <ReminderItem key={reminder.id} reminder={reminder} />
-                    ))
-                ) : (
-                    <p className="text-sm text-muted-foreground text-center">Nessun promemoria attivo.</p>
-                )}
               </CardContent>
             </Card>
           </div>

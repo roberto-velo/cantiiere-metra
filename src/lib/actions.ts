@@ -2,7 +2,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import type { Client, Task, TaskStatus, Technician, Photo, Document, Reminder } from './types';
+import type { Client, Task, TaskStatus, Technician, Photo, Document } from './types';
 import { supabase } from './supabase';
 import { randomUUID } from 'crypto';
 
@@ -245,32 +245,5 @@ export async function updateAttachmentAction({ taskId, attachmentId, type, data 
     } catch (error) {
         console.error("Error updating attachment:", error);
         return { success: false, message: "Errore durante l'aggiornamento dell'allegato." };
-    }
-}
-
-
-// --- Reminder Actions ---
-export async function addReminderAction(reminderData: Omit<Reminder, 'id' | 'isCompleted'>) {
-    try {
-        const newReminder = { ...reminderData, isCompleted: false };
-        const { data, error } = await supabase.from('reminders').insert([newReminder]).select().single();
-        if (error) throw error;
-        revalidatePath('/');
-        return { success: true, reminder: data };
-    } catch (error) {
-        console.error('Error adding reminder:', error);
-        return { success: false, message: 'Failed to add reminder.' };
-    }
-}
-
-export async function deleteReminderAction(id: number) {
-    try {
-        const { error } = await supabase.from('reminders').delete().eq('id', id);
-        if (error) throw error;
-        revalidatePath('/');
-        return { success: true };
-    } catch (error) {
-        console.error('Error deleting reminder:', error);
-        return { success: false, message: 'Failed to delete reminder.' };
     }
 }
