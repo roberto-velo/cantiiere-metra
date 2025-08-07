@@ -131,15 +131,12 @@ export default async function DashboardPage() {
                         <TableRow key={task.id}>
                            <TableCell>
                             <div className="font-medium">{task.description}</div>
-                             <div className="hidden text-sm text-muted-foreground md:inline">
-                                {task.time}
-                            </div>
                           </TableCell>
                           <TableCell className="hidden sm:table-cell">
                              {clients.find(c => c.id === task.clientId)?.name ?? 'N/A'}
                           </TableCell>
-                           <TableCell className="hidden md:table-cell">
-                            {task.date}
+                           <TableCell className="hidden md:table-cell whitespace-nowrap">
+                            {task.date} <span className="text-foreground">{task.time}</span>
                           </TableCell>
                           <TableCell className="text-right">
                              <Badge className={cn("text-xs", statusBadge[task.status])} variant="outline">
